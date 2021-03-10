@@ -58,7 +58,7 @@ const LoginForm = () => {
                 />
               </Form.Item>
               <Button size="large" htmlType="submit" type="primary" block>
-                <i className="fas fa-sign-in-alt mr-5" />
+                <i className="fas fa-sign-in-alt me-2" />
                 ĐĂNG NHẬP
               </Button>
             </Form>

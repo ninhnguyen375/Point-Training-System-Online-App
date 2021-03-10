@@ -234,14 +234,12 @@ const MainLayout = ({ children }) => {
                     history.push('/profile')
                   }}
                 >
-                  <i className="fas fa-user mr-1" />
-                  {' '}
+                  <i className="fas fa-user me-2" />
                   Thông tin cá nhân
                 </Menu.Item>
                 <Menu.Divider />
                 <Menu.Item onClick={handleLogout}>
-                  <i className="fas fa-sign-out-alt mr-1" />
-                  {' '}
+                  <i className="fas fa-sign-out-alt me-2" />
                   Đăng xuất
                 </Menu.Item>
               </Menu>

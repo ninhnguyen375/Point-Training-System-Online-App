@@ -1,3 +1,5 @@
+// nprogress
+@import '~nprogress/nprogress.css';
 // antd
 @import '~antd/lib/style/themes/default.less';
 @import '~antd/dist/antd.less';
@@ -8,9 +10,6 @@
 @text-color: #340C6F;
 @text-primary: #340C6F;
 
-.ant-layout-sider-zero-width-trigger {
-  right: -39px;
-}
 // Card
 .ant-card {
   box-shadow: 0 0 5px lightgray;
@@ -94,6 +93,9 @@
 /* Antd layout */
 .ant-layout {
   background: #fff;
+}
+.ant-layout-sider-zero-width-trigger {
+  right: -39px;
 }
 /* Button */
 .ant-btn {
@@ -204,6 +206,7 @@
   border-radius: 5px;
   display: flex;
   font-weight: bold;
+  width: 111px;
 
   &-icon {
     border-top-color: @primary-color;
