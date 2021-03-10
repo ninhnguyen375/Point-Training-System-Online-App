@@ -1,19 +1,14 @@
-/* eslint-disable react/jsx-filename-extension */
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
+
 import Root from './common/Root'
 import reportWebVitals from './reportWebVitals'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import '@fortawesome/fontawesome-free/css/all.css'
-import 'antd/dist/antd.less'
-import './assets/styles/index.less'
-import './assets/styles/custom.less'
 import { store, persistor } from './common/store'
 
-import './assets/styles/Home.scss'
-import './assets/styles/Login.scss'
+import './assets/styles/custom.less'
+import './assets/styles/index.scss'
 
 ReactDOM.render(
   <Provider store={store}>

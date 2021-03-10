@@ -11,18 +11,15 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module',
   },
-  plugins: ['react', 'prettier'],
+  plugins: ['react'],
   rules: {
-    'prettier/prettier': [
-      'error',
-      {
-        trailingComma: 'all',
-        tabWidth: 2,
-        semi: false,
-        singleQuote: true,
-      },
-    ],
+    'react/jsx-wrap-multilines': 'off',
     'no-console': 'off',
     'import/prefer-default-export': 'off',
+    'comma-dangle': ['error', 'always-multiline'],
+    indent: ['error', 2, { SwitchCase: 1 }],
+    semi: ['error', 'never'],
+    quotes: ['error', 'single'],
+    'no-trailing-spaces': 'error',
   },
 }

@@ -1,16 +1,21 @@
 import React from 'react'
-import { Route, Switch } from 'react-router-dom'
-import Home from '../pages/Home'
+import { Redirect, Route, Switch } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import Login from '../pages/Login'
 import NotFound from '../pages/NotFound'
+import { MODULE_NAME as MODULE_USER, ROLE } from '../modules/user/model'
+import Dashboard from '../pages/Dashboard'
 
 const Routes = () => {
-  const user = false
+  const profile = useSelector(state => state[MODULE_USER].profile)
 
-  if (user) {
+  if (profile && profile.roleName === ROLE.student) {
     return (
       <Switch>
-        <Route exact path="/" component={Home} />
+        <Route exact path="/dashboard" component={Dashboard} />
+        <Route exact path="/">
+          <Redirect to="/dashboard" />
+        </Route>
         <Route exact path="*" component={NotFound} />
       </Switch>
     )
