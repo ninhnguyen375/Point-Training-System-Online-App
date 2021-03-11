@@ -6,30 +6,14 @@ export default {
       itemGroup: 'Tổng Quan',
       items: [
         {
-          key: 'overview',
+          key: 'dashboard',
           iconClass: 'fas fa-home',
-          title: 'Tổng Quan',
-          children: [
-            {
-              key: 'dashboard',
-              title: 'Bảng Điều Khiển',
-            },
-          ],
+          title: 'Bảng Điều Khiển',
         },
-      ],
-    },
-    {
-      items: [
         {
-          key: 'data',
-          iconClass: 'fas fa-user',
-          title: 'Thông Tin',
-          children: [
-            {
-              key: 'profile',
-              title: 'Thông Tin Cá Nhân',
-            },
-          ],
+          key: 'make-evaluation',
+          iconClass: 'fas fa-edit',
+          title: 'Tự Đánh Giá Rèn Luyện',
         },
       ],
     },
@@ -37,9 +21,9 @@ export default {
       itemGroup: 'Quản lý',
       items: [
         {
-          key: 'admin',
-          iconClass: 'fas fa-user',
-          title: 'Quản lý Admin',
+          key: 'evaluation',
+          iconClass: 'fas fa-file-alt',
+          title: 'Phiếu Điểm Rèn Luyện',
         },
         {
           key: 'import-list',

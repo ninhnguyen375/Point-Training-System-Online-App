@@ -1,14 +1,12 @@
-import { fetchAuthLoading } from '../../common/fetch'
-import { configs } from '../../configs/dev'
+import { fetchLoading } from '../../common/fetch'
+import { configs } from '../../configs'
 
-export const services = {
-  login: ({ code, password }) =>
-    fetchAuthLoading({
-      url: `${configs.API}/Authentications/Login`,
-      method: 'post',
-      data: {
-        code,
-        password,
-      },
-    }),
-}
+export const loginService = ({ code, password }) =>
+  fetchLoading({
+    url: `${configs.API}/Authentications/Login`,
+    method: 'post',
+    data: {
+      code,
+      password,
+    },
+  })

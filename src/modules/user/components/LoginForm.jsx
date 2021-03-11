@@ -1,18 +1,24 @@
-import { Button, Card, Divider, Form, Input } from 'antd'
+import { Button, Card, Divider, Form, Input, notification } from 'antd'
 import React from 'react'
 import { useDispatch } from 'react-redux'
 import Logo from '../../../assets/images/sgu-logo.png'
+import handleError from '../../../common/utils/handleError'
 import { login } from '../actions'
-import { services } from '../services'
+import { loginService } from '../services'
 
 const LoginForm = () => {
   const [form] = Form.useForm()
   const dispatch = useDispatch()
 
   const handleSubmit = async (values) => {
-    const { data } = await services.login(values)
-
-    dispatch(login(data.data))
+    try {
+      const { data } = await loginService(values)
+      console.log('~ data', data)
+      dispatch(login(data.data))
+    } catch (err) {
+      console.log('~ err', err)
+      handleError(err, null, notification)
+    }
   }
 
   return (

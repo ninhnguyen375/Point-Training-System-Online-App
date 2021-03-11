@@ -5,6 +5,7 @@ import Login from '../pages/Login'
 import NotFound from '../pages/NotFound'
 import { MODULE_NAME as MODULE_USER, ROLE } from '../modules/user/model'
 import Dashboard from '../pages/Dashboard'
+import MakeEvaluationPage from '../pages/MakeEvaluationPage'
 
 const Routes = () => {
   const profile = useSelector(state => state[MODULE_USER].profile)
@@ -13,6 +14,7 @@ const Routes = () => {
     return (
       <Switch>
         <Route exact path="/dashboard" component={Dashboard} />
+        <Route exact path="/make-evaluation" component={MakeEvaluationPage} />
         <Route exact path="/">
           <Redirect to="/dashboard" />
         </Route>

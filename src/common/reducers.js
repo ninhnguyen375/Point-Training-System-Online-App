@@ -6,7 +6,7 @@ const initialState = {
   layout: {
     siderMenu: {
       selectedKeys: ['dashboard'],
-      openKeys: ['overview'],
+      openKeys: [],
     },
   },
 }
