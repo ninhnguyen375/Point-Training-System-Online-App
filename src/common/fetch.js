@@ -11,11 +11,12 @@ export const fetchAuth = ({ url, headers, ...options }) => axios({
     'Content-Type': 'application/json',
     ...headers,
   },
-  options,
+  ...options,
 })
 
-export const fetchAuthLoading = async ({ url, method, data, headers, ...options }) => {
+export const fetchAuthLoading = async ({ url, method, data, headers, token, ...options }) => {
   nProgress.start()
+  const tokenKey = token || store.getState()[MODULE_USER].profile.token
 
   try {
     const res = await axios({
@@ -25,10 +26,10 @@ export const fetchAuthLoading = async ({ url, method, data, headers, ...options 
       timeout: configs.TIMEOUT,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${store.getState()[MODULE_USER].profile.token}`,
+        Authorization: `Bearer ${tokenKey}`,
         ...headers,
       },
-      options,
+      ...options,
     })
 
     nProgress.done()
@@ -52,7 +53,7 @@ export const fetchLoading = async ({ url, method, data, headers, ...options }) =
         'Content-Type': 'application/json',
         ...headers,
       },
-      options,
+      ...options,
     })
 
     nProgress.done()

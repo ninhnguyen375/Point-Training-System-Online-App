@@ -3,7 +3,10 @@ import React from 'react'
 import { useDispatch } from 'react-redux'
 import Logo from '../../../assets/images/sgu-logo.png'
 import handleError from '../../../common/utils/handleError'
+import { addStudentsInClass } from '../../student-class/actions'
+import { getStudentsOfClassByMonitorIdService } from '../../student-class/services'
 import { login } from '../actions'
+import { ROLE } from '../model'
 import { loginService } from '../services'
 
 const LoginForm = () => {
@@ -12,11 +15,20 @@ const LoginForm = () => {
 
   const handleSubmit = async (values) => {
     try {
-      const { data } = await loginService(values)
-      console.log('~ data', data)
-      dispatch(login(data.data))
+      let user = await loginService(values)
+      user = user.data.data
+
+      if(user.roleName === ROLE.student) {
+        try {
+          let students = await getStudentsOfClassByMonitorIdService(user.id, user.token)
+          students = students.data.data
+          dispatch(addStudentsInClass(students))
+          dispatch(login({ ...user, isMonitor: true }))
+        } catch (err) {
+          dispatch(login({ ...user, isMonitor: false }))
+        }
+      }
     } catch (err) {
-      console.log('~ err', err)
       handleError(err, null, notification)
     }
   }
@@ -63,6 +75,29 @@ const LoginForm = () => {
                   placeholder="Nhập mật khẩu"
                 />
               </Form.Item>
+              <div>
+                <Button
+                  htmlType="button"
+                  onClick={() =>
+                    handleSubmit({ code: '54321', password: '54321' })}
+                >
+                  Giảng viên A
+                </Button>
+                <Button
+                  htmlType="button"
+                  onClick={() =>
+                    handleSubmit({ code: '3117410212', password: '3117410212' })}
+                >
+                  Sinh viên A - lop truong
+                </Button>
+                <Button
+                  htmlType="button"
+                  onClick={() =>
+                    handleSubmit({ code: '12345', password: '12345' })}
+                >
+                  Nhân viên A
+                </Button>
+              </div>
               <Button size="large" htmlType="submit" type="primary" block>
                 <i className="fas fa-sign-in-alt me-2" />
                 ĐĂNG NHẬP

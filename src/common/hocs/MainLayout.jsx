@@ -49,8 +49,8 @@ const MainLayout = ({ children }) => {
   }
 
   const handleLogout = () => {
+    history.push('/')
     dispatch(clearAll())
-    notification.success({ message: 'Đăng xuất', description: 'Thành công' })
   }
 
   const handleClick = (value) => {
@@ -63,7 +63,7 @@ const MainLayout = ({ children }) => {
     history.push(`/${value.key}`)
   }
 
-  const userRole = profile ? profile.roleName : ROLE.student
+  const userRole = profile ? profile.roleName : ROLE.employee
   const userName = profile ? profile.fullName : 'user'
 
   const renderMenu = (menus = []) =>

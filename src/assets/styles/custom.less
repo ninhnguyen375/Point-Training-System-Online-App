@@ -7,8 +7,8 @@
 @primary-color: #340C6F;
 @success-color: #52C41A;
 @warning-color: #ffc107;
-@text-color: #340C6F;
-@text-primary: #340C6F;
+@text-color: #333333;
+@text-primary: #333333;
 
 // Card
 .ant-card {
@@ -54,7 +54,7 @@
   width: calc(100% - 20px);
   transition: 0.3s;
   margin: 10px auto;
-  color: @text-color;
+  color: @primary-color;
 }
 .ant-menu-submenu-selected {
   & .ant-menu-item-selected {
@@ -62,7 +62,7 @@
   }
 }
 .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
-  background-color: @text-color !important;
+  background-color: @primary-color !important;
 }
 .ant-menu-submenu-inline > .ant-menu-submenu-title .ant-menu-submenu-arrow {
   right: 40px;
@@ -158,11 +158,11 @@
 .ant-tabs-tab:hover,
 .ant-tabs-tab-btn {
   border-radius: 6px 0 0 6px !important;
-  color: @text-color !important;
+  color: @primary-color !important;
 }
 /* Breadcrumb */
 .ant-breadcrumb > span:last-child a {
-  color: @text-color;
+  color: @primary-color;
 }
 .ant-breadcrumb a {
   color: rgba(71, 61, 139, 0.602);

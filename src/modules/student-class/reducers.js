@@ -3,12 +3,12 @@ import { clearAll } from '../../common/actions'
 import * as actions from './actions'
 
 const initialState = {
-  profile: null,
+  studentsInClass: null,
 }
 
 const map = {
   [clearAll]: () => (initialState),
-  [actions.login]: (state, action) => ({ ...current(state), profile: action.payload }),
+  [actions.addStudentInClass]: (state, action) => ({ ...current(state), studentsInClass: action.payload }),
 }
 
 export default createReducer(initialState, map)
