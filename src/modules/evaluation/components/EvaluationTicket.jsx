@@ -7,6 +7,8 @@ import {
   notification,
   Select,
   Table,
+  Tag,
+  Tooltip,
 } from 'antd'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -15,17 +17,20 @@ import PropTypes from 'prop-types'
 import handleError from '../../../common/utils/handleError'
 import {
   getEvaluationPrivateService,
+  getPointOnlineService,
   getPointTrainingGroupsService,
   getYearsService,
 } from '../services'
 import { MODULE_NAME as MODULE_USER, ROLE } from '../../user/model'
 import { disableEvaluationItems, semesters } from '../model'
+import { cloneObj } from '../../../common/utils/object'
 
-const EvaluationTicket = ({ studentId }) => {
+const EvaluationTicket = ({ student }) => {
   // store
   const profile = useSelector((state) => state[MODULE_USER].profile)
   // state
   const [studentEvaluation, setStudentEvaluation] = useState(null)
+  console.log('~ studentEvaluation', studentEvaluation)
   const [monitorEvaluation, setMonitorEvaluation] = useState(null)
   const [displayEvaluationTicket, setDisplayEvaluationTicket] = useState([])
   const [previousResult, setPreviousResult] = useState(null)
@@ -33,11 +38,12 @@ const EvaluationTicket = ({ studentId }) => {
   const [years, setYears] = useState([])
   const [yearId, setYearId] = useState(null)
   const [semesterId, setSemesterId] = useState(null)
+  const [loading, setLoading] = useState(false)
   // ref
   const inputPreviousResult = useRef(null)
 
   const { isMonitor } = profile
-  const ticketOfMonitor = isMonitor && !studentId
+  const isTicketOfMonitor = isMonitor && !student.id
 
   const mapToEvaluationTicket = (data = []) => {
     const displayEvalutionTicket = []
@@ -113,10 +119,27 @@ const EvaluationTicket = ({ studentId }) => {
     return isValid
   }
 
+  const getTotalPoint = (clone = []) => {
+    let total = 0
+    if (!clone) {
+      return 0
+    }
+
+    clone.forEach((group) => {
+      if (group.isAnotherItem) {
+        total += group.point
+      } else {
+        total += group.items.reduce((sum, item) => sum + item.point, 0)
+      }
+    })
+
+    return total > 100 ? 100 : total
+  }
+
   const getEvaluationPrivate = useCallback(async (yId, sId) => {
     try {
       let evaluationPrivate = await getEvaluationPrivateService({
-        studentId: studentId || profile.id,
+        studentId: student.id || profile.id,
         semesterId: sId,
         yearId: yId,
       })
@@ -127,11 +150,11 @@ const EvaluationTicket = ({ studentId }) => {
       setEvaluation(evaluationPrivate)
       const mapped = mapToEvaluationTicket(pointTrainingGroups)
 
-      setStudentEvaluation(
-        evaluationPrivate.studentEvaluation || mapped.evaluationData,
-      )
       setMonitorEvaluation(
         evaluationPrivate.monitorEvaluation || mapped.evaluationData,
+      )
+      setStudentEvaluation(
+        evaluationPrivate.studentEvaluation || mapped.evaluationData,
       )
       setDisplayEvaluationTicket(mapped.displayEvalutionTicket)
     } catch (err) {
@@ -158,47 +181,80 @@ const EvaluationTicket = ({ studentId }) => {
     }
   }, [getEvaluationPrivate, yearId, semesterId])
 
-  const handleChangePoint = (record, role) => (value) => {
-    const { id } = record
-    const point = value
-    const clone = JSON.parse(
-      JSON.stringify(
-        role === ROLE.student ? studentEvaluation : monitorEvaluation,
-      ),
-    )
-
+  const getEvaluationWithNewPoint = (id, point, clone) => {
     const newEvaluationTicket = clone.map((group) => {
       if (group.id === id) {
         return { ...group, point }
       }
 
-      const cloneEvaluation = JSON.parse(JSON.stringify(group))
+      const cloneGroup = cloneObj(group)
 
-      const itemIndex = cloneEvaluation.items.findIndex(
-        (item) => item.id === id,
-      )
+      const itemIndex = cloneGroup.items.findIndex((item) => item.id === id)
 
       if (itemIndex !== -1) {
-        cloneEvaluation.items[itemIndex].point = point
+        cloneGroup.items[itemIndex].point = point
       }
 
       return {
-        ...cloneEvaluation,
-        currentPoint: cloneEvaluation.currentPoint + point,
+        ...cloneGroup,
+        currentPoint: cloneGroup.currentPoint + point,
       }
     })
 
     if (!validatePoint(newEvaluationTicket)) {
       notification.error({ message: 'Điểm vượt quá mức tối đa' })
-      return
+      return clone
     }
 
-    if (role === ROLE.student) {
-      setStudentEvaluation(newEvaluationTicket)
+    return newEvaluationTicket
+  }
+
+  const handleChangePoint = (evaluationId, point, forStudent) => {
+    const newEvaluation = getEvaluationWithNewPoint(
+      evaluationId,
+      point,
+      cloneObj(forStudent ? studentEvaluation : monitorEvaluation),
+    )
+
+    if (forStudent) {
+      setStudentEvaluation(newEvaluation)
     } else {
-      setMonitorEvaluation(newEvaluationTicket)
+      setMonitorEvaluation(newEvaluation)
     }
   }
+
+  const applyPoint = (point) => {
+    const clone = cloneObj(isMonitor ? monitorEvaluation : studentEvaluation)
+    let newEvaluation
+    // reset point
+    newEvaluation = getEvaluationWithNewPoint(2, 0, clone)
+    newEvaluation = getEvaluationWithNewPoint(3, 0, newEvaluation)
+    newEvaluation = getEvaluationWithNewPoint(4, 0, newEvaluation)
+    newEvaluation = getEvaluationWithNewPoint(5, 0, newEvaluation)
+
+    // apply point
+    if (point >= 3.6 && point <= 4.0) {
+      newEvaluation = getEvaluationWithNewPoint(2, 14, newEvaluation)
+    } else if (point >= 3.2 && point <= 3.59) {
+      newEvaluation = getEvaluationWithNewPoint(3, 12, newEvaluation)
+    } else if (point >= 2.5 && point <= 3.19) {
+      newEvaluation = getEvaluationWithNewPoint(4, 10, newEvaluation)
+    } else if (point >= 2.0 && point <= 2.49) {
+      newEvaluation = getEvaluationWithNewPoint(5, 5, newEvaluation)
+    }
+
+    if (isMonitor) {
+      setMonitorEvaluation(newEvaluation)
+    } else {
+      setStudentEvaluation(newEvaluation)
+    }
+  }
+
+  useEffect(() => {
+    if (previousResult !== null) {
+      applyPoint(previousResult)
+    }
+  }, [previousResult])
 
   const getEvaluationTicketItemById = (id, src) => {
     let item = {}
@@ -225,7 +281,9 @@ const EvaluationTicket = ({ studentId }) => {
       return (
         <InputNumber
           style={{ width: 55 }}
-          disabled={disableEvaluationItems.includes(r.id)}
+          disabled={
+            (!forStudent && !isMonitor) || disableEvaluationItems.includes(r.id)
+          }
           min={r.isAnotherItem ? 0 : r.point > 0 ? 0 : -100}
           max={r.isAnotherItem ? r.maxPoint : r.point > 0 ? r.point : 0}
           defaultValue={0}
@@ -235,7 +293,7 @@ const EvaluationTicket = ({ studentId }) => {
               forStudent ? studentEvaluation : monitorEvaluation,
             ).point || 0
           }
-          onChange={handleChangePoint(r, forStudent ? ROLE.student : ROLE.monitor)}
+          onChange={(v) => handleChangePoint(r.id, v, forStudent)}
         />
       )
     }
@@ -245,10 +303,23 @@ const EvaluationTicket = ({ studentId }) => {
 
   const columns = [
     {
+      key: 'id',
+      title: 'MÃ',
+      align: 'center',
+      render: (r) =>
+        (r.point !== null && r.point !== undefined) || r.isAnotherItem
+          ? r.id
+          : '',
+    },
+    {
       key: 0,
       title: 'NỘI DUNG ĐÁNH GIÁ',
       width: '50vw',
-      render: (r) => <div className={r.class}>{r.title}</div>,
+      render: (r) => (
+        <div className={r.class}>
+          <div className="me-2 d-inline">{r.title}</div>
+        </div>
+      ),
     },
     {
       key: 1,
@@ -270,6 +341,32 @@ const EvaluationTicket = ({ studentId }) => {
     },
   ]
 
+  const handleGetPointOnline = async () => {
+    setLoading(true)
+
+    const code = student.code || profile.code
+    try {
+      const { data } = await getPointOnlineService(code)
+      if (!data) {
+        notification.info({
+          message: `Chưa có điểm cho MSSV ${code}`,
+          description: 'Hãy thử lại sau',
+        })
+      } else {
+        applyPoint(parseFloat(data))
+        message.success('Lấy điểm thành công')
+        setPreviousResult(parseFloat(data))
+      }
+    } catch (err) {
+      notification.info({
+        message: `Chưa có điểm cho MSSV ${code}`,
+        description: 'Hãy thử lại sau',
+      })
+    }
+
+    setLoading(false)
+  }
+
   const renderTicket = (cols, display, ev) => {
     if (!ev) {
       return ''
@@ -289,7 +386,7 @@ const EvaluationTicket = ({ studentId }) => {
             {profile.code || 'sv'}
           </div>
           <div className="mt-2">
-            <b>Nhập hệ 4 học kỳ trước:</b>
+            <b>Nhập hệ 4 học kỳ trước (VD: 2.5):</b>
             <div className="mt-2">
               <InputNumber
                 ref={inputPreviousResult}
@@ -300,16 +397,48 @@ const EvaluationTicket = ({ studentId }) => {
                 onChange={(v) => setPreviousResult(v)}
                 value={previousResult}
               />
+              <Button
+                loading={loading}
+                onClick={handleGetPointOnline}
+                className="ms-2"
+                type="primary"
+              >
+                {loading ? 'ĐANG LẤY ĐIỂM' : 'LẤY ĐIỂM TỰ ĐỘNG'}
+              </Button>
             </div>
           </div>
         </div>
         <Table
+          bordered
           className="mt-3"
           rowKey={(r) => r.id}
           size="small"
           pagination={false}
           columns={cols}
           dataSource={display}
+          summary={() => (
+            <Table.Summary.Row>
+              <Table.Summary.Cell colSpan={3}>
+                <b>
+                  <div className="text-center">Tổng cộng</div>
+                </b>
+              </Table.Summary.Cell>
+              <Table.Summary.Cell>
+                <b>
+                  <div className="text-center">
+                    {getTotalPoint(studentEvaluation)}
+                  </div>
+                </b>
+              </Table.Summary.Cell>
+              <Table.Summary.Cell>
+                <b>
+                  <div className="text-center">
+                    {getTotalPoint(monitorEvaluation)}
+                  </div>
+                </b>
+              </Table.Summary.Cell>
+            </Table.Summary.Row>
+          )}
         />
         <div className="d-flex justify-content-end mt-4">
           <Button className="me-2">LƯU NHÁP</Button>
@@ -319,6 +448,12 @@ const EvaluationTicket = ({ studentId }) => {
               if (previousResult === null && inputPreviousResult.current) {
                 message.error('Vui lòng nhập điểm hệ 4')
                 inputPreviousResult.current.focus()
+              } else {
+                console.log(
+                  getTotalPoint(
+                    isMonitor ? monitorEvaluation : studentEvaluation,
+                  ),
+                )
               }
             }}
           >
@@ -385,11 +520,11 @@ const EvaluationTicket = ({ studentId }) => {
 }
 
 EvaluationTicket.propTypes = {
-  studentId: PropTypes.number,
+  student: PropTypes.objectOf(PropTypes.any),
 }
 
 EvaluationTicket.defaultProps = {
-  studentId: null,
+  student: {},
 }
 
 export default EvaluationTicket

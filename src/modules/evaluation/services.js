@@ -1,4 +1,4 @@
-import { fetchAuthLoading } from '../../common/fetch'
+import { fetchAxios, fetchAuthLoading } from '../../common/fetch'
 import { configs } from '../../configs'
 
 export const getPointTrainingGroupsService = () =>
@@ -25,4 +25,11 @@ export const getYearsService = () =>
   fetchAuthLoading({
     url: `${configs.API}/Years`,
     method: 'get',
+  })
+
+export const getPointOnlineService = (code) =>
+  fetchAxios({
+    url: `${configs.CrawlerAPI}/crawler/get-point`,
+    method: 'get',
+    params: { code },
   })

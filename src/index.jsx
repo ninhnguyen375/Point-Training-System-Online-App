@@ -7,8 +7,8 @@ import Root from './common/Root'
 import reportWebVitals from './reportWebVitals'
 import { store, persistor } from './common/store'
 
-import './assets/styles/custom.less'
 import './assets/styles/index.scss'
+import './assets/styles/custom.less'
 
 ReactDOM.render(
   <Provider store={store}>

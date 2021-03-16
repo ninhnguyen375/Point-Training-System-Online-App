@@ -86,6 +86,13 @@ const LoginForm = () => {
                 <Button
                   htmlType="button"
                   onClick={() =>
+                    handleSubmit({ code: '3117410002', password: '3117410002' })}
+                >
+                  Sinh viên D
+                </Button>
+                <Button
+                  htmlType="button"
+                  onClick={() =>
                     handleSubmit({ code: '3117410212', password: '3117410212' })}
                 >
                   Sinh viên A - lop truong

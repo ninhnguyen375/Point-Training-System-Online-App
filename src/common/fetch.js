@@ -4,17 +4,67 @@ import { configs } from '../configs'
 import { store } from './store'
 import { MODULE_NAME as MODULE_USER } from '../modules/user/model'
 
-export const fetchAuth = ({ url, headers, ...options }) => axios({
+export const fetchAuth = async ({
   url,
-  timeout: configs.TIMEOUT,
-  headers: {
-    'Content-Type': 'application/json',
-    ...headers,
-  },
-  ...options,
-})
+  headers,
+  token,
+  method,
+  data,
+  ...options
+}) => {
+  const tokenKey = token || store.getState()[MODULE_USER].profile.token
 
-export const fetchAuthLoading = async ({ url, method, data, headers, token, ...options }) => {
+  const res = await axios({
+    url,
+    method,
+    data,
+    timeout: configs.TIMEOUT,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${tokenKey}`,
+      ...headers,
+    },
+    ...options,
+  })
+
+  return res
+}
+
+export const fetchAxios = async ({
+  url,
+  headers,
+  method,
+  data,
+  ...options
+}) => {
+  try {
+    const res = await axios({
+      url,
+      method,
+      data,
+      timeout: configs.TIMEOUT,
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
+      ...options,
+    })
+
+    return res
+  } catch (err) {
+    console.log('err in fetchAxios,', err)
+    throw err
+  }
+}
+
+export const fetchAuthLoading = async ({
+  url,
+  method,
+  data,
+  headers,
+  token,
+  ...options
+}) => {
   nProgress.start()
   const tokenKey = token || store.getState()[MODULE_USER].profile.token
 
@@ -40,7 +90,13 @@ export const fetchAuthLoading = async ({ url, method, data, headers, token, ...o
   }
 }
 
-export const fetchLoading = async ({ url, method, data, headers, ...options }) => {
+export const fetchLoading = async ({
+  url,
+  method,
+  data,
+  headers,
+  ...options
+}) => {
   nProgress.start()
 
   try {
