@@ -1,6 +1,6 @@
 import * as actions from './actions'
 
-const { createReducer } = require('@reduxjs/toolkit')
+const {createReducer} = require('@reduxjs/toolkit')
 
 const initialState = {
   layout: {
@@ -12,7 +12,7 @@ const initialState = {
 }
 
 const reducerMap = {
-  [actions.clearAll]: () => ({ ...initialState }),
+  [actions.clearAll]: () => ({...initialState}),
   [actions.setSiderMenu]: (state, action) => ({
     ...state,
     layout: {

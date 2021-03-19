@@ -1,7 +1,7 @@
 import React from 'react'
-import { BrowserRouter as Router } from 'react-router-dom'
+import {BrowserRouter as Router} from 'react-router-dom'
 import viVN from 'antd/lib/locale/vi_VN'
-import { ConfigProvider } from 'antd'
+import {ConfigProvider} from 'antd'
 import Routes from './Routes'
 
 const Root = () => (

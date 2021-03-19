@@ -1,14 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Provider } from 'react-redux'
-import { PersistGate } from 'redux-persist/integration/react'
+import {Provider} from 'react-redux'
+import {PersistGate} from 'redux-persist/integration/react'
 
 import Root from './common/Root'
 import reportWebVitals from './reportWebVitals'
-import { store, persistor } from './common/store'
+import {store, persistor} from './common/store'
 
-import './assets/styles/index.scss'
 import './assets/styles/custom.less'
+import './assets/styles/index.scss'
 
 ReactDOM.render(
   <Provider store={store}>

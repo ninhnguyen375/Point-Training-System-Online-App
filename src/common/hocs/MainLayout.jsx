@@ -1,29 +1,29 @@
-import React, { useState, useEffect } from 'react'
+import React, {useState, useEffect} from 'react'
 import propTypes from 'prop-types'
-import { Layout, Menu, Dropdown, Tag, notification } from 'antd'
+import {Layout, Menu, Dropdown, Tag, notification} from 'antd'
 
-import { useHistory, useLocation } from 'react-router-dom'
+import {useHistory, useLocation} from 'react-router-dom'
 import SubMenu from 'antd/lib/menu/SubMenu'
-import { useDispatch, useSelector } from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import siderMenu from '../constants/siderMenu'
 import userIcon from '../../assets/images/user.svg'
-import { clearAll, setSiderMenu } from '../actions'
-import { MODULE_NAME as MODULE_USER, ROLE } from '../../modules/user/model'
-import { configs } from '../../configs'
+import {clearAll, setSiderMenu} from '../actions'
+import {MODULE_NAME as MODULE_USER, ROLE} from '../../modules/user/model'
+import {configs} from '../../configs'
 
-const { Header, Sider, Content } = Layout
+const {Header, Sider, Content} = Layout
 
-const MainLayout = ({ children }) => {
+const MainLayout = ({children}) => {
   // store
   const moduleUser = useSelector((state) => state[MODULE_USER])
-  const { selectedKeys, openKeys } = useSelector(
+  const {selectedKeys, openKeys} = useSelector(
     (state) => state.common.layout.siderMenu,
   )
 
   // states
   const [collapsed, setCollapsed] = useState(false)
 
-  const { profile } = moduleUser
+  const {profile} = moduleUser
   const dispatch = useDispatch()
   const history = useHistory()
   const location = useLocation()
@@ -136,37 +136,22 @@ const MainLayout = ({ children }) => {
     <Dropdown
       trigger={['click']}
       overlay={
-        <Menu style={{ width: 200 }}>
+        <Menu style={{width: 200}}>
           <Menu.Item>
-            <div className="d-flex" style={{ paddingBottom: 5 }}>
+            <div className="d-flex" style={{paddingBottom: 5}}>
               <img
                 src={userIcon}
                 alt="avatar"
                 width={35}
-                style={{ marginRight: 10, paddingTop: 10 }}
+                style={{marginRight: 10, paddingTop: 10}}
               />
 
               <div>
                 <span>{userName || ''}</span>
                 <br />
-                <Tag color="darkslateblue">{userRole}</Tag>
+                <Tag color="darkslateblue">{profile.isMonitor ? ROLE.monitor : userRole}</Tag>
               </div>
             </div>
-          </Menu.Item>
-          <Menu.Divider />
-          <Menu.Item
-            onClick={() => {
-              dispatch(
-                setSiderMenu({
-                  selectedKeys,
-                  openKeys: [...openKeys, 'data'],
-                }),
-              )
-              history.push('/profile')
-            }}
-          >
-            <i className="fas fa-user me-2" />
-            Thông tin cá nhân
           </Menu.Item>
           <Menu.Divider />
           <Menu.Item onClick={handleLogout}>

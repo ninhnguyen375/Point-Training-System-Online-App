@@ -1,4 +1,4 @@
-import { ROLE } from '../../modules/user/model'
+import {ROLE} from '../../modules/user/model'
 
 export default {
   [ROLE.student]: [
@@ -24,11 +24,6 @@ export default {
           key: 'evaluation',
           iconClass: 'fas fa-file-alt',
           title: 'Phiếu Điểm Rèn Luyện',
-        },
-        {
-          key: 'import-list',
-          iconClass: 'fas fa-file-import',
-          title: 'Phiếu Nhập',
         },
       ],
     },

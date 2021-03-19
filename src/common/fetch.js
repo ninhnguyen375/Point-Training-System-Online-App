@@ -1,8 +1,8 @@
 import axios from 'axios'
 import nProgress from 'nprogress'
-import { configs } from '../configs'
-import { store } from './store'
-import { MODULE_NAME as MODULE_USER } from '../modules/user/model'
+import {configs} from '../configs'
+import {store} from './store'
+import {MODULE_NAME as MODULE_USER} from '../modules/user/model'
 
 export const fetchAuth = async ({
   url,

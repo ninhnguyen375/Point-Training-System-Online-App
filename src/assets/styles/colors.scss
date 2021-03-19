@@ -1,0 +1,10 @@
+.success {
+  background: $success-color !important;
+  border-color: $success-color !important;
+  color: white !important;
+
+  &:hover, &:active {
+    background: darken($success-color, 10) !important;
+    border-color: darken($success-color, 10) !important;
+  }
+}

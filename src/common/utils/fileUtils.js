@@ -1,4 +1,4 @@
-import { message } from 'antd'
+import {message} from 'antd'
 
 export const isFileImage = (file) => {
   const acceptedImageTypes = ['image/gif', 'image/jpeg', 'image/jpg', 'image/png']
@@ -19,7 +19,7 @@ export const beforeUpload = (file) => {
   return isJpgOrPng && isLt2M
 }
 
-export const customRequest = ({ onSuccess }) => {
+export const customRequest = ({onSuccess}) => {
   setTimeout(() => onSuccess('ok'), 0)
 }
 

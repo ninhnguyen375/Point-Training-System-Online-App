@@ -1,10 +1,10 @@
-import { Button, Card, DatePicker, Form, notification, Popconfirm, Select } from 'antd'
+import {Button, Card, DatePicker, Form, notification, Popconfirm, Select} from 'antd'
 import moment from 'moment'
 import React from 'react'
-import { useHistory } from 'react-router-dom'
+import {useHistory} from 'react-router-dom'
 import handleError from '../../../common/utils/handleError'
-import { semesters } from '../model'
-import { startEvaluationService } from '../services'
+import {semesters} from '../model'
+import {startEvaluationService} from '../services'
 
 const CreateEvaluationForm = () => {
   const [form] = Form.useForm()
@@ -60,25 +60,25 @@ const CreateEvaluationForm = () => {
           </Select>
         </Form.Item>
         <Form.Item
-          rules={[{ required: true, message: 'Bắc buộc' }]}
+          rules={[{required: true, message: 'Bắc buộc'}]}
           label="Hạn chót đánh giá dành cho sinh viên:"
           name="deadlineDateForStudent"
         >
-          <DatePicker style={{ width: '100%' }} />
+          <DatePicker style={{width: '100%'}} />
         </Form.Item>
         <Form.Item
-          rules={[{ required: true, message: 'Bắc buộc' }]}
+          rules={[{required: true, message: 'Bắc buộc'}]}
           label="Hạn chót đánh giá dành cho lớp trưởng:"
           name="deadlineDateForMonitor"
         >
-          <DatePicker style={{ width: '100%' }} />
+          <DatePicker style={{width: '100%'}} />
         </Form.Item>
         <Form.Item
-          rules={[{ required: true, message: 'Bắc buộc' }]}
+          rules={[{required: true, message: 'Bắc buộc'}]}
           label="Hạn chót đánh giá dành cho cố vấn học tập:"
           name="deadlineDateForLecturer"
         >
-          <DatePicker style={{ width: '100%' }} />
+          <DatePicker style={{width: '100%'}} />
         </Form.Item>
         <div className="d-flex justify-content-end">
           <Popconfirm

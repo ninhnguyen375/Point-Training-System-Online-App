@@ -1,6 +1,6 @@
 export const mapPayloadToForm = (payload, files, fieldFileName) => {
   const form = new FormData()
-  const data = { ...payload }
+  const data = {...payload}
 
   Object.keys(data).forEach((key) => {
     const value = data[key]

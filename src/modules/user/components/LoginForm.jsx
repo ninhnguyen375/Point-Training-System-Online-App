@@ -1,13 +1,13 @@
-import { Button, Card, Divider, Form, Input, notification } from 'antd'
+import {Button, Card, Divider, Form, Input, notification} from 'antd'
 import React from 'react'
-import { useDispatch } from 'react-redux'
+import {useDispatch} from 'react-redux'
 import Logo from '../../../assets/images/sgu-logo.png'
 import handleError from '../../../common/utils/handleError'
-import { addStudentsInClass } from '../../student-class/actions'
-import { getStudentsOfClassByMonitorIdService } from '../../student-class/services'
-import { login } from '../actions'
-import { ROLE } from '../model'
-import { loginService } from '../services'
+import {addStudentsInClass} from '../../student-class/actions'
+import {getStudentsOfClassByMonitorIdService} from '../../student-class/services'
+import {login} from '../actions'
+import {ROLE} from '../model'
+import {loginService} from '../services'
 
 const LoginForm = () => {
   const [form] = Form.useForm()
@@ -23,10 +23,12 @@ const LoginForm = () => {
           let students = await getStudentsOfClassByMonitorIdService(user.id, user.token)
           students = students.data.data
           dispatch(addStudentsInClass(students))
-          dispatch(login({ ...user, isMonitor: true }))
+          dispatch(login({...user, isMonitor: true}))
         } catch (err) {
-          dispatch(login({ ...user, isMonitor: false }))
+          dispatch(login({...user, isMonitor: false}))
         }
+      } else {
+        dispatch(login(user))
       }
     } catch (err) {
       handleError(err, null, notification)
@@ -56,22 +58,22 @@ const LoginForm = () => {
               <Form.Item
                 name="code"
                 initialValue="3117410212"
-                rules={[{ required: true, message: 'Vui lòng nhập mã số ' }]}
+                rules={[{required: true, message: 'Vui lòng nhập mã số '}]}
                 label="Mã số:"
               >
                 <Input
-                  style={{ float: 'right', width: 300 }}
+                  style={{float: 'right', width: 300}}
                   placeholder="Nhập mã số"
                 />
               </Form.Item>
               <Form.Item
                 name="password"
                 initialValue="3117410212"
-                rules={[{ required: true, message: 'Vui lòng nhập mật khẩu' }]}
+                rules={[{required: true, message: 'Vui lòng nhập mật khẩu'}]}
                 label="Mật khẩu:"
               >
                 <Input.Password
-                  style={{ float: 'right', width: 300 }}
+                  style={{float: 'right', width: 300}}
                   placeholder="Nhập mật khẩu"
                 />
               </Form.Item>
@@ -79,28 +81,28 @@ const LoginForm = () => {
                 <Button
                   htmlType="button"
                   onClick={() =>
-                    handleSubmit({ code: '54321', password: '54321' })}
+                    handleSubmit({code: '54321', password: '54321'})}
                 >
                   Giảng viên A
                 </Button>
                 <Button
                   htmlType="button"
                   onClick={() =>
-                    handleSubmit({ code: '3117410002', password: '3117410002' })}
+                    handleSubmit({code: '3117410002', password: '3117410002'})}
                 >
                   Sinh viên D
                 </Button>
                 <Button
                   htmlType="button"
                   onClick={() =>
-                    handleSubmit({ code: '3117410212', password: '3117410212' })}
+                    handleSubmit({code: '3117410212', password: '3117410212'})}
                 >
                   Sinh viên A - lop truong
                 </Button>
                 <Button
                   htmlType="button"
                   onClick={() =>
-                    handleSubmit({ code: '12345', password: '12345' })}
+                    handleSubmit({code: '12345', password: '12345'})}
                 >
                   Nhân viên A
                 </Button>
