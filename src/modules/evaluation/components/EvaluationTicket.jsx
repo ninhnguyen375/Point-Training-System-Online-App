@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   Divider,
+  Input,
   InputNumber,
   message,
   Modal,
@@ -27,13 +28,16 @@ import {
   uploadFileService,
   removeFileService,
   studentMakeDraftEvaluationService,
+  studentMakeEvaluationService,
+  monitorMakeEvaluationService,
+  lecturerApproveService,
 } from '../services'
 import {MODULE_NAME as MODULE_USER, ROLE} from '../../user/model'
-import {disableEvaluationItems, semesters} from '../model'
+import {disableEvaluationItems, evaluationStatus, semesters} from '../model'
 import {cloneObj} from '../../../common/utils/object'
 import {configs} from '../../../configs'
 
-const EvaluationTicket = ({student}) => {
+const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
   // store
   const profile = useSelector((state) => state[MODULE_USER].profile)
   // state
@@ -55,10 +59,17 @@ const EvaluationTicket = ({student}) => {
   const inputPreviousResult = useRef(null)
 
   const {isMonitor} = profile
-  const isTicketOfMonitor = isMonitor && !student.id
+  const isTicketOfMonitor =
+    isMonitor && evaluation && evaluation.monitorId === profile.id
+
+  useEffect(() => {
+    setYearId(yearIdProp)
+    setSemesterId(semesterIdProp)
+  }, [yearIdProp, semesterIdProp])
 
   const validatePoint = (cloneEvaluationTicket) => {
     let isValid = true
+    let k = 0
 
     cloneEvaluationTicket.every((group) => {
       const cloneGroup = JSON.parse(JSON.stringify(group))
@@ -66,13 +77,14 @@ const EvaluationTicket = ({student}) => {
 
       if (totalPoint > cloneGroup.maxPoint) {
         isValid = false
+        k = totalPoint - cloneGroup.maxPoint
         return false
       }
 
       return true
     })
 
-    return isValid
+    return {isValid, k}
   }
 
   const getEvaluationWithNewPoint = (id, point, clone) => {
@@ -82,28 +94,48 @@ const EvaluationTicket = ({student}) => {
       }
 
       const cloneGroup = cloneObj(group)
-
       const itemIndex = cloneGroup.items.findIndex((item) => item.id === id)
 
       if (itemIndex !== -1) {
         cloneGroup.items[itemIndex].point = point
+
+        const totalPoint = cloneGroup.items.reduce(
+          (sum, item) => sum + item.point,
+          0,
+        )
+
+        return {
+          ...cloneGroup,
+          currentPoint: totalPoint,
+        }
       }
 
-      return {
-        ...cloneGroup,
-        currentPoint: cloneGroup.currentPoint + point,
-      }
+      return group
     })
 
-    if (!validatePoint(newEvaluationTicket)) {
-      notification.error({message: 'Điểm vượt quá mức tối đa'})
-      return clone
+    const validate = validatePoint(newEvaluationTicket)
+    if (!validate.isValid) {
+      const validPoint = point - validate.k
+      notification.info({
+        message: `Điểm vượt quá mức tối đa, lấy ${validPoint}đ`,
+      })
+      return getEvaluationWithNewPoint(id, validPoint, clone)
     }
 
     return newEvaluationTicket
   }
 
   const handleChangePoint = (evaluationId, point, forStudent) => {
+    if (isTicketOfMonitor) {
+      const newEvaluation = getEvaluationWithNewPoint(
+        evaluationId,
+        point,
+        cloneObj(monitorEvaluation),
+      )
+      setStudentEvaluation(newEvaluation)
+      setMonitorEvaluation(newEvaluation)
+      return
+    }
     const newEvaluation = getEvaluationWithNewPoint(
       evaluationId,
       point,
@@ -162,10 +194,10 @@ const EvaluationTicket = ({student}) => {
       )
 
       if (pointForStudent && pointForStudent.id && pointForStudent.point) {
-        handleChangePoint(pointForStudent.id, pointForStudent.point, false)
         notification.success({
           message: `Nhập thành công ${pointForStudent.point}đ tại mã mục ${pointForStudent.id}`,
         })
+        handleChangePoint(pointForStudent.id, pointForStudent.point, false)
       } else {
         notification.info({
           message: 'Nhập thành công, sinh viên không tham gia sự kiện nào.',
@@ -213,7 +245,7 @@ const EvaluationTicket = ({student}) => {
                 parentId: d.id,
                 point: 0,
               })
-              displayEvalutionTicket.push({...child, class: ''})
+              displayEvalutionTicket.push({...child, class: 'ms-3'})
             })
           } else {
             evaluationDataItem.push({
@@ -295,7 +327,10 @@ const EvaluationTicket = ({student}) => {
         setAttachments(atts)
       }
     } catch (err) {
-      handleError(err, null, notification)
+      notification.info({
+        message: 'Chưa có đợt đánh giá tại học kỳ bạn chọn',
+      })
+      setEvaluation(null)
     }
   }, [])
 
@@ -318,7 +353,7 @@ const EvaluationTicket = ({student}) => {
     }
   }, [getEvaluationPrivate, yearId, semesterId])
 
-  const applyPoint = (point) => {
+  const applyPoint = (prePoint, currPoint) => {
     const clone = cloneObj(isMonitor ? monitorEvaluation : studentEvaluation)
     let newEvaluation
     // reset point
@@ -326,16 +361,25 @@ const EvaluationTicket = ({student}) => {
     newEvaluation = getEvaluationWithNewPoint(3, 0, newEvaluation)
     newEvaluation = getEvaluationWithNewPoint(4, 0, newEvaluation)
     newEvaluation = getEvaluationWithNewPoint(5, 0, newEvaluation)
+    newEvaluation = getEvaluationWithNewPoint(8, 0, newEvaluation)
+    newEvaluation = getEvaluationWithNewPoint(9, 0, newEvaluation)
 
-    // apply point
-    if (point >= 3.6 && point <= 4.0) {
+    // apply with current point
+    if (currPoint >= 3.6 && currPoint <= 4.0) {
       newEvaluation = getEvaluationWithNewPoint(2, 14, newEvaluation)
-    } else if (point >= 3.2 && point <= 3.59) {
+    } else if (currPoint >= 3.2 && currPoint <= 3.59) {
       newEvaluation = getEvaluationWithNewPoint(3, 12, newEvaluation)
-    } else if (point >= 2.5 && point <= 3.19) {
+    } else if (currPoint >= 2.5 && currPoint <= 3.19) {
       newEvaluation = getEvaluationWithNewPoint(4, 10, newEvaluation)
-    } else if (point >= 2.0 && point <= 2.49) {
+    } else if (currPoint >= 2.0 && currPoint <= 2.49) {
       newEvaluation = getEvaluationWithNewPoint(5, 5, newEvaluation)
+    }
+
+    // apply with previous point
+    if (prePoint && currPoint >= 2 && currPoint - prePoint >= 2) {
+      newEvaluation = getEvaluationWithNewPoint(9, 6, newEvaluation)
+    } else if (prePoint && currPoint >= 2 && currPoint - prePoint >= 1) {
+      newEvaluation = getEvaluationWithNewPoint(8, 3, newEvaluation)
     }
 
     if (isMonitor) {
@@ -347,7 +391,7 @@ const EvaluationTicket = ({student}) => {
 
   useEffect(() => {
     if (currentResult !== null) {
-      applyPoint(currentResult)
+      applyPoint(parseFloat(previousResult), parseFloat(currentResult))
     }
   }, [currentResult])
 
@@ -377,46 +421,48 @@ const EvaluationTicket = ({student}) => {
   }
 
   const renderInputPoint = (r, forStudent) => {
-    console.log(
+    const currItem = getEvaluationTicketItemById(
       r.id,
-      getEvaluationTicketItemById(
-        r.id,
-        forStudent ? studentEvaluation : monitorEvaluation,
-      ).point || 0,
+      forStudent ? studentEvaluation : monitorEvaluation,
     )
+
     if ((r.point !== null && r.point !== undefined) || r.isAnotherItem) {
+      const style = {
+        width: 55,
+        outline: (currItem.point || 0) !== 0 ? '2px solid #49227d' : '',
+      }
+      const readOnly =
+        (!forStudent && !isMonitor) ||
+        (!isTicketOfMonitor && isMonitor && forStudent) ||
+        profile.roleName === ROLE.lecturer ||
+        evaluation.status === evaluationStatus.AcceptEvaluationStatus
+      const min = r.isAnotherItem ? 0 : r.point > 0 ? 0 : -100
+      const max = r.isAnotherItem ? r.maxPoint : r.point > 0 ? r.point : 0
+      const value = currItem.point || 0
+      const defaultValue = currItem.point || 0
+      const onChange = (v) => handleChangePoint(r.id, v, forStudent)
+
       return (
         <InputNumber
-          style={{width: 55}}
-          disabled={
-            (!forStudent && !isMonitor) || disableEvaluationItems.includes(r.id)
-          }
-          min={r.isAnotherItem ? 0 : r.point > 0 ? 0 : -100}
-          max={r.isAnotherItem ? r.maxPoint : r.point > 0 ? r.point : 0}
-          value={
-            getEvaluationTicketItemById(
-              r.id,
-              forStudent ? studentEvaluation : monitorEvaluation,
-            ).point || 0
-          }
-          onChange={(v) => handleChangePoint(r.id, v, forStudent)}
-          defaultValue={
-            getEvaluationTicketItemById(
-              r.id,
-              forStudent ? studentEvaluation : monitorEvaluation,
-            ).point || 0
-          }
+          style={style}
+          readOnly={readOnly}
+          disabled={disableEvaluationItems.includes(r.id)}
+          min={min}
+          max={max}
+          value={value}
+          onChange={onChange}
+          defaultValue={defaultValue}
         />
       )
     }
 
-    return ''
+    return r.maxPoint ? `${currItem.currentPoint}/${r.maxPoint}` : ''
   }
 
   const columns = [
     {
       key: 'id',
-      title: 'MÃ',
+      title: <b>MÃ</b>,
       align: 'center',
       render: (r) =>
         (r.point !== null && r.point !== undefined) || r.isAnotherItem
@@ -425,7 +471,7 @@ const EvaluationTicket = ({student}) => {
     },
     {
       key: 0,
-      title: 'NỘI DUNG ĐÁNH GIÁ',
+      title: <b>NỘI DUNG ĐÁNH GIÁ</b>,
       width: '50vw',
       render: (r) => (
         <div className={r.class}>
@@ -435,19 +481,19 @@ const EvaluationTicket = ({student}) => {
     },
     {
       key: 1,
-      title: 'Điểm',
+      title: <b>Điểm</b>,
       align: 'center',
       render: (r) => (r.isAnotherItem ? r.maxPoint : r.point),
     },
     {
       key: 2,
-      title: 'Điểm SV tự đánh giá',
+      title: <b>Điểm SV tự đánh giá</b>,
       align: 'center',
       render: (r) => renderInputPoint(r, true),
     },
     {
       key: 3,
-      title: 'Lớp trưởng đánh giá',
+      title: <b>Lớp trưởng đánh giá</b>,
       align: 'center',
       render: (r) => renderInputPoint(r, false),
     },
@@ -508,32 +554,119 @@ const EvaluationTicket = ({student}) => {
     }
   }
 
+  const handleClickSaveAsDraft = async () => {
+    try {
+      await studentMakeDraftEvaluationService(
+        evaluation.id,
+        JSON.stringify(studentEvaluation),
+        previousResult,
+        currentResult,
+      )
+      await getEvaluationPrivate(yearId, semesterId)
+      notification.success({message: 'Lưu nháp thành công'})
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const studentMakeEvaluation = async (evaluationId) => {
+    try {
+      await studentMakeEvaluationService(evaluationId)
+      notification.success({
+        message: 'Đánh giá thành công',
+        description:
+          'Bạn có thể khiếu nại sau khi lớp trưởng đánh giá phiếu của bạn',
+      })
+      await getEvaluationPrivate(yearId, semesterId)
+    } catch (err) {
+      handleError(err, null, notification)
+    }
+  }
+
+  const monitorMakeEvaluation = async () => {
+    try {
+      await monitorMakeEvaluationService(
+        evaluation.id,
+        JSON.stringify(monitorEvaluation),
+        previousResult,
+        currentResult,
+      )
+      notification.success({
+        message: 'Lớp trưởng đánh giá thành công',
+      })
+      await getEvaluationPrivate(yearId, semesterId)
+    } catch (err) {
+      handleError(err, null, notification)
+    }
+  }
+
+  const handleSubmit = () => {
+    // for student
+    if (profile.roleName === ROLE.student) {
+      // for monitor
+      if (isMonitor) {
+        // validate
+        if (currentResult === null) {
+          message.error('Vui lòng nhập điểm hệ 4')
+          inputCurrentResult.current.focus()
+          return
+        }
+        if (previousResult === null) {
+          message.error('Vui lòng nhập điểm hệ 4')
+          inputPreviousResult.current.focus()
+          return
+        }
+
+        monitorMakeEvaluation()
+        return
+      }
+
+      // not monitor
+      // validate
+      if (previousResult === null) {
+        message.error('Vui lòng nhập điểm hệ 4')
+        inputPreviousResult.current.focus()
+        return
+      }
+      studentMakeEvaluation(evaluation.id)
+    }
+  }
+
+  const handleLecturerApprove = async () => {
+    try {
+      await lecturerApproveService(evaluation.id)
+      await getEvaluationPrivate(yearId, semesterId)
+      notification.success({
+        message: 'Cố vấn học tập xét duyệt',
+        description: 'Thành công',
+      })
+    } catch (err) {
+      handleError(err, null, notification)
+    }
+  }
+
   const renderTicket = (cols, display) => (
     <div>
       <div>
         <div className="mt-2">
-          <b>Họ tên:</b>
-          {' '}
-          {profile.fullName || 'sv'}
+          <b>Họ tên: </b>
+          {student.fullName || profile.fullName || 'sv'}
         </div>
         <div className="mt-2">
-          <b>MSSV:</b>
-          {' '}
-          {profile.code || 'sv'}
+          <b>MSSV: </b>
+          {student.code || profile.code || 'sv'}
         </div>
         <div className="mt-2">
           <b>Nhập điểm hệ 4 học kỳ trước (VD: 2.5):</b>
-          <div className="mt-2">
+          <div className="mt-2 d-flex flex-wrap align-items-center">
             <InputNumber
               ref={inputPreviousResult}
               min={0}
               max={4}
-              placeholder="Điểm học kỳ trước"
-              style={{width: 173}}
               onChange={(v) => setPreviousResult(v)}
               value={previousResult}
             />
-            <span className="me-2 ms-2">Xem trên</span>
+            <span className="me-2 ms-2">xem trên</span>
             <a
               target="blank"
               href={`http://thongtindaotao.sgu.edu.vn/Default.aspx?page=xemdiemthi&id=${
@@ -552,17 +685,15 @@ const EvaluationTicket = ({student}) => {
             {isMonitor ? '' : '(bỏ trống nếu chưa có)'}
             :
           </b>
-          <div className="mt-2">
+          <div className="mt-2 d-flex flex-wrap align-items-center">
             <InputNumber
               ref={inputCurrentResult}
               min={0}
               max={4}
-              placeholder="Điểm học kỳ hiện tại"
-              style={{width: 173}}
               onChange={(v) => setCurrentResult(v)}
               value={currentResult}
             />
-            <span className="me-2 ms-2">Xem trên</span>
+            <span className="me-2 ms-2">xem trên</span>
             <a
               target="blank"
               href={`http://thongtindaotao.sgu.edu.vn/Default.aspx?page=xemdiemthi&id=${
@@ -584,6 +715,7 @@ const EvaluationTicket = ({student}) => {
         pagination={false}
         columns={cols}
         dataSource={display}
+        scroll={{x: '600px'}}
         summary={() => (
           <Table.Summary.Row>
             <Table.Summary.Cell colSpan={3}>
@@ -609,27 +741,37 @@ const EvaluationTicket = ({student}) => {
         )}
       />
 
-      <div className="mt-4 d-flex justify-content-between">
-        <div className="col-lg-4 card p-3">
+      <div className="mt-4 d-flex flex-wrap">
+        <div style={{maxWidth: 318}} className="card p-3 me-3 mt-2">
           <Upload
             customRequest={handleAddAttachment}
             onRemove={handleRemoveAttachment}
             fileList={attachments}
           >
             <Button icon={<i className="fas fa-file-upload me-2" />}>
-              Tải lên hình ảnh hoặc file minh chứng
+              Tải lên ảnh minh chứng
             </Button>
           </Upload>
         </div>
+        <div style={{maxWidth: 318}} className="me-3 card p-3 mt-2">
+          <div>Nội dung khiếu nại:</div>
+          <Input.TextArea style={{width: 284}} placeholder="Nhập khiếu nại" />
+        </div>
         {isMonitor && (
-          <div>
+          <div style={{maxWidth: 318}} className="mt-2 text-end">
             <Upload
+              disabled={
+                evaluation.status === evaluationStatus.AcceptEvaluationStatus
+              }
               showUploadList={false}
               customRequest={({onSuccess}) => onSuccess()}
               onChange={handleChangeFileEvent}
               fileList={[]}
             >
               <Button
+                disabled={
+                  evaluation.status === evaluationStatus.AcceptEvaluationStatus
+                }
                 type="primary"
                 icon={<i className="fas fa-file-import me-2" />}
               >
@@ -640,50 +782,90 @@ const EvaluationTicket = ({student}) => {
         )}
       </div>
 
-      <div className="d-flex justify-content-end mt-4">
-        <Button
-          onClick={async () => {
-            try {
-              await studentMakeDraftEvaluationService(
-                evaluation.id,
-                JSON.stringify(studentEvaluation),
-                previousResult,
-                currentResult,
-              )
-              notification.success({message: 'Lưu nháp thành công'})
-            } catch (err) {
-              console.log(err)
-            }
-          }}
-          size="large"
-          className="me-2"
-        >
-          LƯU NHÁP
-        </Button>
-        <Popconfirm
-          title="Hoàn tất đánh giá?"
-          onConfirm={() => {
-            if (currentResult === null && isMonitor) {
-              message.error('Vui lòng nhập điểm hệ 4')
-              inputCurrentResult.current.focus()
-            } else if (previousResult === null) {
-              message.error('Vui lòng nhập điểm hệ 4')
-              inputPreviousResult.current.focus()
-            } else {
-              message.info('submit')
-            }
-          }}
-        >
-          <Button className="success" size="large" type="primary">
-            HOÀN TẤT
+      <div className="d-flex justify-content-end mt-3">
+        {!isMonitor && !isTicketOfMonitor && profile.roleName === ROLE.student && (
+          <div className="alert alert-info m-0">
+            {evaluation.status === evaluationStatus.NewEvaluationStatus &&
+              'Bạn có thể lưu nháp hoặc chọn HOÀN TẤT để lớp trưởng đánh giá.'}
+            {evaluation.status === evaluationStatus.DraftEvaluationStatus &&
+              !isMonitor &&
+              !isTicketOfMonitor &&
+              'Phiếu hiện tại đang là nháp, chọn HOÀN TẤT để lớp trưởng đánh giá.'}
+            {evaluation.status === evaluationStatus.SubmitEvaluationStatus &&
+              !isMonitor &&
+              !isTicketOfMonitor &&
+              'Bạn đã hoàn tất phiếu đánh giá, phiếu đang chờ lớp trưởng đánh giá, bạn có thể chỉnh sửa trong khoản thời gian này.'}
+            {evaluation.status === evaluationStatus.ConfirmEvaluationStatus &&
+              !isMonitor &&
+              !isTicketOfMonitor &&
+              'Lớp trưởng đã đánh giá phiếu của bạn, bạn có thể khiếu nại nếu thấy sai sót.'}
+          </div>
+        )}
+      </div>
+      <div className="d-flex justify-content-end mt-3">
+        {(evaluation.status === evaluationStatus.NewEvaluationStatus ||
+          evaluation.status === evaluationStatus.DraftEvaluationStatus ||
+          evaluation.status === evaluationStatus.SubmitEvaluationStatus) && (
+          <>
+            {isMonitor && !isTicketOfMonitor ? (
+              ''
+            ) : (
+              <Button
+                onClick={handleClickSaveAsDraft}
+                size="large"
+                className="me-2"
+              >
+                LƯU NHÁP
+              </Button>
+            )}
+            <Popconfirm title="HOÀN TẤT đánh giá?" onConfirm={handleSubmit}>
+              <Button className="success" size="large" type="primary">
+                HOÀN TẤT
+              </Button>
+            </Popconfirm>
+          </>
+        )}
+
+        {evaluation.status === evaluationStatus.ConfirmEvaluationStatus &&
+          isMonitor && (
+          <Popconfirm title="CẬP NHẬT đánh giá?" onConfirm={handleSubmit}>
+            <Button className="success" size="large" type="primary">
+              CẬP NHẬT
+            </Button>
+          </Popconfirm>
+        )}
+
+        {evaluation.status === evaluationStatus.ConfirmEvaluationStatus &&
+          profile.roleName === ROLE.lecturer && (
+          <Popconfirm
+            title="DUYỆT đánh giá?"
+            onConfirm={handleLecturerApprove}
+          >
+            <Button className="success" size="large" type="primary">
+              DUYỆT ĐÁNH GIÁ
+            </Button>
+          </Popconfirm>
+        )}
+
+        {evaluation.status === evaluationStatus.ConfirmEvaluationStatus &&
+          profile.roleName === ROLE.student &&
+          !isMonitor && (
+          <Button
+            onClick={() => message.info('khieu nai')}
+            size="large"
+            className="me-2"
+            type="primary"
+          >
+            KHIẾU NẠI
           </Button>
-        </Popconfirm>
+        )}
       </div>
     </div>
   )
 
   return (
     <Card
+      size="small"
       title={
         <span>
           <b>TỰ ĐÁNH GIÁ RÈN LUYỆN </b>
@@ -698,7 +880,6 @@ const EvaluationTicket = ({student}) => {
               (isMonitor
                 ? evaluation.DeadlineDateForMonitor
                 : evaluation.DeadlineDateForStudent)}
-            {/*  moment().format('DD/MM/yyyy').toString() */}
           </b>
         </span>
       }
@@ -710,6 +891,7 @@ const EvaluationTicket = ({student}) => {
             onChange={(v) => setYearId(v)}
             placeholder="Chọn năm học"
             style={{width: '100%'}}
+            value={yearId}
           >
             {years[0] &&
               years.map((y) => (
@@ -725,6 +907,7 @@ const EvaluationTicket = ({student}) => {
             onChange={(v) => setSemesterId(v)}
             placeholder="Chọn học kỳ"
             style={{width: '100%'}}
+            value={semesterId}
           >
             {semesters.map((s) => (
               <Select.Option key={s.id} value={s.id}>
@@ -739,6 +922,24 @@ const EvaluationTicket = ({student}) => {
         <Divider />
       </div>
 
+      {evaluation && (
+        <Tooltip placement="topLeft" title="Tổng dựa trên lớp trưởng đánh giá">
+          <div className="tag-total-point">
+            <div className="me-2">
+              Tổng:
+              {' '}
+              <b>{getTotalPoint(monitorEvaluation)}</b>
+              đ - Xếp loại:
+              {' '}
+              <b>Khá</b>
+            </div>
+            <Tag color="geekblue">
+              <b>{evaluation.status.toUpperCase()}</b>
+            </Tag>
+          </div>
+        </Tooltip>
+      )}
+
       {evaluation && renderTicket(columns, displayEvaluationTicket)}
     </Card>
   )
@@ -746,10 +947,14 @@ const EvaluationTicket = ({student}) => {
 
 EvaluationTicket.propTypes = {
   student: PropTypes.objectOf(PropTypes.any),
+  yearIdProp: PropTypes.number,
+  semesterIdProp: PropTypes.number,
 }
 
 EvaluationTicket.defaultProps = {
   student: {},
+  yearIdProp: null,
+  semesterIdProp: null,
 }
 
 export default EvaluationTicket

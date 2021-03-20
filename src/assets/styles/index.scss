@@ -14,6 +14,7 @@
 @import './Home.scss';
 @import './Login.scss';
 @import './MainLayout.scss';
+@import './EvaluationTicket.scss';
 
 // common
 @import './colors.scss';
@@ -22,4 +23,13 @@ body {
 }
 a {
   text-decoration: none;
+  color: $primary-color;
+  &:hover {
+    color: $primary-color;
+  }
+}
+.table-bg-active {
+  background-color: $primary-color !important;
+  border-bottom: $primary-color !important;
+  color: white !important;
 }

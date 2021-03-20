@@ -29,16 +29,9 @@ const MainLayout = ({children}) => {
   const location = useLocation()
 
   useEffect(() => {
-    const splitArr = location.pathname.split('/')
-    let selectedArr = []
-    if (splitArr.length >= 2) {
-      selectedArr = [location.pathname.slice(1)]
-    } else {
-      selectedArr = [location.pathname.split('/')[1]]
-    }
     dispatch(
       setSiderMenu({
-        selectedKeys: selectedArr,
+        selectedKeys: location.pathname.split('/')[1],
         openKeys,
       }),
     )

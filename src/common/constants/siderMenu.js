@@ -28,6 +28,28 @@ export default {
       ],
     },
   ],
+  [ROLE.lecturer]: [
+    {
+      itemGroup: 'Tổng Quan',
+      items: [
+        {
+          key: 'dashboard',
+          iconClass: 'fas fa-home',
+          title: 'Bảng Điều Khiển',
+        },
+      ],
+    },
+    {
+      itemGroup: 'Quản lý',
+      items: [
+        {
+          key: 'evaluation',
+          iconClass: 'fas fa-file-alt',
+          title: 'Phiếu Điểm Rèn Luyện',
+        },
+      ],
+    },
+  ],
   [ROLE.employee]: [
     {
       itemGroup: 'Tổng Quan',

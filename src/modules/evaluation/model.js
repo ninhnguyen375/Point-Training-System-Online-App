@@ -1,5 +1,5 @@
 export const MODULE_NAME = 'evaluation'
-export const disableEvaluationItems = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+export const disableEvaluationItems = [2, 3, 4, 5, 6, 7, 8, 9]
 export const semesters = [
   {
     id: 1,
@@ -28,4 +28,12 @@ const a = {
       ],
     },
   ],
+}
+
+export const evaluationStatus = {
+  NewEvaluationStatus: 'Mới',
+  DraftEvaluationStatus: 'Đang lưu nháp',
+  SubmitEvaluationStatus: 'Sinh viên đã nộp',
+  ConfirmEvaluationStatus: 'Lớp trưởng đã xác nhận',
+  AcceptEvaluationStatus: 'Giảng viên đã chấp nhận',
 }

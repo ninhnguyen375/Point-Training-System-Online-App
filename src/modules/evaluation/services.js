@@ -76,3 +76,32 @@ export const studentMakeDraftEvaluationService = (
       currentResult,
     },
   })
+
+export const studentMakeEvaluationService = (evaluationId) =>
+  fetchAuthLoading({
+    url: `${configs.API}/Evaluations/SubmitEvaluationByStudent/${evaluationId}`,
+    method: 'put',
+  })
+
+export const lecturerApproveService = (evaluationId) =>
+  fetchAuthLoading({
+    url: `${configs.API}/Evaluations/EvaluatedByLecturer/${evaluationId}`,
+    method: 'put',
+  })
+
+export const monitorMakeEvaluationService = (
+  evaluationId,
+  evaluation,
+  previousResult,
+  currentResult,
+) =>
+  fetchAuthLoading({
+    url: `${configs.API}/Evaluations/EvaluatedByMonitor`,
+    method: 'post',
+    data: {
+      id: evaluationId,
+      monitorEvaluation: evaluation,
+      previousResult,
+      currentResult,
+    },
+  })

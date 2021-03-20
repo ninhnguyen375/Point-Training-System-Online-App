@@ -7,6 +7,8 @@ import {MODULE_NAME as MODULE_USER, ROLE} from '../modules/user/model'
 import Dashboard from '../pages/Dashboard'
 import MakeEvaluationPage from '../pages/MakeEvaluationPage'
 import CreateEvaluationPage from '../pages/CreateEvaluationPage'
+import ConfirmEvaluationPage from '../pages/ConfirmEvaluationPage'
+import EvaluationListPage from '../pages/EvaluationListPage'
 
 const Routes = () => {
   const profile = useSelector(state => state[MODULE_USER].profile)
@@ -16,6 +18,24 @@ const Routes = () => {
       <Switch>
         <Route exact path="/dashboard" component={Dashboard} />
         <Route exact path="/make-evaluation" component={MakeEvaluationPage} />
+        <Route exact path="/evaluation" component={EvaluationListPage} />
+        <Route exact path="/evaluation/confirm" component={ConfirmEvaluationPage} />
+
+        <Route exact path="/">
+          <Redirect to="/dashboard" />
+        </Route>
+        <Route exact path="*" component={NotFound} />
+      </Switch>
+    )
+  }
+
+  if (profile && profile.roleName === ROLE.lecturer) {
+    return (
+      <Switch>
+        <Route exact path="/dashboard" component={Dashboard} />
+        <Route exact path="/evaluation" component={EvaluationListPage} />
+        <Route exact path="/evaluation/confirm" component={ConfirmEvaluationPage} />
+
         <Route exact path="/">
           <Redirect to="/dashboard" />
         </Route>
