@@ -31,6 +31,7 @@ import {
   studentMakeEvaluationService,
   monitorMakeEvaluationService,
   lecturerApproveService,
+  complainService,
 } from '../services'
 import {MODULE_NAME as MODULE_USER, ROLE} from '../../user/model'
 import {disableEvaluationItems, evaluationStatus, semesters} from '../model'
@@ -54,13 +55,17 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
   const [attachments, setAttachments] = useState([])
   const [pointOfEvent, setPointOfEvent] = useState([])
   const [pointOfEventError, setPointOfEventError] = useState([])
+  const [note, setNote] = useState('')
+  const [reasonRefuseComplain, setReasonRefuseComplain] = useState('')
+  const [visibleRefuseComplain, setVisibleRefuseComplain] = useState(false)
   // ref
   const inputCurrentResult = useRef(null)
   const inputPreviousResult = useRef(null)
+  const inputNote = useRef(null)
 
   const {isMonitor} = profile
   const isTicketOfMonitor =
-    isMonitor && evaluation && evaluation.monitorId === profile.id
+    isMonitor && evaluation && evaluation.studentId === profile.id
 
   useEffect(() => {
     setYearId(yearIdProp)
@@ -307,14 +312,17 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
       const mapped = mapToEvaluationTicket(pointTrainingGroups)
 
       setMonitorEvaluation(
-        JSON.parse(evaluationPrivate.monitorEvaluation) || mapped.evaluationData,
+        JSON.parse(evaluationPrivate.monitorEvaluation) ||
+          mapped.evaluationData,
       )
       setStudentEvaluation(
-        JSON.parse(evaluationPrivate.studentEvaluation) || mapped.evaluationData,
+        JSON.parse(evaluationPrivate.studentEvaluation) ||
+          mapped.evaluationData,
       )
       setPreviousResult(evaluationPrivate.previousResult)
       setCurrentResult(evaluationPrivate.currentResult)
       setDisplayEvaluationTicket(mapped.displayEvalutionTicket)
+      setNote(evaluationPrivate.note)
 
       // get attachments
       if (evaluationPrivate.attachments) {
@@ -554,7 +562,7 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
     }
   }
 
-  const handleClickSaveAsDraft = async () => {
+  const handleClickSaveAsDraft = async (notify = true) => {
     try {
       await studentMakeDraftEvaluationService(
         evaluation.id,
@@ -563,7 +571,9 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
         currentResult,
       )
       await getEvaluationPrivate(yearId, semesterId)
-      notification.success({message: 'Lưu nháp thành công'})
+      if (notify) {
+        notification.success({message: 'Lưu nháp thành công'})
+      }
     } catch (err) {
       console.log(err)
     }
@@ -583,24 +593,42 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
     }
   }
 
-  const monitorMakeEvaluation = async () => {
+  const getClassification = (totalPoint) => {
+    if (totalPoint >= 65 < 85) {
+      return 'Khá'
+    }
+    if (totalPoint >= 50 < 65) {
+      return 'Trung bình'
+    }
+    if (totalPoint >= 35 < 50) {
+      return 'Yếu'
+    }
+  }
+
+  const monitorMakeEvaluation = async (noti = true, paramNote) => {
     try {
+      const totalPoint = getTotalPoint(monitorEvaluation)
       await monitorMakeEvaluationService(
         evaluation.id,
         JSON.stringify(monitorEvaluation),
         previousResult,
         currentResult,
+        totalPoint,
+        getClassification(totalPoint),
+        paramNote,
       )
-      notification.success({
-        message: 'Lớp trưởng đánh giá thành công',
-      })
+      if (noti) {
+        notification.success({
+          message: 'Lớp trưởng đánh giá thành công',
+        })
+      }
       await getEvaluationPrivate(yearId, semesterId)
     } catch (err) {
       handleError(err, null, notification)
     }
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // for student
     if (profile.roleName === ROLE.student) {
       // for monitor
@@ -616,18 +644,22 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
           inputPreviousResult.current.focus()
           return
         }
-
-        monitorMakeEvaluation()
+        monitorMakeEvaluation(
+          true,
+          evaluation.status === evaluationStatus.ComplainEvaluationStatus
+            ? 'Đã sửa'
+            : note,
+        )
         return
       }
 
       // not monitor
-      // validate
       if (previousResult === null) {
         message.error('Vui lòng nhập điểm hệ 4')
         inputPreviousResult.current.focus()
         return
       }
+      await handleClickSaveAsDraft(false)
       studentMakeEvaluation(evaluation.id)
     }
   }
@@ -639,6 +671,49 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
       notification.success({
         message: 'Cố vấn học tập xét duyệt',
         description: 'Thành công',
+      })
+    } catch (err) {
+      handleError(err, null, notification)
+    }
+  }
+
+  const handleComplain = async () => {
+    try {
+      if (!note) {
+        notification.info({message: 'Vui lòng nhập Ghi chú khiếu nại'})
+        inputNote.current.focus()
+        return
+      }
+      await complainService(evaluation.id, note)
+      notification.success({message: 'Gửi khiếu nại thành công'})
+      getEvaluationPrivate(yearId, semesterId)
+    } catch (err) {
+      handleError(err, null, notification)
+    }
+  }
+
+  const handleRefuseComplain = async () => {
+    // validate
+    if (currentResult === null) {
+      message.error('Vui lòng nhập điểm hệ 4')
+      inputCurrentResult.current.focus()
+      return
+    }
+    if (previousResult === null) {
+      message.error('Vui lòng nhập điểm hệ 4')
+      inputPreviousResult.current.focus()
+      return
+    }
+    if (!reasonRefuseComplain) {
+      message.info('Vui lòng nhập lý do từ chối')
+      return
+    }
+
+    try {
+      monitorMakeEvaluation(false, reasonRefuseComplain)
+      setVisibleRefuseComplain(false)
+      notification.success({
+        message: 'Từ chối khiếu nại thành công',
       })
     } catch (err) {
       handleError(err, null, notification)
@@ -747,16 +822,24 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
             customRequest={handleAddAttachment}
             onRemove={handleRemoveAttachment}
             fileList={attachments}
+            disabled={profile.roleName !== ROLE.student}
           >
             <Button icon={<i className="fas fa-file-upload me-2" />}>
               Tải lên ảnh minh chứng
             </Button>
           </Upload>
         </div>
-        <div style={{maxWidth: 318}} className="me-3 card p-3 mt-2">
-          <div>Nội dung khiếu nại:</div>
-          <Input.TextArea style={{width: 284}} placeholder="Nhập khiếu nại" />
-        </div>
+        {profile.roleName === ROLE.student && (
+          <div style={{maxWidth: 318}} className="me-3 card p-3 mt-2">
+            <div>Ghi chú:</div>
+            <Input.TextArea
+              onChange={(e) => setNote(e.target.value)}
+              value={note}
+              ref={inputNote}
+              style={{width: 284}}
+            />
+          </div>
+        )}
         {isMonitor && (
           <div style={{maxWidth: 318}} className="mt-2 text-end">
             <Upload
@@ -826,13 +909,28 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
           </>
         )}
 
-        {evaluation.status === evaluationStatus.ConfirmEvaluationStatus &&
+        {(evaluation.status === evaluationStatus.ConfirmEvaluationStatus ||
+          evaluation.status === evaluationStatus.ComplainEvaluationStatus) &&
           isMonitor && (
-          <Popconfirm title="CẬP NHẬT đánh giá?" onConfirm={handleSubmit}>
-            <Button className="success" size="large" type="primary">
-              CẬP NHẬT
-            </Button>
-          </Popconfirm>
+          <>
+            {evaluation.status ===
+              evaluationStatus.ComplainEvaluationStatus ? (
+                <Button
+                  onClick={() => setVisibleRefuseComplain(true)}
+                  className="me-2"
+                  size="large"
+                >
+                  TỪ CHỐI KHIẾU NẠI
+                </Button>
+              ) : (
+                ''
+              )}
+            <Popconfirm title="CẬP NHẬT đánh giá?" onConfirm={handleSubmit}>
+              <Button className="success" size="large" type="primary">
+                CẬP NHẬT
+              </Button>
+            </Popconfirm>
+          </>
         )}
 
         {evaluation.status === evaluationStatus.ConfirmEvaluationStatus &&
@@ -851,7 +949,7 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
           profile.roleName === ROLE.student &&
           !isMonitor && (
           <Button
-            onClick={() => message.info('khieu nai')}
+            onClick={handleComplain}
             size="large"
             className="me-2"
             type="primary"
@@ -863,24 +961,32 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
     </div>
   )
 
+  const getDeadline = () => {
+    if (isMonitor) {
+      return `${moment(evaluation.DeadlineDateForStudent).format(
+        'DD/MM/yyyy',
+      )}-${moment(evaluation.DeadlineDateForMonitor).format('DD/MM/yyyy')}`
+    } if(profile.roleName === ROLE.student){
+      return `moment(evaluation.DeadlineDateForMonitor).format(
+        'DD/MM/yyyy',
+      )`
+    }
+
+    if(profile.roleName === ROLE.lecturer) {
+      return `${moment(evaluation.DeadlineDateForMonitor).format(
+        'DD/MM/yyyy',
+      )}-${moment(evaluation.DeadlineDateForLecturer).format('DD/MM/yyyy')}`
+    }
+
+    return ''
+  }
+
   return (
     <Card
       size="small"
       title={
         <span>
           <b>TỰ ĐÁNH GIÁ RÈN LUYỆN </b>
-          -
-          {' '}
-          {isMonitor ? 'Lớp trưởng' : 'Sinh viên'}
-          {' '}
-          thực hiện đánh giá đến hết
-          ngày
-          <b className="ms-2 text-danger">
-            {evaluation &&
-              (isMonitor
-                ? evaluation.DeadlineDateForMonitor
-                : evaluation.DeadlineDateForStudent)}
-          </b>
         </span>
       }
     >
@@ -922,6 +1028,17 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
         <Divider />
       </div>
 
+      {evaluation && getDeadline() && (
+        <div>
+          Hạn chót
+          {' '}
+          {profile.roleName}
+          :
+          {' '}
+          {getDeadline()}
+        </div>
+      )}
+
       {evaluation && (
         <Tooltip placement="topLeft" title="Tổng dựa trên lớp trưởng đánh giá">
           <div className="tag-total-point">
@@ -941,6 +1058,21 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
       )}
 
       {evaluation && renderTicket(columns, displayEvaluationTicket)}
+
+      <Modal
+        onCancel={() => setVisibleRefuseComplain(false)}
+        title={<b>TỪ CHỐI KHIẾU NẠI</b>}
+        visible={visibleRefuseComplain}
+        onOk={handleRefuseComplain}
+      >
+        <div>
+          <div>Nhập lý do từ chối:</div>
+          <Input.TextArea
+            onChange={(e) => setReasonRefuseComplain(e.target.value)}
+            placeholder="Nhập lý do từ chối"
+          />
+        </div>
+      </Modal>
     </Card>
   )
 }

@@ -89,11 +89,24 @@ export const lecturerApproveService = (evaluationId) =>
     method: 'put',
   })
 
+export const complainService = (evaluationId, note) =>
+  fetchAuthLoading({
+    url: `${configs.API}/Evaluations/ComplainedByStudent`,
+    method: 'post',
+    data: {
+      evaluationId,
+      note,
+    },
+  })
+
 export const monitorMakeEvaluationService = (
   evaluationId,
   evaluation,
   previousResult,
   currentResult,
+  conclusionPoint,
+  classification,
+  note,
 ) =>
   fetchAuthLoading({
     url: `${configs.API}/Evaluations/EvaluatedByMonitor`,
@@ -103,5 +116,21 @@ export const monitorMakeEvaluationService = (
       monitorEvaluation: evaluation,
       previousResult,
       currentResult,
+      conclusionPoint,
+      classification,
+      note,
     },
+  })
+
+export const getEvaluationBatchListService = () =>
+  fetchAuthLoading({
+    url: `${configs.API}/Evaluations/GetAllEvaluationsCreated`,
+    method: 'get',
+  })
+
+export const updateEvaluationBatchService = (semesterId, yearId, data) =>
+  fetchAuthLoading({
+    url: `${configs.API}/Evaluations/UpdateEvaluationPeriod/${semesterId},${yearId}`,
+    method: 'put',
+    data,
   })

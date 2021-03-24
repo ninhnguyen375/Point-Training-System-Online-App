@@ -9,6 +9,8 @@ import MakeEvaluationPage from '../pages/MakeEvaluationPage'
 import CreateEvaluationPage from '../pages/CreateEvaluationPage'
 import ConfirmEvaluationPage from '../pages/ConfirmEvaluationPage'
 import EvaluationListPage from '../pages/EvaluationListPage'
+import EvaluationBatchListPage from '../pages/EvaluationBatchListPage'
+import EvaluationBatchPage from '../pages/EvaluationBatchPage'
 
 const Routes = () => {
   const profile = useSelector(state => state[MODULE_USER].profile)
@@ -49,6 +51,9 @@ const Routes = () => {
       <Switch>
         <Route exact path="/dashboard" component={Dashboard} />
         <Route exact path="/evaluation/create" component={CreateEvaluationPage} />
+        <Route exact path="/evaluation-batch" component={EvaluationBatchListPage} />
+        <Route exact path="/evaluation-batch/detail" component={EvaluationBatchPage} />
+
         <Route exact path="/">
           <Redirect to="/dashboard" />
         </Route>

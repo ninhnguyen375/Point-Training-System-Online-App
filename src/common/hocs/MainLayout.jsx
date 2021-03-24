@@ -19,6 +19,7 @@ const MainLayout = ({children}) => {
   const {selectedKeys, openKeys} = useSelector(
     (state) => state.common.layout.siderMenu,
   )
+  console.log('~ selectedKeys', selectedKeys)
 
   // states
   const [collapsed, setCollapsed] = useState(false)
@@ -31,7 +32,7 @@ const MainLayout = ({children}) => {
   useEffect(() => {
     dispatch(
       setSiderMenu({
-        selectedKeys: location.pathname.split('/')[1],
+        selectedKeys: location.pathname.slice(1),
         openKeys,
       }),
     )

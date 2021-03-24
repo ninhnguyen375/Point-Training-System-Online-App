@@ -1,4 +1,12 @@
-import {Button, Card, DatePicker, Form, notification, Popconfirm, Select} from 'antd'
+import {
+  Button,
+  Card,
+  DatePicker,
+  Form,
+  notification,
+  Popconfirm,
+  Select,
+} from 'antd'
 import moment from 'moment'
 import React from 'react'
 import {useHistory} from 'react-router-dom'
@@ -13,20 +21,40 @@ const CreateEvaluationForm = () => {
   const handleSubmit = async (values) => {
     try {
       await startEvaluationService(values)
-      history.push('/dashboard')
+      notification.success({message: 'Bắt đầu thành công'})
+      history.push('/evaluation-batch')
     } catch (err) {
       handleError(err, null, notification)
     }
   }
 
   const currentYear = moment().year()
-  console.log('~ currentYear', currentYear)
 
   const years = [
     `${currentYear - 1}-${currentYear}`,
     `${currentYear}-${currentYear + 1}`,
-    `${currentYear + 1}-${currentYear + 2}`,
   ]
+
+  const validator = (name) => (_, date) => {
+    let type = ''
+    if (name === 'deadlineDateForStudent') {
+      type = 'Sinh Viên'
+    }
+    if (name === 'deadlineDateForMonitor') {
+      type = 'Lớp Trưởng'
+    }
+    if (name === 'deadlineDateForLecturer') {
+      type = 'Cố Vấn Học Tập'
+    }
+    if (
+      moment(date, 'YYYY-MM-DD').isBefore(
+        moment(form.getFieldValue(name), 'YYYY-MM-DD').add(1, 'day'),
+      )
+    ) {
+      return Promise.reject(new Error(`Phải lớn hơn hạn chót cho ${type}`))
+    }
+    return Promise.resolve()
+  }
 
   return (
     <Card title={<b>BẮT ĐẦU ĐỢT ĐÁNH GIÁ RÈN LUYỆN</b>}>
@@ -60,21 +88,39 @@ const CreateEvaluationForm = () => {
           </Select>
         </Form.Item>
         <Form.Item
-          rules={[{required: true, message: 'Bắc buộc'}]}
+          rules={[
+            {required: true, message: 'Bắc buộc'},
+            {
+              validator: (_, value) =>
+                moment(value, 'YYYY-MM-YYYY').isBefore(moment())
+                  ? Promise.reject(new Error('Phải lớn hơn ngày hiện tại'))
+                  : Promise.resolve(),
+            },
+          ]}
           label="Hạn chót đánh giá dành cho sinh viên:"
           name="deadlineDateForStudent"
         >
           <DatePicker style={{width: '100%'}} />
         </Form.Item>
         <Form.Item
-          rules={[{required: true, message: 'Bắc buộc'}]}
+          rules={[
+            {required: true, message: 'Bắc buộc'},
+            {
+              validator: validator('deadlineDateForStudent'),
+            },
+          ]}
           label="Hạn chót đánh giá dành cho lớp trưởng:"
           name="deadlineDateForMonitor"
         >
           <DatePicker style={{width: '100%'}} />
         </Form.Item>
         <Form.Item
-          rules={[{required: true, message: 'Bắc buộc'}]}
+          rules={[
+            {required: true, message: 'Bắc buộc'},
+            {
+              validator: validator('deadlineDateForMonitor'),
+            },
+          ]}
           label="Hạn chót đánh giá dành cho cố vấn học tập:"
           name="deadlineDateForLecturer"
         >

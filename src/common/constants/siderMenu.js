@@ -64,6 +64,11 @@ export default {
           iconClass: 'fas fa-play-circle',
           title: 'Bắt Đầu Đợt Đánh Giá',
         },
+        {
+          key: 'evaluation-batch',
+          iconClass: 'fas fa-copy',
+          title: 'Đợt Đánh Giá Đã Tạo',
+        },
       ],
     },
   ],

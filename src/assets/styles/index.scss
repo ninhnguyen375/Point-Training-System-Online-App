@@ -20,6 +20,7 @@
 @import './colors.scss';
 body {
   overflow: hidden;
+  width: 100vw !important;
 }
 a {
   text-decoration: none;

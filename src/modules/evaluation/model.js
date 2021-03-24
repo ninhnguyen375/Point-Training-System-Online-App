@@ -33,7 +33,8 @@ const a = {
 export const evaluationStatus = {
   NewEvaluationStatus: 'Mới',
   DraftEvaluationStatus: 'Đang lưu nháp',
-  SubmitEvaluationStatus: 'Sinh viên đã nộp',
+  SubmitEvaluationStatus: 'Sinh viên đã đánh giá',
+  ComplainEvaluationStatus: 'Sinh viên đang khiếu nại kết quả',
   ConfirmEvaluationStatus: 'Lớp trưởng đã xác nhận',
   AcceptEvaluationStatus: 'Giảng viên đã chấp nhận',
 }
