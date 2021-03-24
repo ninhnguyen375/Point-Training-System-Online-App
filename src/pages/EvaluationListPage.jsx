@@ -13,7 +13,7 @@ const EvaluationListPage = () => (
           icon: 'fas fa-home',
         },
         {
-          url: '/make-evaluation',
+          url: '/evaluation',
           title: 'Danh sách phiếu điểm rèn luyện',
           icon: '',
         },

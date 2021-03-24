@@ -134,3 +134,16 @@ export const updateEvaluationBatchService = (semesterId, yearId, data) =>
     method: 'put',
     data,
   })
+
+export const getEvaluationListService = (params) =>
+  fetchAuthLoading({
+    url: `${configs.API}/Evaluations`,
+    method: 'get',
+    params,
+  })
+
+export const getClassesOfLecturerService = (id) =>
+  fetchAuthLoading({
+    url: `${configs.API}/StudentClasses/GetStudentClassesByLecturer/${id}`,
+    method: 'get',
+  })

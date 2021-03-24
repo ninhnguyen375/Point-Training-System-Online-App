@@ -57,7 +57,10 @@ const MainLayout = ({children}) => {
     history.push(`/${value.key}`)
   }
 
-  const userRole = profile ? profile.roleName : ROLE.employee
+  const userRole =
+    profile.isMonitor && profile.roleName === ROLE.student
+      ? ROLE.monitor
+      : profile.roleName
   const userName = profile ? profile.fullName : 'user'
 
   const renderMenu = (menus = []) =>
@@ -143,7 +146,9 @@ const MainLayout = ({children}) => {
               <div>
                 <span>{userName || ''}</span>
                 <br />
-                <Tag color="darkslateblue">{profile.isMonitor ? ROLE.monitor : userRole}</Tag>
+                <Tag color="darkslateblue">
+                  {profile.isMonitor ? ROLE.monitor : userRole}
+                </Tag>
               </div>
             </div>
           </Menu.Item>
@@ -205,9 +210,7 @@ const MainLayout = ({children}) => {
         </Menu>
       </Sider>
       <Layout>
-        <Header className="main-layout__header">
-          {headerDropdown}
-        </Header>
+        <Header className="main-layout__header">{headerDropdown}</Header>
         <Content
           style={{
             overflow: 'scroll',

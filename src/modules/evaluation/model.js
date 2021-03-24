@@ -38,3 +38,12 @@ export const evaluationStatus = {
   ConfirmEvaluationStatus: 'Lớp trưởng đã xác nhận',
   AcceptEvaluationStatus: 'Giảng viên đã chấp nhận',
 }
+
+export const evaluationStatusColor = {
+  'Mới': '',
+  'Đang lưu nháp': 'gray',
+  'Sinh viên đã đánh giá': 'blue',
+  'Sinh viên đang khiếu nại kết quả': 'red',
+  'Lớp trưởng đã xác nhận': 'lime',
+  'Giảng viên đã chấp nhận': 'green',
+}

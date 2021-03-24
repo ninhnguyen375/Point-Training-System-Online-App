@@ -5,28 +5,28 @@ import handleError from '../../../common/utils/handleError'
 import {getEvaluationBatchListService} from '../services'
 
 const EvaluationBatchList = () => {
-  const [createdEvaluations, setCreatedEvaluations] = useState(null)
+  const [evaluationBatches, setEvaluationBatches] = useState([])
   const history = useHistory()
 
-  const getCreatedEvaluations = useCallback(async () => {
+  const getEvaluationBatch = useCallback(async () => {
     try {
       const {data} = await getEvaluationBatchListService()
 
-      setCreatedEvaluations(data.data.sort((a, b) => a.year.title < b.year.title ? 1 : -1))
+      setEvaluationBatches(data.data.sort((a, b) => a.year.title < b.year.title ? 1 : -1))
     } catch (err) {
       handleError(err, null, notification)
     }
   }, [])
 
   useEffect(() => {
-    getCreatedEvaluations()
-  }, [getCreatedEvaluations])
+    getEvaluationBatch()
+  }, [getEvaluationBatch])
 
   return (
     <Card title={<b>ĐỢT ĐÁNH GIÁ RÈN LUYỆN ĐÃ TẠO</b>} size="small">
       <Table
         rowKey={(r) => `${r.year.id  }-${r.semester.id}`}
-        dataSource={createdEvaluations || []}
+        dataSource={evaluationBatches}
         size="small"
         columns={[
           {
