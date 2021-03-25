@@ -44,6 +44,6 @@ export const evaluationStatusColor = {
   'Đang lưu nháp': 'gray',
   'Sinh viên đã đánh giá': 'blue',
   'Sinh viên đang khiếu nại kết quả': 'red',
-  'Lớp trưởng đã xác nhận': 'lime',
+  'Lớp trưởng đã xác nhận': 'geekblue',
   'Giảng viên đã chấp nhận': 'green',
 }

@@ -62,7 +62,7 @@ export default {
         {
           key: 'evaluation',
           iconClass: 'fas fa-file-alt',
-          title: 'Phiếu Điểm Rèn Luyện',
+          title: 'Danh Sách Phiếu Của Lớp',
         },
       ],
     },

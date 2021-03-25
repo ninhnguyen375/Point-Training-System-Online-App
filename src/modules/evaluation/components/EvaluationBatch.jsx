@@ -11,6 +11,7 @@ const EvaluationBatch = () => {
   const {state} = location
   const [form] = Form.useForm()
   const history = useHistory()
+  const [test, setTest] = useState(false)
 
   useEffect(() => {
     if (state) {
@@ -97,7 +98,7 @@ const EvaluationBatch = () => {
             </div>
             <div className="mt-3">
               <Form.Item
-                rules={[
+                rules={test ? [
                   {required: true, message: 'Bắc buộc'},
                   {
                     validator: (_, value) =>
@@ -107,31 +108,31 @@ const EvaluationBatch = () => {
                         )
                         : Promise.resolve(),
                   },
-                ]}
+                ] : []}
                 label="Hạn chót đánh giá dành cho sinh viên:"
                 name="deadlineDateForStudent"
               >
                 <DatePicker style={{width: '100%'}} />
               </Form.Item>
               <Form.Item
-                rules={[
+                rules={test ? [
                   {required: true, message: 'Bắc buộc'},
                   {
                     validator: validator('deadlineDateForStudent'),
                   },
-                ]}
+                ] : []}
                 label="Hạn chót đánh giá dành cho lớp trưởng:"
                 name="deadlineDateForMonitor"
               >
                 <DatePicker style={{width: '100%'}} />
               </Form.Item>
               <Form.Item
-                rules={[
+                rules={test ? [
                   {required: true, message: 'Bắc buộc'},
                   {
                     validator: validator('deadlineDateForMonitor'),
                   },
-                ]}
+                ] : []}
                 label="Hạn chót đánh giá dành cho cố vấn học tập:"
                 name="deadlineDateForLecturer"
               >

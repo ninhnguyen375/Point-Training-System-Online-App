@@ -41,6 +41,7 @@ import {cloneObj} from '../../../common/utils/object'
 import {configs} from '../../../configs'
 
 const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
+  window.moment = moment
   // store
   const profile = useSelector((state) => state[MODULE_USER].profile)
   // state
@@ -67,53 +68,94 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
   const {isMonitor} = profile
   const isTicketOfMonitor =
     isMonitor && evaluation && evaluation.studentId === profile.id
-  const userRole =
+  const viewRole =
     isMonitor && !isTicketOfMonitor ? ROLE.monitor : profile.roleName
 
-  const getDeadline = () => {
-    if (!evaluation) {
+  const getDeadline = (evaluationData, role) => {
+    if (!evaluationData) {
       return ''
     }
-    console.log('~ evaluation', evaluation)
 
-    if (isMonitor && !isTicketOfMonitor) {
-      return `${moment(evaluation.deadlineDateForStudent).format(
+    // monitor first
+    if (role === ROLE.monitor) {
+      return `${moment(evaluationData.deadlineDateForStudent).format(
         'DD/MM/yyyy',
-      )} - ${moment(evaluation.deadlineDateForMonitor).format('DD/MM/yyyy')}`
+      )} - ${moment(evaluationData.deadlineDateForMonitor).format(
+        'DD/MM/yyyy',
+      )}`
     }
 
-    if (profile.roleName === ROLE.student) {
-      return moment(evaluation.deadlineDateForStudent).format('DD/MM/yyyy')
+    if (role === ROLE.student) {
+      return moment(evaluationData.deadlineDateForStudent).format('DD/MM/yyyy')
     }
 
-    if (profile.roleName === ROLE.lecturer) {
-      return `${moment(evaluation.deadlineDateForMonitor).format(
+    if (role === ROLE.lecturer) {
+      return `${moment(evaluationData.deadlineDateForMonitor).format(
         'DD/MM/yyyy',
-      )} - ${moment(evaluation.deadlineDateForLecturer).format('DD/MM/yyyy')}`
+      )} - ${moment(evaluationData.deadlineDateForLecturer).format(
+        'DD/MM/yyyy',
+      )}`
     }
 
     return ''
   }
 
-  const validateDeadline = () => {
-    const deadlines = getDeadline().split(' - ')
+  const deadlineString = getDeadline(evaluation, viewRole)
 
-    if (deadlines.length === 0) {
+  const getYourTurn = (evaluationData, role) => {
+    if (!evaluationData) {
       return false
     }
 
-    if (deadlines.length === 2) {
-      if (moment().isBefore(moment(deadlines[1], 'DD-MM-YYYY'))) {
-        return true
-      }
-    } else if (moment().isBefore(moment(deadlines[0], 'DD-MM-YYYY'))) {
+    const evalStatus = evaluationData.status
+
+    if (
+      role === ROLE.monitor &&
+      (evalStatus === evaluationStatus.SubmitEvaluationStatus ||
+        evalStatus === evaluationStatus.ComplainEvaluationStatus ||
+        evalStatus === evaluationStatus.ConfirmEvaluationStatus)
+    ) {
+      return true
+    }
+
+    if (
+      role === ROLE.student &&
+      (evalStatus === evaluationStatus.DraftEvaluationStatus ||
+        evalStatus === evaluationStatus.NewEvaluationStatus)
+    ) {
+      return true
+    }
+
+    if (
+      role === ROLE.lecturer &&
+      evalStatus === evaluationStatus.ConfirmEvaluationStatus
+    ) {
       return true
     }
 
     return false
   }
 
-  const isValidDeadline = validateDeadline()
+  const isYourTurn = getYourTurn(evaluation, viewRole)
+
+  const validateDeadline = (deadline) => {
+    if (!deadline) {
+      return false
+    }
+
+    const currentDate = moment().format('DD-MM-YYYY')
+    const isValidDate = moment(currentDate, 'DD-MM-YYYY').isSameOrBefore(
+      moment(deadline, 'DD-MM-YYYY'),
+    )
+
+    if (isValidDate) {
+      return true
+    }
+
+    return false
+  }
+
+  const isValidDeadline = validateDeadline(deadlineString.split(' - ').pop())
 
   useEffect(() => {
     setYearId(yearIdProp)
@@ -506,7 +548,8 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
         (!forStudent && !isMonitor) ||
         (!isTicketOfMonitor && isMonitor && forStudent) ||
         profile.roleName === ROLE.lecturer ||
-        evaluation.status === evaluationStatus.AcceptEvaluationStatus
+        evaluation.status === evaluationStatus.AcceptEvaluationStatus ||
+        !isValidDeadline
       const min = r.isAnotherItem ? 0 : r.point > 0 ? 0 : -100
       const max = r.isAnotherItem ? r.maxPoint : r.point > 0 ? r.point : 0
       const value = currItem.point || 0
@@ -517,7 +560,7 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
         <InputNumber
           style={style}
           readOnly={readOnly}
-          disabled={disableEvaluationItems.includes(r.id) || !isValidDeadline}
+          disabled={disableEvaluationItems.includes(r.id)}
           min={min}
           max={max}
           value={value}
@@ -804,7 +847,7 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
               onChange={(v) => setPreviousResult(v)}
               value={previousResult}
               placeholder="Điểm hệ 4"
-              disabled={!isValidDeadline}
+              readOnly={!isValidDeadline}
             />
             <span className="me-2 ms-2">xem trên</span>
             <a
@@ -833,7 +876,7 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
               onChange={(v) => setCurrentResult(v)}
               value={currentResult}
               placeholder="Điểm hệ 4"
-              disabled={!isValidDeadline}
+              readOnly={!isValidDeadline}
             />
             <span className="me-2 ms-2">xem trên</span>
             <a
@@ -891,7 +934,9 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
             fileList={attachments}
             disabled={profile.roleName !== ROLE.student}
           >
-            <Button disabled={!isValidDeadline} icon={<i className="fas fa-file-upload me-2" />}>
+            <Button
+              icon={<i className="fas fa-file-upload me-2" />}
+            >
               Tải lên ảnh minh chứng
             </Button>
           </Upload>
@@ -920,7 +965,8 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
             >
               <Button
                 disabled={
-                  evaluation.status === evaluationStatus.AcceptEvaluationStatus || !isValidDeadline
+                  evaluation.status ===
+                    evaluationStatus.AcceptEvaluationStatus || !isValidDeadline
                 }
                 type="primary"
                 icon={<i className="fas fa-file-import me-2" />}
@@ -933,39 +979,39 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
       </div>
 
       <div className="d-flex justify-content-end mt-3">
-        {!isMonitor &&
-          !isTicketOfMonitor &&
-          profile.roleName === ROLE.student &&
-          isValidDeadline && (
-          <Alert
-            message={
-              <div>
-                {evaluation.status === evaluationStatus.NewEvaluationStatus &&
+        {viewRole === ROLE.student &&
+          (
+            <Alert
+              message={
+                <div>
+                  {evaluation.status === evaluationStatus.NewEvaluationStatus &&
                     'Bạn có thể LƯU NHÁP hoặc chọn HOÀN TẤT để lớp trưởng đánh giá.'}
-                {evaluation.status ===
+                  {evaluation.status ===
                     evaluationStatus.DraftEvaluationStatus &&
                     !isMonitor &&
                     !isTicketOfMonitor &&
                     'Phiếu hiện tại đang là NHÁP, chọn HOÀN TẤT để lớp trưởng đánh giá.'}
-                {evaluation.status ===
+                  {evaluation.status ===
                     evaluationStatus.SubmitEvaluationStatus &&
                     !isMonitor &&
                     !isTicketOfMonitor &&
                     'Bạn đã hoàn tất phiếu đánh giá, phiếu đang chờ lớp trưởng đánh giá, bạn có thể chỉnh sửa trong khoản thời gian này.'}
-                {evaluation.status ===
+                  {evaluation.status ===
                     evaluationStatus.ConfirmEvaluationStatus &&
                     !isMonitor &&
                     !isTicketOfMonitor &&
                     'Lớp trưởng đã đánh giá phiếu của bạn, bạn có thể khiếu nại nếu thấy sai sót.'}
-              </div>
-            }
-            type="success"
-          />
-        )}
-        {!isValidDeadline && (
-          <Alert message="Phiếu đóng vì Quá hạn" type="error" />
+                </div>
+              }
+              type="success"
+            />
+          )}
+
+        {isYourTurn && !isValidDeadline && (
+          <Alert message="Phiếu đóng vì quá hạn" type="error" />
         )}
       </div>
+
       <div className="d-flex justify-content-end mt-3">
         {(evaluation.status === evaluationStatus.NewEvaluationStatus ||
           evaluation.status === evaluationStatus.DraftEvaluationStatus ||
@@ -1056,7 +1102,6 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
           profile.roleName === ROLE.student &&
           !isMonitor && (
           <Button
-            disabled={!isValidDeadline}
             onClick={handleComplain}
             size="large"
             className="me-2"
@@ -1074,55 +1119,60 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
       size="small"
       title={
         <span>
-          <b>TỰ ĐÁNH GIÁ RÈN LUYỆN </b>
+          <b>PHIẾU ĐIỂM RÈN LUYỆN</b>
         </span>
       }
     >
-      <div>Chọn học kỳ:</div>
-      {evaluationBatches[0] && (
-        <Select
-          disabled={!(evaluation && profile.id === evaluation.studentId)}
-          onChange={(v) => {
-            setYearId(v.split('-')[0])
-            setSemesterId(v.split('-')[1])
-          }}
-          style={{width: 300}}
-          placeholder="Chọn học kỳ"
-          defaultValue={
-            !(evaluation && profile.id === evaluation.studentId)
-              ? `${evaluationBatches[0].year.id}-${evaluationBatches[0].semester.id}`
-              : null
-          }
-        >
-          {evaluationBatches.map((evaluationBatch) => (
-            <Select.Option
-              key={`${evaluationBatch.year.id}-${evaluationBatch.semester.id}`}
-              value={`${evaluationBatch.year.id}-${evaluationBatch.semester.id}`}
+      <div className="d-flex justify-content-between flex-wrap">
+        <div>
+          <div>Chọn học kỳ:</div>
+          {evaluationBatches[0] && (
+            <Select
+              disabled={
+                evaluation &&
+                !(
+                  profile.id === evaluation.studentId &&
+                  (!isMonitor || isTicketOfMonitor)
+                )
+              }
+              onChange={(v) => {
+                setYearId(v.split('-')[0])
+                setSemesterId(v.split('-')[1])
+              }}
+              style={{width: 300}}
+              placeholder="Chọn học kỳ"
+              value={yearId && semesterId ? `${yearId}-${semesterId}` : null}
             >
-              Năm học
-              {' '}
-              {evaluationBatch.year.title}
-              {' '}
-              -
-              {' '}
-              {evaluationBatch.semester.title}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
+              {evaluationBatches.map((evaluationBatch) => (
+                <Select.Option
+                  key={`${evaluationBatch.year.id}-${evaluationBatch.semester.id}`}
+                  value={`${evaluationBatch.year.id}-${evaluationBatch.semester.id}`}
+                >
+                  {`Năm học ${evaluationBatch.year.title} - ${evaluationBatch.semester.title}`}
+                </Select.Option>
+              ))}
+            </Select>
+          )}
+        </div>
 
-      <div className="col-lg-6">
-        <Divider />
-        {evaluation && getDeadline() && (
+        {deadlineString && (
           <Alert
-            message={`Hạn chót ${userRole}: ${getDeadline()} ${
-              !isValidDeadline ? '(Quá hạn)' : ''
+            message={`Hạn chót ${viewRole}: ${deadlineString} ${
+              isYourTurn && !isValidDeadline ? '(quá hạn)' : ''
             }`}
-            type={isValidDeadline ? 'success' : 'error'}
+            className="mt-2"
+            type={
+              isYourTurn
+                ? isValidDeadline
+                  ? 'success'
+                  : 'error'
+                : ''
+            }
           />
         )}
-        <Divider />
       </div>
+
+      <Divider />
 
       {evaluation && (
         <Tooltip placement="topLeft" title="Tổng dựa trên lớp trưởng đánh giá">
@@ -1141,6 +1191,10 @@ const EvaluationTicket = ({student, yearIdProp, semesterIdProp}) => {
           </div>
         </Tooltip>
       )}
+
+      <div className="col-lg-6">
+        <Divider />
+      </div>
 
       {evaluation && renderTicket(columns, displayEvaluationTicket)}
 

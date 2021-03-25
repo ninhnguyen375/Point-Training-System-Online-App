@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Card,
   Divider,
@@ -8,7 +9,7 @@ import {
   Table,
   Tag,
 } from 'antd'
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {useSelector} from 'react-redux'
 import {useHistory} from 'react-router-dom'
 import handleError from '../../../common/utils/handleError'
@@ -41,6 +42,8 @@ const EvaluationList = () => {
       data = data.data
       data = data.sort((a, b) => (a.year.title < b.year.title ? 1 : -1))
       setEvaluationBatches(data)
+      setYearId(data[0].year.id)
+      setSemesterId(data[0].semester.id)
     } catch (err) {
       handleError(err, null, notification)
     }
@@ -152,7 +155,8 @@ const EvaluationList = () => {
 
         if (
           profile.isMonitor &&
-          r.status === evaluationStatus.ConfirmEvaluationStatus
+          r.status === evaluationStatus.ConfirmEvaluationStatus ||
+          r.status === evaluationStatus.ComplainEvaluationStatus
         ) {
           return (
             <Button
@@ -171,7 +175,7 @@ const EvaluationList = () => {
           return (
             <Button
               onClick={() => history.push('/evaluation/confirm', r)}
-              type="default"
+              type="primary"
             >
               XÉT DUYỆT
             </Button>
@@ -183,6 +187,37 @@ const EvaluationList = () => {
     },
   ]
 
+  const renderSelectBatch = (batches = []) => {
+    if (batches.length === 0) {
+      return ''
+    }
+
+    return (
+      <div className="col-lg-4">
+        <div>Chọn Năm học và Học kỳ:</div>
+        <Select
+          onChange={(v) => {
+            setYearId(v.split('-')[0])
+            setSemesterId(v.split('-')[1])
+          }}
+          placeholder="Chọn Năm học và Học kỳ"
+          style={{width: '100%'}}
+          value={yearId && semesterId ? `${yearId}-${semesterId}` : null}
+        >
+          {evaluationBatches.map((evaluationBatch) => (
+            <Select.Option
+              key={`${evaluationBatch.year.id}-${evaluationBatch.semester.id}`}
+              value={`${evaluationBatch.year.id}-${evaluationBatch.semester.id}`}
+            >
+              {`Năm học ${evaluationBatch.year.title} - ${evaluationBatch.semester.title}`}
+            </Select.Option>
+          ))}
+        </Select>
+        <Alert className="mt-2" message="Chọn lại Năm học và Học kỳ nếu chưa chính xác" type="error" />
+      </div>
+    )
+  }
+
   return (
     <Card
       size="small"
@@ -193,32 +228,8 @@ const EvaluationList = () => {
       }
     >
       <div>
-        <div>Chọn học kỳ:</div>
-        {evaluationBatches[0] && (
-          <Select
-            onChange={(v) => {
-              setYearId(v.split('-')[0])
-              setSemesterId(v.split('-')[1])
-            }}
-            style={{width: 300}}
-            placeholder="Chọn học kỳ"
-          >
-            {evaluationBatches.map((evaluationBatch) => (
-              <Select.Option
-                key={`${evaluationBatch.year.id}-${evaluationBatch.semester.id}`}
-                value={`${evaluationBatch.year.id}-${evaluationBatch.semester.id}`}
-              >
-                Năm học
-                {' '}
-                {evaluationBatch.year.title}
-                {' '}
-                -
-                {' '}
-                {evaluationBatch.semester.title}
-              </Select.Option>
-            ))}
-          </Select>
-        )}
+        {renderSelectBatch(evaluationBatches)}
+
         {profile.roleName === ROLE.lecturer && classesOfLecturer[0] && (
           <div className="mt-3">
             <div>Chọn lớp:</div>
