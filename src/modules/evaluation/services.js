@@ -1,10 +1,14 @@
-import {fetchAxios, fetchAuthLoading} from '../../common/fetch'
+import moment from 'moment'
+import {fetchAxios, fetchAuthLoading, fetchAuth} from '../../common/fetch'
 import {configs} from '../../configs'
+import {ROLE} from '../user/model'
 
-export const getPointTrainingGroupsService = () =>
-  fetchAuthLoading({
+export const getPointTrainingGroupsService = (token) =>
+  fetchAuth({
     url: `${configs.API}/PointTrainingGroups`,
     method: 'get',
+    pageLoading: true,
+    token,
   })
 
 export const startEvaluationService = (data) =>
@@ -19,12 +23,6 @@ export const getEvaluationPrivateService = (params) =>
     url: `${configs.API}/Evaluations/Private`,
     method: 'get',
     params,
-  })
-
-export const getYearsService = () =>
-  fetchAuthLoading({
-    url: `${configs.API}/Years`,
-    method: 'get',
   })
 
 export const getPointOnlineService = (code) =>
@@ -147,3 +145,49 @@ export const getClassesOfLecturerService = (id) =>
     url: `${configs.API}/StudentClasses/GetStudentClassesByLecturer/${id}`,
     method: 'get',
   })
+
+export const validateDeadline = (deadline) => {
+  if (!deadline) {
+    return false
+  }
+
+  const currentDate = moment().format('DD-MM-YYYY')
+  const isValidDate = moment(currentDate, 'DD-MM-YYYY').isSameOrBefore(
+    moment(deadline, 'DD-MM-YYYY'),
+  )
+
+  if (isValidDate) {
+    return true
+  }
+
+  return false
+}
+
+export const getDeadline = (evaluationData, viewRole) => {
+  if (!evaluationData) {
+    return ''
+  }
+
+  // monitor first
+  if (viewRole === ROLE.monitor) {
+    return `${moment(evaluationData.deadlineDateForStudent).format(
+      'DD/MM/yyyy',
+    )} - ${moment(evaluationData.deadlineDateForMonitor).format(
+      'DD/MM/yyyy',
+    )}`
+  }
+
+  if (viewRole === ROLE.student) {
+    return moment(evaluationData.deadlineDateForStudent).format('DD/MM/yyyy')
+  }
+
+  if (viewRole === ROLE.lecturer) {
+    return `${moment(evaluationData.deadlineDateForMonitor).format(
+      'DD/MM/yyyy',
+    )} - ${moment(evaluationData.deadlineDateForLecturer).format(
+      'DD/MM/yyyy',
+    )}`
+  }
+
+  return ''
+}

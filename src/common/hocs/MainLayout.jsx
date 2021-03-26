@@ -19,7 +19,6 @@ const MainLayout = ({children}) => {
   const {selectedKeys, openKeys} = useSelector(
     (state) => state.common.layout.siderMenu,
   )
-  console.log('~ selectedKeys', selectedKeys)
 
   // states
   const [collapsed, setCollapsed] = useState(false)
@@ -58,7 +57,7 @@ const MainLayout = ({children}) => {
   }
 
   const userRole =
-    profile.isMonitor && profile.roleName === ROLE.student
+    profile.isMonitor
       ? ROLE.monitor
       : profile.roleName
   const userName = profile ? profile.fullName : 'user'
@@ -139,15 +138,15 @@ const MainLayout = ({children}) => {
               <img
                 src={userIcon}
                 alt="avatar"
-                width={35}
-                style={{marginRight: 10, paddingTop: 10}}
+                width={42}
+                style={{marginRight: 10}}
               />
 
               <div>
                 <span>{userName || ''}</span>
                 <br />
-                <Tag color="darkslateblue">
-                  {profile.isMonitor ? ROLE.monitor : userRole}
+                <Tag color="geekblue">
+                  {userRole}
                 </Tag>
               </div>
             </div>
@@ -161,8 +160,14 @@ const MainLayout = ({children}) => {
       }
     >
       <div className="main-layout__dropdown-profile">
-        <img src={userIcon} alt="avatar" width={35} />
-        <i className="fas fa-caret-down" />
+        <img src={userIcon} alt="avatar" />
+        <div style={{lineHeight: 1, fontSize: '0.9em'}}>
+          <div>{userName || ''}</div>
+          <Tag className="mt-1" color="geekblue">
+            {userRole}
+          </Tag>
+        </div>
+        <i className="fas fa-caret-down ms-2" />
       </div>
     </Dropdown>
   )
@@ -210,7 +215,9 @@ const MainLayout = ({children}) => {
         </Menu>
       </Sider>
       <Layout>
-        <Header className="main-layout__header">{headerDropdown}</Header>
+        <Header className="main-layout__header">
+          {headerDropdown}
+        </Header>
         <Content
           style={{
             overflow: 'scroll',

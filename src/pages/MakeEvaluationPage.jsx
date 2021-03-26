@@ -14,7 +14,7 @@ const MakeEvaluationPage = () => (
         },
         {
           url: '/make-evaluation',
-          title: 'Tự đánh giá rèn luyện',
+          title: 'Đánh Giá Rèn Luyện',
           icon: '',
         },
       ]}

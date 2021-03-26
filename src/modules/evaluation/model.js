@@ -10,25 +10,6 @@ export const semesters = [
     title: 'Học kỳ 2',
   },
 ]
-const a = {
-  studentEvalution: [
-    {
-      id: 1,
-      maxPoint: 20,
-      point: 20,
-      isAnotherItem: true,
-      currentPoint: 0,
-      items: [
-        {
-          id: 1,
-          title: 'Tham gia hoạt động văn hóa, văn nghệ, TDTT, phòng chống TNXH…',
-          point: 5,
-          parentId: 1,
-        },
-      ],
-    },
-  ],
-}
 
 export const evaluationStatus = {
   NewEvaluationStatus: 'Mới',
@@ -47,3 +28,11 @@ export const evaluationStatusColor = {
   'Lớp trưởng đã xác nhận': 'geekblue',
   'Giảng viên đã chấp nhận': 'green',
 }
+
+export const classification = [
+  'Kém',
+  'Yếu',
+  'Trung bình',
+  'Giỏi',
+  'Xuất sắc',
+]

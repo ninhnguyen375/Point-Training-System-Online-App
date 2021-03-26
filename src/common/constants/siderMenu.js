@@ -13,7 +13,7 @@ export default {
         {
           key: 'make-evaluation',
           iconClass: 'fas fa-edit',
-          title: 'Tự Đánh Giá Rèn Luyện',
+          title: 'Đánh Giá Rèn Luyện',
         },
       ],
     },
@@ -30,7 +30,7 @@ export default {
         {
           key: 'make-evaluation',
           iconClass: 'fas fa-edit',
-          title: 'Tự Đánh Giá Rèn Luyện',
+          title: 'Đánh Giá Rèn Luyện',
         },
       ],
     },

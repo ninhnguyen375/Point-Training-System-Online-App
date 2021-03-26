@@ -3,6 +3,8 @@ import React from 'react'
 import {useDispatch} from 'react-redux'
 import Logo from '../../../assets/images/sgu-logo.png'
 import handleError from '../../../common/utils/handleError'
+import {addPointTrainingGroup} from '../../evaluation/actions'
+import {getPointTrainingGroupsService} from '../../evaluation/services'
 import {addStudentsInClass} from '../../student-class/actions'
 import {getStudentsOfClassByMonitorIdService} from '../../student-class/services'
 import {login} from '../actions'
@@ -18,6 +20,9 @@ const LoginForm = () => {
       let user = await loginService(values)
       user = user.data.data
 
+      let pointTrainingGroups = await getPointTrainingGroupsService(user.token)
+      pointTrainingGroups = pointTrainingGroups.data.data
+
       if(user.roleName === ROLE.student) {
         try {
           let students = await getStudentsOfClassByMonitorIdService(user.id, user.token)
@@ -30,6 +35,8 @@ const LoginForm = () => {
       } else {
         dispatch(login(user))
       }
+
+      dispatch(addPointTrainingGroup(pointTrainingGroups))
     } catch (err) {
       handleError(err, null, notification)
     }
@@ -77,14 +84,7 @@ const LoginForm = () => {
                   placeholder="Nhập mật khẩu"
                 />
               </Form.Item>
-              <div>
-                <Button
-                  htmlType="button"
-                  onClick={() =>
-                    handleSubmit({code: '54321', password: '54321'})}
-                >
-                  Giảng viên A
-                </Button>
+              <div className="mb-2">
                 <Button
                   htmlType="button"
                   onClick={() =>
@@ -98,6 +98,13 @@ const LoginForm = () => {
                     handleSubmit({code: '3117410212', password: '3117410212'})}
                 >
                   Sinh viên A - lop truong
+                </Button>
+                <Button
+                  htmlType="button"
+                  onClick={() =>
+                    handleSubmit({code: '54321', password: '54321'})}
+                >
+                  Giảng viên A
                 </Button>
                 <Button
                   htmlType="button"

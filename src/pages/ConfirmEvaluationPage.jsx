@@ -1,26 +1,14 @@
-import {notification} from 'antd'
+import {Card} from 'antd'
+import qs from 'query-string'
 import React, {useCallback, useEffect, useState} from 'react'
-import {useHistory, useParams} from 'react-router-dom'
+import {useHistory, useLocation, useParams} from 'react-router-dom'
 import CustomBreadcrumb from '../common/components/widgets/CustomBreadcrumb'
 import MainLayout from '../common/hocs/MainLayout'
 import EvaluationTicket from '../modules/evaluation/components/EvaluationTicket'
 
 const ConfirmEvaluationPage = () => {
-  const history = useHistory()
-  const [loading, setLoading] = useState(true)
-  const [data, setData] = useState(null)
-  console.log('~ data', data)
-
-  useEffect(() => {
-    const {location} = history
-    const {state} = location
-    if (!state) {
-      notification.error({message: 'SV không hợp lệ'})
-    } else {
-      setData(state)
-      setLoading(false)
-    }
-  }, [])
+  let {search} = useLocation()
+  search = qs.parse(search)
 
   return (
     <MainLayout>
@@ -32,20 +20,20 @@ const ConfirmEvaluationPage = () => {
             icon: 'fas fa-home',
           },
           {
-            url: '/make-evaluation',
+            url: '/evaluation/confirm',
             title: 'Phiếu điểm rèn luyện',
             icon: '',
           },
         ]}
       />
-      {loading ? (
-        'Đang tải...'
-      ) : (
+      {(search.studentId && search.yearId && search.semesterId) ? (
         <EvaluationTicket
-          student={data.student}
-          yearIdProp={data.yearId}
-          semesterIdProp={data.semesterId}
+          studentIdProp={parseInt(search.studentId, 10)}
+          yearIdProp={parseInt(search.yearId, 10)}
+          semesterIdProp={parseInt(search.semesterId, 10)}
         />
+      ) : (
+        <Card>Không hợp lệ</Card>
       )}
     </MainLayout>
   )

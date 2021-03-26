@@ -8,4 +8,13 @@
   padding: 10px 7px;
   display: flex;
   width: fit-content;
+
+  &__status {
+    background-color: white;
+    color: $primary-color;
+    padding: 0 5px;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+  }
 }
