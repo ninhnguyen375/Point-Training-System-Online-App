@@ -23,15 +23,10 @@ const LoginForm = () => {
       let pointTrainingGroups = await getPointTrainingGroupsService(user.token)
       pointTrainingGroups = pointTrainingGroups.data.data
 
-      if(user.roleName === ROLE.student) {
-        try {
-          let students = await getStudentsOfClassByMonitorIdService(user.id, user.token)
-          students = students.data.data
-          dispatch(addStudentsInClass(students))
-          dispatch(login({...user, isMonitor: true}))
-        } catch (err) {
-          dispatch(login({...user, isMonitor: false}))
-        }
+      if (user.roleName === ROLE.monitor) {
+        dispatch(login({...user, roleName: ROLE.student, isMonitor: true}))
+      } else if (user.roleName === ROLE.student) {
+        dispatch(login({...user, isMonitor: false}))
       } else {
         dispatch(login(user))
       }
@@ -88,16 +83,16 @@ const LoginForm = () => {
                 <Button
                   htmlType="button"
                   onClick={() =>
-                    handleSubmit({code: '3117410002', password: '3117410002'})}
+                    handleSubmit({code: '3117410241', password: '3117410241'})}
                 >
-                  Sinh viên D
+                  Sinh viên 30
                 </Button>
                 <Button
                   htmlType="button"
                   onClick={() =>
-                    handleSubmit({code: '3117410212', password: '3117410212'})}
+                    handleSubmit({code: '3117410240', password: '3117410240'})}
                 >
-                  Sinh viên A - lop truong
+                  Sinh viên 29 - lop truong
                 </Button>
                 <Button
                   htmlType="button"

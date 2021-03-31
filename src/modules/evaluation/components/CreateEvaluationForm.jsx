@@ -1,6 +1,7 @@
 import {
   Button,
   Card,
+  Checkbox,
   DatePicker,
   Form,
   notification,
@@ -17,7 +18,7 @@ import {startEvaluationService} from '../services'
 const CreateEvaluationForm = () => {
   const [form] = Form.useForm()
   const history = useHistory()
-  const [test, setTest] = useState(false)
+  const [isValidate, setIsValidate] = useState(true)
 
   const handleSubmit = async (values) => {
     try {
@@ -89,50 +90,73 @@ const CreateEvaluationForm = () => {
           </Select>
         </Form.Item>
         <Form.Item
-          rules={test ? [
-            {required: true, message: 'Bắc buộc'},
-            {
-              validator: (_, value) =>
-                moment(value, 'YYYY-MM-YYYY').isBefore(moment())
-                  ? Promise.reject(new Error('Phải lớn hơn ngày hiện tại'))
-                  : Promise.resolve(),
-            },
-          ] : []}
+          rules={
+            isValidate
+              ? [
+                {required: true, message: 'Bắc buộc'},
+                {
+                  validator: (_, value) =>
+                    moment(value, 'YYYY-MM-YYYY').isBefore(moment())
+                      ? Promise.reject(
+                        new Error('Phải lớn hơn ngày hiện tại'),
+                      )
+                      : Promise.resolve(),
+                },
+              ]
+              : []
+          }
           label="Hạn chót đánh giá dành cho sinh viên:"
           name="deadlineDateForStudent"
         >
           <DatePicker style={{width: '100%'}} />
         </Form.Item>
         <Form.Item
-          rules={test ? [
-            {required: true, message: 'Bắc buộc'},
-            {
-              validator: validator('deadlineDateForStudent'),
-            },
-          ] : []}
+          rules={
+            isValidate
+              ? [
+                {required: true, message: 'Bắc buộc'},
+                {
+                  validator: validator('deadlineDateForStudent'),
+                },
+              ]
+              : []
+          }
           label="Hạn chót đánh giá dành cho lớp trưởng:"
           name="deadlineDateForMonitor"
         >
           <DatePicker style={{width: '100%'}} />
         </Form.Item>
         <Form.Item
-          rules={test ? [
-            {required: true, message: 'Bắc buộc'},
-            {
-              validator: validator('deadlineDateForMonitor'),
-            },
-          ] : []}
+          rules={
+            isValidate
+              ? [
+                {required: true, message: 'Bắc buộc'},
+                {
+                  validator: validator('deadlineDateForMonitor'),
+                },
+              ]
+              : []
+          }
           label="Hạn chót đánh giá dành cho cố vấn học tập:"
           name="deadlineDateForLecturer"
         >
           <DatePicker style={{width: '100%'}} />
         </Form.Item>
-        <div className="d-flex justify-content-end">
+        <div>
+          <Checkbox
+            checked={isValidate}
+            onClick={() => setIsValidate(!isValidate)}
+          >
+            Validate
+          </Checkbox>
           <Popconfirm
-            title="Chắc chắn bắt đầu?"
+            okButtonProps={{className: 'success'}}
+            placement="topRight"
+            title="Xác nhận"
             onConfirm={() => form.submit()}
           >
-            <Button type="primary" block>
+            <Button size="large" className="success" type="primary" block>
+              <i className="fas fa-play-circle me-2" />
               BẮT ĐẦU
             </Button>
           </Popconfirm>

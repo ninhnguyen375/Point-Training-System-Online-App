@@ -6,13 +6,8 @@ export default {
       itemGroup: 'Tổng Quan',
       items: [
         {
-          key: 'dashboard',
-          iconClass: 'fas fa-home',
-          title: 'Bảng Điều Khiển',
-        },
-        {
           key: 'make-evaluation',
-          iconClass: 'fas fa-edit',
+          iconClass: 'fas fa-list-alt',
           title: 'Đánh Giá Rèn Luyện',
         },
       ],
@@ -23,13 +18,8 @@ export default {
       itemGroup: 'Tổng Quan',
       items: [
         {
-          key: 'dashboard',
-          iconClass: 'fas fa-home',
-          title: 'Bảng Điều Khiển',
-        },
-        {
           key: 'make-evaluation',
-          iconClass: 'fas fa-edit',
+          iconClass: 'fas fa-list-alt',
           title: 'Đánh Giá Rèn Luyện',
         },
       ],
@@ -39,7 +29,7 @@ export default {
       items: [
         {
           key: 'evaluation',
-          iconClass: 'fas fa-file-alt',
+          iconClass: 'fas fa-copy',
           title: 'Danh Sách Phiếu Của Lớp',
         },
       ],
@@ -47,21 +37,11 @@ export default {
   ],
   [ROLE.lecturer]: [
     {
-      itemGroup: 'Tổng Quan',
-      items: [
-        {
-          key: 'dashboard',
-          iconClass: 'fas fa-home',
-          title: 'Bảng Điều Khiển',
-        },
-      ],
-    },
-    {
       itemGroup: 'Quản lý',
       items: [
         {
           key: 'evaluation',
-          iconClass: 'fas fa-file-alt',
+          iconClass: 'fas fa-copy',
           title: 'Danh Sách Phiếu Của Lớp',
         },
       ],
@@ -72,11 +52,6 @@ export default {
       itemGroup: 'Tổng Quan',
       items: [
         {
-          key: 'dashboard',
-          iconClass: 'fas fa-home',
-          title: 'Bảng Điều Khiển',
-        },
-        {
           key: 'evaluation/create',
           iconClass: 'fas fa-play-circle',
           title: 'Bắt Đầu Đợt Đánh Giá',
@@ -85,6 +60,36 @@ export default {
           key: 'evaluation-batch',
           iconClass: 'fas fa-copy',
           title: 'Đợt Đánh Giá Đã Tạo',
+        },
+      ],
+    },
+    {
+      itemGroup: 'Quản Lý',
+      items: [
+        {
+          key: 'student',
+          iconClass: 'fas fa-user-graduate',
+          title: 'Sinh Viên',
+        },
+        {
+          key: 'student-class',
+          iconClass: 'fas fa-suitcase',
+          title: 'Danh Sách Lớp',
+        },
+      ],
+    },
+    {
+      itemGroup: 'Nhập Liệu',
+      items: [
+        {
+          key: 'student-class/import',
+          iconClass: 'fas fa-file-import',
+          title: 'Nhập Lớp',
+        },
+        {
+          key: 'student/import',
+          iconClass: 'fas fa-file-import',
+          title: 'Nhập Sinh Viên',
         },
       ],
     },

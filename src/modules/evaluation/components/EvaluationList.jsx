@@ -15,14 +15,12 @@ import {
 import qs from 'query-string'
 import React, {useCallback, useEffect, useState} from 'react'
 import {useSelector} from 'react-redux'
-import {useHistory} from 'react-router-dom'
 import moment from 'moment'
 import handleError from '../../../common/utils/handleError'
 import {
   classification,
   evaluationStatus,
   evaluationStatusColor,
-  semesters,
 } from '../model'
 import {
   getClassesOfLecturerService,
@@ -387,7 +385,8 @@ const EvaluationList = () => {
               <Select
                 onChange={(v) => setSearch({...search, classification: v})}
                 placeholder="Xếp loại"
-                style={{width: 120, marginRight: 5}}
+                className="me-2 mb-2"
+                style={{width: 120}}
                 allowClear
               >
                 {classification.map((c) => (

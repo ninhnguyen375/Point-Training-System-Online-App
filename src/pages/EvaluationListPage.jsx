@@ -8,14 +8,9 @@ const EvaluationListPage = () => (
     <CustomBreadcrumb
       items={[
         {
-          url: '/dashboard',
-          title: 'Bảng Điều Khiển',
-          icon: 'fas fa-home',
-        },
-        {
           url: '/evaluation',
           title: 'Danh sách phiếu điểm rèn luyện',
-          icon: '',
+          icon: 'fas fa-copy',
         },
       ]}
     />

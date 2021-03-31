@@ -11,6 +11,11 @@ import ConfirmEvaluationPage from '../pages/ConfirmEvaluationPage'
 import EvaluationListPage from '../pages/EvaluationListPage'
 import EvaluationBatchListPage from '../pages/EvaluationBatchListPage'
 import EvaluationBatchPage from '../pages/EvaluationBatchPage'
+import StudentListPage from '../pages/StudentListPage'
+import ImportStudentPage from '../pages/ImportStudentPage'
+import StudentClassListPage from '../pages/StudentClassListPage'
+import ImportStudentClassPage from '../pages/ImportStudentClassPage'
+import Home from '../pages/Home'
 
 const Routes = () => {
   const profile = useSelector(state => state[MODULE_USER].profile)
@@ -24,7 +29,7 @@ const Routes = () => {
         <Route exact path="/evaluation/confirm" component={ConfirmEvaluationPage} />
 
         <Route exact path="/">
-          <Redirect to="/dashboard" />
+          <Redirect to="/make-evaluation" />
         </Route>
         <Route exact path="*" component={NotFound} />
       </Switch>
@@ -39,7 +44,7 @@ const Routes = () => {
         <Route exact path="/evaluation/confirm" component={ConfirmEvaluationPage} />
 
         <Route exact path="/">
-          <Redirect to="/dashboard" />
+          <Redirect to="/evaluation" />
         </Route>
         <Route exact path="*" component={NotFound} />
       </Switch>
@@ -50,12 +55,17 @@ const Routes = () => {
     return (
       <Switch>
         <Route exact path="/dashboard" component={Dashboard} />
+        <Route exact path="/home" component={Home} />
         <Route exact path="/evaluation/create" component={CreateEvaluationPage} />
         <Route exact path="/evaluation-batch" component={EvaluationBatchListPage} />
         <Route exact path="/evaluation-batch/detail" component={EvaluationBatchPage} />
+        <Route exact path="/student" component={StudentListPage} />
+        <Route exact path="/student/import" component={ImportStudentPage} />
+        <Route exact path="/student-class" component={StudentClassListPage} />
+        <Route exact path="/student-class/import" component={ImportStudentClassPage} />
 
         <Route exact path="/">
-          <Redirect to="/dashboard" />
+          <Redirect to="/evaluation-batch" />
         </Route>
         <Route exact path="*" component={NotFound} />
       </Switch>

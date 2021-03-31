@@ -14,7 +14,7 @@ const EvaluationBatchList = () => {
 
       setEvaluationBatches(data.data.sort((a, b) => a.year.title < b.year.title ? 1 : -1))
     } catch (err) {
-      handleError(err, null, notification)
+      console.log(err)
     }
   }, [])
 

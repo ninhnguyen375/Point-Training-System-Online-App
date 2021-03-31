@@ -8,14 +8,9 @@ const MakeEvaluationPage = () => (
     <CustomBreadcrumb
       items={[
         {
-          url: '/dashboard',
-          title: 'Bảng Điều Khiển',
-          icon: 'fas fa-home',
-        },
-        {
           url: '/make-evaluation',
           title: 'Đánh Giá Rèn Luyện',
-          icon: '',
+          icon: 'fas fa-list-alt',
         },
       ]}
     />

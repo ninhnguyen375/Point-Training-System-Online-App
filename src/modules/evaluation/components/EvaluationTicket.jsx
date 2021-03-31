@@ -16,7 +16,6 @@ import {
 } from 'antd'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {useSelector} from 'react-redux'
-import moment from 'moment'
 import readExcelFile from 'read-excel-file'
 import PropTypes from 'prop-types'
 import handleError from '../../../common/utils/handleError'
@@ -62,7 +61,6 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
   const [loading, setLoading] = useState(false)
   const [attachments, setAttachments] = useState([])
   const [note, setNote] = useState('')
-  console.log('render ticket')
   const [reasonRefuseComplain, setReasonRefuseComplain] = useState('')
   const [visibleRefuseComplain, setVisibleRefuseComplain] = useState(false)
   const [evaluationBatches, setEvaluationBatches] = useState([])
@@ -357,7 +355,7 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
     return total > 100 ? 100 : total
   }
 
-  const getEvaluationPrivate = useCallback(async (stuId, yId, sId) => {
+  const getEvaluationPrivate = useCallback(async (stuId, yId, sId, groups) => {
     try {
       let evaluationPrivate = await getEvaluationPrivateService({
         studentId: stuId,
@@ -367,7 +365,7 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
       evaluationPrivate = evaluationPrivate.data.data
 
       setEvaluation(evaluationPrivate)
-      const mapped = mapToEvaluationTicket(pointTrainingGroups)
+      const mapped = mapToEvaluationTicket(groups)
 
       setMonitorEvaluation(
         JSON.parse(evaluationPrivate.monitorEvaluation) ||
@@ -402,9 +400,9 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
 
   useEffect(() => {
     if (yearId && semesterId) {
-      getEvaluationPrivate(studentId, yearId, semesterId)
+      getEvaluationPrivate(studentId, yearId, semesterId, pointTrainingGroups)
     }
-  }, [getEvaluationPrivate, studentId, yearId, semesterId])
+  }, [getEvaluationPrivate, studentId, yearId, semesterId, pointTrainingGroups])
 
   const applyPoint = (prePoint, currPoint) => {
     const clone = cloneObj(isMonitor ? monitorEvaluation : studentEvaluation)
@@ -616,7 +614,12 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
         previousResult,
         currentResult,
       )
-      await getEvaluationPrivate(studentId, yearId, semesterId)
+      await getEvaluationPrivate(
+        studentId,
+        yearId,
+        semesterId,
+        pointTrainingGroups,
+      )
       if (notify) {
         notification.success({message: 'Lưu nháp thành công'})
       }
@@ -633,7 +636,12 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
         description:
           'Bạn có thể khiếu nại sau khi lớp trưởng đánh giá phiếu của bạn',
       })
-      await getEvaluationPrivate(studentId, yearId, semesterId)
+      await getEvaluationPrivate(
+        studentId,
+        yearId,
+        semesterId,
+        pointTrainingGroups,
+      )
     } catch (err) {
       handleError(err, null, notification)
     }
@@ -672,7 +680,12 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
           message: 'Lớp trưởng đánh giá thành công',
         })
       }
-      await getEvaluationPrivate(studentId, yearId, semesterId)
+      await getEvaluationPrivate(
+        studentId,
+        yearId,
+        semesterId,
+        pointTrainingGroups,
+      )
     } catch (err) {
       handleError(err, null, notification)
     }
@@ -717,7 +730,12 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
   const handleLecturerApprove = async () => {
     try {
       await lecturerApproveService(evaluation.id)
-      await getEvaluationPrivate(studentId, yearId, semesterId)
+      await getEvaluationPrivate(
+        studentId,
+        yearId,
+        semesterId,
+        pointTrainingGroups,
+      )
       notification.success({
         message: 'Cố vấn học tập xét duyệt',
         description: 'Thành công',
@@ -736,7 +754,7 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
       }
       await complainService(evaluation.id, note)
       notification.success({message: 'Gửi khiếu nại thành công'})
-      getEvaluationPrivate(studentId, yearId, semesterId)
+      getEvaluationPrivate(studentId, yearId, semesterId, pointTrainingGroups)
     } catch (err) {
       handleError(err, null, notification)
     }
@@ -848,7 +866,7 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
         pagination={false}
         columns={cols}
         dataSource={display}
-        scroll={{x: '600px'}}
+        scroll={{x: 360}}
         summary={() => (
           <Table.Summary.Row>
             <Table.Summary.Cell colSpan={3}>
@@ -881,6 +899,27 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
             onRemove={handleRemoveAttachment}
             fileList={attachments}
             disabled={profile.roleName !== ROLE.student}
+            accept="image/*"
+            onPreview={(file) => {
+              window.Modal.show(
+                <div
+                  style={{
+                    background: `url('${file.url}')`,
+                    width: '100%',
+                    height: '90vh',
+                    backgroundSize: 'contant',
+                  }}
+                />,
+                {
+                  title: 'HÌNH ẢNH',
+                  width: '99vw',
+                  height: '99vh',
+                  style: {
+                    top: '0.5vh',
+                  },
+                },
+              )
+            }}
           >
             <Button icon={<i className="fas fa-file-upload me-2" />}>
               Tải lên ảnh minh chứng
@@ -930,7 +969,7 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
       </div>
 
       <div className="d-flex justify-content-end mt-3">
-        {viewRole === ROLE.student && (
+        {viewRole === ROLE.student && !(isYourTurn && !isValidDeadline) && (
           <Alert
             message={
               <div>
@@ -1074,33 +1113,35 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
     >
       <div className="d-flex justify-content-between flex-wrap">
         <div className="col-lg-4">
-          <div>Chọn học kỳ:</div>
           {evaluationBatches[0] && (
-            <Select
-              disabled={
-                evaluation &&
-                !(
-                  profile.id === evaluation.studentId &&
-                  (!isMonitor || isTicketOfMonitor)
-                )
-              }
-              onChange={(v) => {
-                setYearId(v.split('-')[0])
-                setSemesterId(v.split('-')[1])
-              }}
-              style={{width: '100%'}}
-              placeholder="Chọn học kỳ"
-              value={yearId && semesterId ? `${yearId}-${semesterId}` : null}
-            >
-              {evaluationBatches.map((evaluationBatch) => (
-                <Select.Option
-                  key={`${evaluationBatch.year.id}-${evaluationBatch.semester.id}`}
-                  value={`${evaluationBatch.year.id}-${evaluationBatch.semester.id}`}
-                >
-                  {`Năm học ${evaluationBatch.year.title} - ${evaluationBatch.semester.title}`}
-                </Select.Option>
-              ))}
-            </Select>
+            <>
+              <div>Chọn học kỳ:</div>
+              <Select
+                disabled={
+                  evaluation &&
+                  !(
+                    profile.id === evaluation.studentId &&
+                    (!isMonitor || isTicketOfMonitor)
+                  )
+                }
+                onChange={(v) => {
+                  setYearId(v.split('-')[0])
+                  setSemesterId(v.split('-')[1])
+                }}
+                style={{width: '100%'}}
+                placeholder="Chọn học kỳ"
+                value={yearId && semesterId ? `${yearId}-${semesterId}` : null}
+              >
+                {evaluationBatches.map((evaluationBatch) => (
+                  <Select.Option
+                    key={`${evaluationBatch.year.id}-${evaluationBatch.semester.id}`}
+                    value={`${evaluationBatch.year.id}-${evaluationBatch.semester.id}`}
+                  >
+                    {`Năm học ${evaluationBatch.year.title} - ${evaluationBatch.semester.title}`}
+                  </Select.Option>
+                ))}
+              </Select>
+            </>
           )}
         </div>
 
@@ -1147,9 +1188,7 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
         </Tooltip>
       )}
 
-      <div className="col-lg-6">
-        <Divider />
-      </div>
+      <Divider />
 
       {evaluation && renderTicket(columns, displayEvaluationTicket)}
 

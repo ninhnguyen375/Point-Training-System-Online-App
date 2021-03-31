@@ -13,6 +13,7 @@ module.exports = {
   },
   plugins: ['react'],
   rules: {
+    'react/jsx-props-no-spreading': 'off',
     'react/jsx-wrap-multilines': 'off',
     'no-console': 'off',
     'import/prefer-default-export': 'off',
