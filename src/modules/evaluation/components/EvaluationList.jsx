@@ -16,6 +16,7 @@ import qs from 'query-string'
 import React, {useCallback, useEffect, useState} from 'react'
 import {useSelector} from 'react-redux'
 import moment from 'moment'
+import {Link} from 'react-router-dom'
 import handleError from '../../../common/utils/handleError'
 import {
   classification,
@@ -223,9 +224,7 @@ const EvaluationList = () => {
                   DUYỆT NGAY
                 </Button>
               </Popconfirm>
-              <Button
-                onClick={() => gotoConfirmPage(r)}
-              >
+              <Button onClick={() => gotoConfirmPage(r)}>
                 <i className="fas fa-info me-2" />
                 XEM
               </Button>
@@ -234,9 +233,7 @@ const EvaluationList = () => {
         }
 
         return (
-          <Button
-            onClick={() => gotoConfirmPage(r)}
-          >
+          <Button onClick={() => gotoConfirmPage(r)}>
             <i className="fas fa-info me-2" />
             XEM
           </Button>
@@ -408,6 +405,17 @@ const EvaluationList = () => {
             columns={columns}
             scroll={{x: '600px'}}
           />
+
+          <div className="d-flex justify-content-end mt-3">
+            <Button
+              onClick={() => window.open('/class-statistic')}
+              size="large"
+              type="primary"
+              className="success"
+            >
+              XUẤT BẢNG GHI ĐIỂM RÈN LUYỆN CỦA LỚP
+            </Button>
+          </div>
         </div>
       )}
     </Card>

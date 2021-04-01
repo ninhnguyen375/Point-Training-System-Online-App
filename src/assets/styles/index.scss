@@ -39,3 +39,13 @@ a {
   color: $primary-color;
   cursor: pointer;
 }
+.raw-table {
+  width: 100%;
+  text-align: center;
+  border: 1px solid black;
+
+  th, td {
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+  }
+}

@@ -16,6 +16,7 @@ import ImportStudentPage from '../pages/ImportStudentPage'
 import StudentClassListPage from '../pages/StudentClassListPage'
 import ImportStudentClassPage from '../pages/ImportStudentClassPage'
 import Home from '../pages/Home'
+import ClassStatistic from '../pages/ClassStatistic'
 
 const Routes = () => {
   const profile = useSelector(state => state[MODULE_USER].profile)
@@ -27,6 +28,7 @@ const Routes = () => {
         <Route exact path="/make-evaluation" component={MakeEvaluationPage} />
         <Route exact path="/evaluation" component={EvaluationListPage} />
         <Route exact path="/evaluation/confirm" component={ConfirmEvaluationPage} />
+        <Route exact path="/class-statistic" component={ClassStatistic} />
 
         <Route exact path="/">
           <Redirect to="/make-evaluation" />
@@ -63,6 +65,7 @@ const Routes = () => {
         <Route exact path="/student/import" component={ImportStudentPage} />
         <Route exact path="/student-class" component={StudentClassListPage} />
         <Route exact path="/student-class/import" component={ImportStudentClassPage} />
+        <Route exact path="/class-statistic" component={ClassStatistic} />
 
         <Route exact path="/">
           <Redirect to="/evaluation-batch" />

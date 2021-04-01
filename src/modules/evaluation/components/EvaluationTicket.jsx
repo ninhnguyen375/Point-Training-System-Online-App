@@ -649,7 +649,7 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
 
   const getClassification = (totalPoint) => {
     if (totalPoint >= 85) {
-      return 'Xuất sắc'
+      return 'Tốt'
     }
     if (totalPoint >= 65 && totalPoint < 85) {
       return 'Khá'
