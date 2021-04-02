@@ -1,7 +1,7 @@
 /* eslint-disable new-cap */
-import {Button} from 'antd'
+import { Button } from 'antd'
 import jsPDF from 'jspdf'
-import React, {useEffect, useRef} from 'react'
+import React from 'react'
 import logo from '../assets/images/sgu-logo.png'
 import '../assets/fonts/times-normal'
 import '../assets/fonts/timesi-normal'
@@ -9,7 +9,7 @@ import '../assets/fonts/timesbd-normal'
 import '../assets/fonts/timesbi-normal'
 
 const TestExportPDF = () => {
-  const pdf = new jsPDF({unit: 'px', format: 'a4', userUnit: 'px'})
+  const pdf = new jsPDF({ unit: 'px', format: 'a4', userUnit: 'px' })
   pdf.setFont('times')
   pdf.setFont('timesi')
   pdf.setFont('timesbd')
@@ -25,19 +25,28 @@ const TestExportPDF = () => {
   const exportToPDF = async () => {
     const input = document.getElementById('pdf-element')
 
-    const signSlot1 = document.getElementById('signSlot1').getBoundingClientRect()
-    const signSlot2 = document.getElementById('signSlot2').getBoundingClientRect()
-    const signSlot3 = document.getElementById('signSlot3').getBoundingClientRect()
+    const signSlot1 = document
+      .getElementById('signSlot1')
+      .getBoundingClientRect()
+    const signSlot2 = document
+      .getElementById('signSlot2')
+      .getBoundingClientRect()
+    const signSlot3 = document
+      .getElementById('signSlot3')
+      .getBoundingClientRect()
+    // eslint-disable-next-line no-console
     console.log(signSlot1.x, signSlot1.y, signSlot1.width, signSlot1.height)
+    // eslint-disable-next-line no-console
     console.log(signSlot2.x, signSlot2.y, signSlot2.width, signSlot2.height)
+    // eslint-disable-next-line no-console
     console.log(signSlot3.x, signSlot3.y, signSlot3.width, signSlot3.height)
-    pdf.html(input, {html2canvas: {scale: 0.75}}).then(() => {
+    pdf.html(input, { html2canvas: { scale: 0.75 } }).then(() => {
       pdf.save('test.pdf')
     })
   }
 
   return (
-    <div style={{height: '100vh', overflow: 'auto'}}>
+    <div style={{ height: '100vh', overflow: 'auto' }}>
       <Button
         style={{
           position: 'fixed',

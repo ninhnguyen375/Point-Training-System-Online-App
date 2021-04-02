@@ -1,29 +1,29 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import propTypes from 'prop-types'
-import {Layout, Menu, Dropdown, Tag, notification} from 'antd'
+import { Layout, Menu, Dropdown, Tag } from 'antd'
 
-import {useHistory, useLocation} from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import SubMenu from 'antd/lib/menu/SubMenu'
-import {useDispatch, useSelector} from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import siderMenu from '../constants/siderMenu'
 import userIcon from '../../assets/images/user.svg'
-import {clearAll, setSiderMenu} from '../actions'
-import {MODULE_NAME as MODULE_USER, ROLE} from '../../modules/user/model'
-import {configs} from '../../configs'
+import { clearAll, setSiderMenu } from '../actions'
+import { MODULE_NAME as MODULE_USER, ROLE } from '../../modules/user/model'
+import { configs } from '../../configs'
 
-const {Header, Sider, Content} = Layout
+const { Header, Sider, Content } = Layout
 
-const MainLayout = ({children}) => {
+const MainLayout = ({ children }) => {
   // store
   const moduleUser = useSelector((state) => state[MODULE_USER])
-  const {selectedKeys, openKeys} = useSelector(
+  const { selectedKeys, openKeys } = useSelector(
     (state) => state.common.layout.siderMenu,
   )
 
   // states
   const [collapsed, setCollapsed] = useState(false)
 
-  const {profile} = moduleUser
+  const { profile } = moduleUser
   const dispatch = useDispatch()
   const history = useHistory()
   const location = useLocation()
@@ -56,10 +56,15 @@ const MainLayout = ({children}) => {
     history.push(`/${value.key}`)
   }
 
-  const userRole =
-    profile.isMonitor
-      ? ROLE.monitor
-      : profile.roleName
+  const handleOpenChange = (keys) =>
+    dispatch(
+      setSiderMenu({
+        selectedKeys,
+        openKeys: keys,
+      }),
+    )
+
+  const userRole = profile.isMonitor ? ROLE.monitor : profile.roleName
   const userName = profile ? profile.fullName : 'user'
 
   const renderMenu = (menus = []) =>
@@ -74,8 +79,7 @@ const MainLayout = ({children}) => {
                   key={i.key}
                   title={
                     <span>
-                      {i.title}
-                      {' '}
+                      <span className="me-2">{i.title}</span>
                       <i className={`${i.iconClass} icon`} />
                     </span>
                   }
@@ -87,10 +91,7 @@ const MainLayout = ({children}) => {
               ) : (
                 <Menu.Item key={i.key}>
                   <div className="main-layout__menu-item">
-                    <span>
-                      {i.title}
-                      {' '}
-                    </span>
+                    <span>{i.title}</span>
                     <i className={i.iconClass} />
                   </div>
                 </Menu.Item>
@@ -106,8 +107,7 @@ const MainLayout = ({children}) => {
             className="main-layout__sider__menu__submenu"
             title={
               <span>
-                {i.title}
-                {' '}
+                <span className="me-2">{i.title}</span>
                 <i className={`${i.iconClass} icon`} />
               </span>
             }
@@ -119,9 +119,10 @@ const MainLayout = ({children}) => {
         ) : (
           <Menu.Item key={i.key}>
             <div className="main-layout__menu-item">
-              <span>{i.title}</span>
-              {' '}
-              <i className={i.iconClass} />
+              <span>
+                <span className="me-2">{i.title}</span>
+                <i className={`${i.iconClass} icon`} />
+              </span>
             </div>
           </Menu.Item>
         ),
@@ -132,7 +133,7 @@ const MainLayout = ({children}) => {
     <Dropdown
       trigger={['click']}
       overlay={
-        <Menu style={{width: 200}}>
+        <Menu style={{ width: 200 }}>
           <Menu.Item onClick={handleLogout}>
             <i className="fas fa-sign-out-alt me-2" />
             Đăng xuất
@@ -142,7 +143,7 @@ const MainLayout = ({children}) => {
     >
       <div className="main-layout__dropdown-profile">
         <img src={userIcon} alt="avatar" />
-        <div style={{lineHeight: 1, fontSize: '0.9em'}}>
+        <div style={{ lineHeight: 1, fontSize: '0.9em' }}>
           <div>{userName || ''}</div>
           <Tag className="mt-1" color="geekblue">
             {userRole}
@@ -178,13 +179,7 @@ const MainLayout = ({children}) => {
           <img alt="logo" src={configs.LogoURL} height={48} />
         </div>
         <Menu
-          onOpenChange={(keys) =>
-            dispatch(
-              setSiderMenu({
-                selectedKeys,
-                openKeys: keys,
-              }),
-            )}
+          onOpenChange={handleOpenChange}
           onClick={handleClick}
           selectedKeys={selectedKeys}
           openKeys={openKeys}
@@ -196,9 +191,7 @@ const MainLayout = ({children}) => {
         </Menu>
       </Sider>
       <Layout>
-        <Header className="main-layout__header">
-          {headerDropdown}
-        </Header>
+        <Header className="main-layout__header">{headerDropdown}</Header>
         <Content
           style={{
             overflow: 'scroll',

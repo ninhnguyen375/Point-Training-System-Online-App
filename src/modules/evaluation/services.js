@@ -1,7 +1,7 @@
 import moment from 'moment'
-import {fetchAxios, fetchAuthLoading, fetchAuth} from '../../common/fetch'
-import {configs} from '../../configs'
-import {ROLE} from '../user/model'
+import { fetchAxios, fetchAuthLoading, fetchAuth } from '../../common/fetch'
+import { configs } from '../../configs'
+import { ROLE } from '../user/model'
 
 export const getPointTrainingGroupsService = (token) =>
   fetchAuth({
@@ -29,7 +29,7 @@ export const getPointOnlineService = (code) =>
   fetchAxios({
     url: `${configs.CrawlerAPI}/crawler/get-point`,
     method: 'get',
-    params: {code},
+    params: { code },
   })
 
 export const uploadFileService = (evaluationId, file) => {
@@ -178,9 +178,7 @@ export const getDeadline = (evaluationData, viewRole) => {
   if (viewRole === ROLE.monitor) {
     return `${moment(evaluationData.deadlineDateForStudent).format(
       'DD/MM/yyyy',
-    )} - ${moment(evaluationData.deadlineDateForMonitor).format(
-      'DD/MM/yyyy',
-    )}`
+    )} - ${moment(evaluationData.deadlineDateForMonitor).format('DD/MM/yyyy')}`
   }
 
   if (viewRole === ROLE.student) {
@@ -190,9 +188,7 @@ export const getDeadline = (evaluationData, viewRole) => {
   if (viewRole === ROLE.lecturer) {
     return `${moment(evaluationData.deadlineDateForMonitor).format(
       'DD/MM/yyyy',
-    )} - ${moment(evaluationData.deadlineDateForLecturer).format(
-      'DD/MM/yyyy',
-    )}`
+    )} - ${moment(evaluationData.deadlineDateForLecturer).format('DD/MM/yyyy')}`
   }
 
   return ''

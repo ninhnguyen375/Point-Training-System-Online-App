@@ -21,7 +21,6 @@ const ImportStudentClassPage = () => (
     />
     <ImportStudentClass />
   </MainLayout>
-
 )
 
 export default ImportStudentClassPage

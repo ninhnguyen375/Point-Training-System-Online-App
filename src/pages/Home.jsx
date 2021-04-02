@@ -1,4 +1,4 @@
-import {Card} from 'antd'
+import { Card } from 'antd'
 import React from 'react'
 import CustomBreadcrumb from '../common/components/widgets/CustomBreadcrumb'
 import MainLayout from '../common/hocs/MainLayout'
@@ -14,9 +14,7 @@ const Home = () => (
         },
       ]}
     />
-    <Card>
-      sdfsf
-    </Card>
+    <Card>sdfsf</Card>
   </MainLayout>
 )
 

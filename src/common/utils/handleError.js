@@ -1,4 +1,4 @@
-import {configs} from '../../configs'
+import { configs } from '../../configs'
 
 /* eslint-disable no-console */
 export default (err, form, noti) => {
@@ -13,12 +13,12 @@ export default (err, form, noti) => {
   const status = err.response ? err.response.status : undefined
 
   if (status === 404) {
-    noti.error({message: 'Dịch vụ không khả dụng'})
+    noti.error({ message: 'Dịch vụ không khả dụng' })
     return
   }
 
   if (status === 500) {
-    noti.error({message: 'Lỗi Hệ Thống', description: 'Dịch vụ API'})
+    noti.error({ message: 'Lỗi Hệ Thống', description: 'Dịch vụ API' })
     return
   }
 
@@ -33,11 +33,11 @@ export default (err, form, noti) => {
 
   if (!data) {
     if (err.message === `timeout of ${configs.TIMEOUT}ms exceeded`) {
-      noti.error({message: 'Lỗi Hệ Thống', description: 'Dịch vụ API'})
+      noti.error({ message: 'Lỗi Hệ Thống', description: 'Dịch vụ API' })
       return
     }
 
-    noti.error({message: err.message || 'Lỗi Hệ Thống'})
+    noti.error({ message: err.message || 'Lỗi Hệ Thống' })
     return
   }
 
@@ -47,7 +47,7 @@ export default (err, form, noti) => {
     if (!errors) {
       return
     }
-    noti.error({message: 'Lỗi', description: errors})
+    noti.error({ message: 'Lỗi', description: errors })
     return
   }
 

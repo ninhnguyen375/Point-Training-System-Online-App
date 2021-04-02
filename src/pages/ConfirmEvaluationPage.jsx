@@ -1,13 +1,13 @@
-import {Card} from 'antd'
+import { Card } from 'antd'
 import qs from 'query-string'
-import React, {useCallback, useEffect, useState} from 'react'
-import {useHistory, useLocation, useParams} from 'react-router-dom'
+import React from 'react'
+import { useLocation } from 'react-router-dom'
 import CustomBreadcrumb from '../common/components/widgets/CustomBreadcrumb'
 import MainLayout from '../common/hocs/MainLayout'
 import EvaluationTicket from '../modules/evaluation/components/EvaluationTicket'
 
 const ConfirmEvaluationPage = () => {
-  let {search} = useLocation()
+  let { search } = useLocation()
   search = qs.parse(search)
 
   return (
@@ -26,7 +26,7 @@ const ConfirmEvaluationPage = () => {
           },
         ]}
       />
-      {(search.studentId && search.yearId && search.semesterId) ? (
+      {search.studentId && search.yearId && search.semesterId ? (
         <EvaluationTicket
           studentIdProp={parseInt(search.studentId, 10)}
           yearIdProp={parseInt(search.yearId, 10)}

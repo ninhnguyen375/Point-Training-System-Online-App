@@ -1,6 +1,6 @@
-import {configureStore, getDefaultMiddleware} from '@reduxjs/toolkit'
-import {composeWithDevTools} from 'redux-devtools-extension'
-import {persistStore, persistReducer} from 'redux-persist'
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
+import { composeWithDevTools } from 'redux-devtools-extension'
+import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import rootReducer from '../modules/rootReducer'
 

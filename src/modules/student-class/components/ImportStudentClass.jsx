@@ -6,15 +6,14 @@ import {
   Popconfirm,
   Table,
   Tooltip,
-  Upload,
 } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
-import React, {useState} from 'react'
-import {useHistory} from 'react-router-dom'
+import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import readExcelFile from 'read-excel-file'
 import ExportCSV from '../../../common/components/widgets/ExportCSV'
 import handleError from '../../../common/utils/handleError'
-import {importStudentClassesService} from '../services'
+import { importStudentClassesService } from '../services'
 
 const ImportStudentClass = () => {
   // state
@@ -32,7 +31,7 @@ const ImportStudentClass = () => {
       'Mã CVHT': '23456',
       'Email CVHT': 'giangviena@gmail.com',
       'Mã Lớp': 'DCT0012',
-      'Khoá': '17',
+      Khoá: '17',
     },
   ]
 
@@ -88,10 +87,10 @@ const ImportStudentClass = () => {
           },
         },
       })
-      const {errors} = reader
-      let {rows} = reader
+      const { errors } = reader
+      let { rows } = reader
 
-      rows = rows.map((r, i) => ({...r, row: i + 2}))
+      rows = rows.map((r, i) => ({ ...r, row: i + 2 }))
 
       setStudentClasses(rows)
       setFailStudentClasses(
@@ -162,7 +161,7 @@ const ImportStudentClass = () => {
     try {
       await importStudentClassesService(studentClasses)
 
-      notification.success({message: 'Nhập lớp thành công'})
+      notification.success({ message: 'Nhập lớp thành công' })
       history.push('/student-class')
     } catch (err) {
       handleError(err, null, notification)
@@ -175,23 +174,17 @@ const ImportStudentClass = () => {
         <div className="col-lg-4 mb-2">
           <Dragger
             showUploadList={false}
-            customRequest={({onSuccess}) => onSuccess()}
+            customRequest={({ onSuccess }) => onSuccess()}
             onChange={handleChangeFileEvent}
             fileList={[]}
             accept=".xlsx,.xls"
           >
             <i className="fas fa-cloud-upload-alt fs-3 text-secondary" />
-            <div className="text-secondary">
-              Tải lên danh sách Lớp (.xlsx)
-            </div>
+            <div className="text-secondary">Tải lên danh sách Lớp (.xlsx)</div>
           </Dragger>
         </div>
         <div className="col">
-          <ExportCSV
-            jsonData={demoData}
-            fileName="demo_Lop"
-            type="primary"
-          >
+          <ExportCSV jsonData={demoData} fileName="demo_Lop" type="primary">
             <i className="fas fa-file-download me-2" />
             TẢI XUỐNG FILE MẪU
           </ExportCSV>
@@ -205,7 +198,7 @@ const ImportStudentClass = () => {
             dataSource={studentClasses}
             size="small"
             columns={columns}
-            scroll={{x: 600}}
+            scroll={{ x: 600 }}
             bordered
           />
         </div>
@@ -220,13 +213,12 @@ const ImportStudentClass = () => {
         <div className="d-flex justify-content-end">
           <b>
             TỔNG:
-            {' '}
             {studentClasses.length}
           </b>
         </div>
         <div
           className="d-flex justify-content-end mt-3"
-          style={{position: 'sticky', top: 10}}
+          style={{ position: 'sticky', top: 10 }}
         >
           <Tooltip
             disabled={failStudentClasses.length > 0}
@@ -238,13 +230,17 @@ const ImportStudentClass = () => {
           >
             <Popconfirm
               placement="rightTop"
-              disabled={failStudentClasses.length > 0 || studentClasses.length === 0}
+              disabled={
+                failStudentClasses.length > 0 || studentClasses.length === 0
+              }
               title="Xác nhận"
-              okButtonProps={{className: 'success'}}
+              okButtonProps={{ className: 'success' }}
               onConfirm={handleImportStudentClass}
             >
               <Button
-                disabled={failStudentClasses.length > 0 || studentClasses.length === 0}
+                disabled={
+                  failStudentClasses.length > 0 || studentClasses.length === 0
+                }
                 size="large"
                 className="success"
                 type="primary"

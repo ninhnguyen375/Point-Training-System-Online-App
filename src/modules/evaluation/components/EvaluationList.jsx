@@ -6,17 +6,15 @@ import {
   Input,
   notification,
   Popconfirm,
-  Radio,
   Select,
   Table,
   Tag,
   Tooltip,
 } from 'antd'
 import qs from 'query-string'
-import React, {useCallback, useEffect, useState} from 'react'
-import {useSelector} from 'react-redux'
+import React, { useCallback, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import moment from 'moment'
-import {Link} from 'react-router-dom'
 import handleError from '../../../common/utils/handleError'
 import {
   classification,
@@ -31,7 +29,7 @@ import {
   lecturerApproveService,
   validateDeadline,
 } from '../services'
-import {MODULE_NAME as MODULE_USER, ROLE} from '../../user/model'
+import { MODULE_NAME as MODULE_USER, ROLE } from '../../user/model'
 
 const EvaluationList = () => {
   // store
@@ -48,7 +46,7 @@ const EvaluationList = () => {
 
   const getEvaluationBatch = useCallback(async () => {
     try {
-      let {data} = await getEvaluationBatchListService()
+      let { data } = await getEvaluationBatchListService()
       data = data.data
       data = data.sort((a, b) => (a.year.title < b.year.title ? 1 : -1))
       setEvaluationBatches(data)
@@ -61,7 +59,7 @@ const EvaluationList = () => {
 
   const getClassesOfLecturer = useCallback(async (id) => {
     try {
-      const {data} = await getClassesOfLecturerService(id)
+      const { data } = await getClassesOfLecturerService(id)
       setClassesOfLecturer(data.data)
     } catch (err) {
       handleError(err, null, notification)
@@ -93,11 +91,11 @@ const EvaluationList = () => {
         studentClassId: classId,
       }
     } else {
-      params = {monitorId: profile.id}
+      params = { monitorId: profile.id }
     }
 
     try {
-      const {data} = await getEvaluationListService({
+      const { data } = await getEvaluationListService({
         yearId,
         semesterId,
         ...params,
@@ -206,8 +204,8 @@ const EvaluationList = () => {
                 isValidDeadline
                   ? ''
                   : `Quá hạn chót ${moment(r.deadlineDateForLecturer).format(
-                    'DD-MM-YYYY',
-                  )}`
+                      'DD-MM-YYYY',
+                    )}`
               }
             >
               <Popconfirm
@@ -256,7 +254,7 @@ const EvaluationList = () => {
             setSemesterId(v.split('-')[1])
           }}
           placeholder="Chọn Năm học và Học kỳ"
-          style={{width: '100%'}}
+          style={{ width: '100%' }}
           value={yearId && semesterId ? `${yearId}-${semesterId}` : null}
         >
           {evaluationBatches.map((evaluationBatch) => (
@@ -315,6 +313,8 @@ const EvaluationList = () => {
     applySearch()
   }, [applySearch])
 
+  const handleChangeSearch = (v, key) => setSearch({ ...search, [key]: v })
+
   return (
     <Card
       size="small"
@@ -333,7 +333,7 @@ const EvaluationList = () => {
             <Select
               onChange={(v) => setClassId(v)}
               placeholder="Chọn lớp"
-              style={{width: '100%'}}
+              style={{ width: '100%' }}
             >
               {classesOfLecturer.map((c) => (
                 <Select.Option key={c.id} value={c.id}>
@@ -352,25 +352,24 @@ const EvaluationList = () => {
           <div className="d-flex justify-content-between flex-wrap">
             <div className="d-flex flex-wrap">
               <Input
-                onChange={(e) =>
-                  setSearch({...search, fullName: e.target.value})}
+                onChange={(e) => handleChangeSearch(e.target.value, 'fullName')}
                 allowClear
                 className="me-2 mb-2"
-                style={{width: 200}}
+                style={{ width: 200 }}
                 placeholder="Tên SV"
               />
               <Input
-                onChange={(e) => setSearch({...search, code: e.target.value})}
+                onChange={(e) => setSearch({ ...search, code: e.target.value })}
                 allowClear
                 className="me-2 mb-2"
-                style={{width: 200}}
+                style={{ width: 200 }}
                 placeholder="MSSV"
               />
               <Select
-                onChange={(v) => setSearch({...search, status: v})}
+                onChange={(v) => setSearch({ ...search, status: v })}
                 placeholder="Trạng thái"
                 className="me-2 mb-2"
-                style={{width: 200}}
+                style={{ width: 200 }}
                 allowClear
               >
                 {Object.keys(evaluationStatus).map((k) => (
@@ -380,10 +379,10 @@ const EvaluationList = () => {
                 ))}
               </Select>
               <Select
-                onChange={(v) => setSearch({...search, classification: v})}
+                onChange={(v) => setSearch({ ...search, classification: v })}
                 placeholder="Xếp loại"
                 className="me-2 mb-2"
-                style={{width: 120}}
+                style={{ width: 120 }}
                 allowClear
               >
                 {classification.map((c) => (
@@ -403,7 +402,7 @@ const EvaluationList = () => {
             rowKey={(r) => r.id}
             dataSource={filteredEvaluationList}
             columns={columns}
-            scroll={{x: '600px'}}
+            scroll={{ x: '600px' }}
           />
 
           <div className="d-flex justify-content-end mt-3">

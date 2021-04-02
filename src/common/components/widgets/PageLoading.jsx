@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 
 class PageLoading extends Component {
   constructor(props) {
@@ -12,20 +12,20 @@ class PageLoading extends Component {
   }
 
   show() {
-    this.setState({isShow: true})
+    this.setState({ isShow: true })
   }
 
   hide() {
-    this.setState({isShow: false})
+    this.setState({ isShow: false })
   }
 
   isVisible() {
-    const {isShow} = this.state
+    const { isShow } = this.state
     return isShow
   }
 
   render() {
-    const {isShow} = this.state
+    const { isShow } = this.state
     if (!isShow) {
       return ''
     }

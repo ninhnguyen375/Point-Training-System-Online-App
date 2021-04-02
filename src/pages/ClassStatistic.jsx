@@ -1,9 +1,9 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-plusplus */
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import html2canvas from 'html2canvas'
 import JsPDF from 'jspdf'
-import {Button} from 'antd'
+import { Button } from 'antd'
 import * as FileSaver from 'file-saver'
 import logo from '../assets/images/sgu-logo.png'
 
@@ -38,7 +38,6 @@ const ClassStatistic = () => {
 
     for (let i = 0; i < 2; i++) {
       const input = document.getElementById(`page${i}`)
-      console.log(window.innerHeight)
       input.style.width = `${width}px`
       input.style.height = `${height}px`
       input.style.fontSize = `${width / 50}px`
@@ -47,7 +46,7 @@ const ClassStatistic = () => {
       document.getElementById('logo').style.width = `${width / 15}px`
     }
 
-    setSize({width, height})
+    setSize({ width, height })
   }, [])
 
   return (
@@ -141,7 +140,7 @@ const ClassStatistic = () => {
               20,
               21,
               22,
-            ].map((r) => (
+            ].map(() => (
               <tr>
                 <td>r</td>
                 <td>r</td>

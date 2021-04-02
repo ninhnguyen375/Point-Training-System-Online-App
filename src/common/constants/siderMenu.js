@@ -1,4 +1,4 @@
-import {ROLE} from '../../modules/user/model'
+import { ROLE } from '../../modules/user/model'
 
 export default {
   [ROLE.student]: [

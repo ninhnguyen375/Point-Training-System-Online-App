@@ -1,9 +1,9 @@
-import {Button, Card, Input, notification, Table, Tooltip} from 'antd'
-import React, {useCallback, useEffect, useState} from 'react'
-import {Link} from 'react-router-dom'
+import { Button, Card, Input, notification, Table, Tooltip } from 'antd'
+import React, { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import handleError from '../../../common/utils/handleError'
-import {ROLE} from '../model'
-import {getAllUsersService} from '../services'
+import { ROLE } from '../model'
+import { getAllUsersService } from '../services'
 
 const StudentList = () => {
   // state
@@ -13,7 +13,7 @@ const StudentList = () => {
 
   const getStudents = useCallback(async () => {
     try {
-      const {data} = await getAllUsersService()
+      const { data } = await getAllUsersService()
 
       setStudents(data.data)
       setFilteredStudents(data.data)
@@ -32,7 +32,9 @@ const StudentList = () => {
       title: 'MSSV',
       render: (r) => (
         <Tooltip title={r.roleName === ROLE.monitor ? 'Lớp Trưởng' : ''}>
-          {r.roleName === ROLE.monitor && <i className="fas fa-key me-2 text-secondary" />}
+          {r.roleName === ROLE.monitor && (
+            <i className="fas fa-key me-2 text-secondary" />
+          )}
           {r.code}
         </Tooltip>
       ),
@@ -84,17 +86,17 @@ const StudentList = () => {
       <div className="d-flex justify-content-between">
         <div className="d-flex flex-wrap">
           <Input
-            onChange={(e) => setSearch({...search, code: e.target.value})}
+            onChange={(e) => setSearch({ ...search, code: e.target.value })}
             allowClear
             className="me-2 mb-2"
-            style={{width: 200}}
+            style={{ width: 200 }}
             placeholder="MSSV"
           />
           <Input
-            onChange={(e) => setSearch({...search, fullName: e.target.value})}
+            onChange={(e) => setSearch({ ...search, fullName: e.target.value })}
             allowClear
             className="me-2 mb-2"
-            style={{width: 200}}
+            style={{ width: 200 }}
             placeholder="Họ Tên SV"
           />
         </div>
@@ -110,7 +112,7 @@ const StudentList = () => {
         columns={columns}
         rowKey={(r) => r.id}
         dataSource={filteredStudents}
-        scroll={{x:600}}
+        scroll={{ x: 600 }}
         size="small"
       />
     </Card>

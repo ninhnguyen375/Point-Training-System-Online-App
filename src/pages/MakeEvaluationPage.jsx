@@ -16,7 +16,6 @@ const MakeEvaluationPage = () => (
     />
     <EvaluationTicket />
   </MainLayout>
-
 )
 
 export default MakeEvaluationPage

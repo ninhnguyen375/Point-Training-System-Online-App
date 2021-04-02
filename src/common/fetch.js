@@ -1,8 +1,9 @@
+/* eslint-disable no-console */
 import axios from 'axios'
 import nProgress from 'nprogress'
-import {configs} from '../configs'
-import {store} from './store'
-import {MODULE_NAME as MODULE_USER} from '../modules/user/model'
+import { configs } from '../configs'
+import { store } from './store'
+import { MODULE_NAME as MODULE_USER } from '../modules/user/model'
 
 export const fetchAuth = async ({
   url,
@@ -73,7 +74,7 @@ export const fetchAuthLoading = async ({
   ...options
 }) => {
   console.time(url)
-  if(pageLoading) {
+  if (pageLoading) {
     window.PageLoading.show()
   } else {
     nProgress.start()
@@ -95,7 +96,7 @@ export const fetchAuthLoading = async ({
       ...options,
     })
 
-    if(pageLoading) {
+    if (pageLoading) {
       window.PageLoading.hide()
     } else {
       nProgress.done()
@@ -104,7 +105,7 @@ export const fetchAuthLoading = async ({
     console.timeEnd(url)
     return res
   } catch (error) {
-    if(pageLoading) {
+    if (pageLoading) {
       window.PageLoading.hide()
     } else {
       nProgress.done()

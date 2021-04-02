@@ -1,17 +1,15 @@
-import {Button, Card, DatePicker, Form, notification} from 'antd'
+import { Button, Card, DatePicker, Form, notification } from 'antd'
 import moment from 'moment'
-import React, {useEffect, useState} from 'react'
-import {useHistory, useLocation} from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { useHistory, useLocation } from 'react-router-dom'
 import handleError from '../../../common/utils/handleError'
-import {cloneObj} from '../../../common/utils/object'
-import {updateEvaluationBatchService} from '../services'
+import { updateEvaluationBatchService } from '../services'
 
 const EvaluationBatch = () => {
   const location = useLocation()
-  const {state} = location
+  const { state } = location
   const [form] = Form.useForm()
   const history = useHistory()
-  const [test, setTest] = useState(false)
 
   useEffect(() => {
     if (state) {
@@ -48,8 +46,8 @@ const EvaluationBatch = () => {
 
       await updateEvaluationBatchService(state.semester.id, state.year.id, data)
 
-      history.push(location.pathname, {...state, ...data})
-      notification.success({message: 'Cập nhật thành công'})
+      history.push(location.pathname, { ...state, ...data })
+      notification.success({ message: 'Cập nhật thành công' })
     } catch (err) {
       handleError(err, null, notification)
     }
@@ -87,56 +85,54 @@ const EvaluationBatch = () => {
         {state ? (
           <div>
             <div className="mt-2">
-              Năm học:
-              {' '}
+              <span className="me-2">Năm học:</span>
               <b>{state.year.title}</b>
             </div>
             <div className="mt-2">
-              Học kỳ:
-              {' '}
+              <span className="me-2">Học kỳ:</span>
               <b>{state.semester.title}</b>
             </div>
             <div className="mt-3">
               <Form.Item
-                rules={test ? [
-                  {required: true, message: 'Bắc buộc'},
+                rules={[
+                  { required: true, message: 'Bắc buộc' },
                   {
                     validator: (_, value) =>
                       moment(value, 'YYYY-MM-YYYY').isBefore(moment())
                         ? Promise.reject(
-                          new Error('Phải lớn hơn ngày hiện tại'),
-                        )
+                            new Error('Phải lớn hơn ngày hiện tại'),
+                          )
                         : Promise.resolve(),
                   },
-                ] : []}
+                ]}
                 label="Hạn chót đánh giá dành cho sinh viên:"
                 name="deadlineDateForStudent"
               >
-                <DatePicker style={{width: '100%'}} />
+                <DatePicker style={{ width: '100%' }} />
               </Form.Item>
               <Form.Item
-                rules={test ? [
-                  {required: true, message: 'Bắc buộc'},
+                rules={[
+                  { required: true, message: 'Bắc buộc' },
                   {
                     validator: validator('deadlineDateForStudent'),
                   },
-                ] : []}
+                ]}
                 label="Hạn chót đánh giá dành cho lớp trưởng:"
                 name="deadlineDateForMonitor"
               >
-                <DatePicker style={{width: '100%'}} />
+                <DatePicker style={{ width: '100%' }} />
               </Form.Item>
               <Form.Item
-                rules={test ? [
-                  {required: true, message: 'Bắc buộc'},
+                rules={[
+                  { required: true, message: 'Bắc buộc' },
                   {
                     validator: validator('deadlineDateForMonitor'),
                   },
-                ] : []}
+                ]}
                 label="Hạn chót đánh giá dành cho cố vấn học tập:"
                 name="deadlineDateForLecturer"
               >
-                <DatePicker style={{width: '100%'}} />
+                <DatePicker style={{ width: '100%' }} />
               </Form.Item>
               <Button htmlType="submit" type="primary" block>
                 CẬP NHẬT

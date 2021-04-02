@@ -1,10 +1,14 @@
-import {Button, Input, notification, Select, Table} from 'antd'
-import {arrayOf, func, number} from 'prop-types'
-import React, {useCallback, useEffect, useState} from 'react'
+import { Button, Input, notification, Select, Table } from 'antd'
+import { arrayOf, func, number } from 'prop-types'
+import React, { useCallback, useEffect, useState } from 'react'
 import handleError from '../../../common/utils/handleError'
-import {getStudentClassListService} from '../services'
+import { getStudentClassListService } from '../services'
 
-const SelectStudentClassList = ({defaultSelectedKeys, onSelect, ignoreKeys}) => {
+const SelectStudentClassList = ({
+  defaultSelectedKeys,
+  onSelect,
+  ignoreKeys,
+}) => {
   // state
   const [studentClasses, setStudentClasses] = useState([])
   const [filterdStudentClasses, setFilterdStudentClasses] = useState([])
@@ -25,7 +29,7 @@ const SelectStudentClassList = ({defaultSelectedKeys, onSelect, ignoreKeys}) => 
     }
 
     // apply ignore
-    res = res.filter(c => !ignoreKeys.includes(c.id))
+    res = res.filter((c) => !ignoreKeys.includes(c.id))
 
     setFilterdStudentClasses(res)
   }, [search, studentClasses])
@@ -47,7 +51,7 @@ const SelectStudentClassList = ({defaultSelectedKeys, onSelect, ignoreKeys}) => 
 
   const getStudentClassList = useCallback(async () => {
     try {
-      const {data} = await getStudentClassListService()
+      const { data } = await getStudentClassListService()
 
       setStudentClasses(data.data)
       setCourses(getCourse(data.data))
@@ -73,27 +77,21 @@ const SelectStudentClassList = ({defaultSelectedKeys, onSelect, ignoreKeys}) => 
     },
   ]
 
-  const uniqueKeys = (arr = []) =>
-    arr.reduce(
-      (prev, curr) => (prev.indexOf(curr) === -1 ? [...prev, curr] : prev),
-      [],
-    )
-
   return (
     <div>
       <div className="d-flex">
         <Input
-          onChange={(e) => setSearch({...search, title: e.target.value})}
+          onChange={(e) => setSearch({ ...search, title: e.target.value })}
           className="me-2"
           allowClear
           placeholder="Tìm Lớp"
         />
         <Select
-          onChange={(v) => setSearch({...search, course: v})}
+          onChange={(v) => setSearch({ ...search, course: v })}
           className="me-2"
           allowClear
           placeholder="Khóa Học"
-          style={{width: 200}}
+          style={{ width: 200 }}
         >
           {courses.map((c) => (
             <Select.Option key={c} value={c}>
@@ -129,7 +127,6 @@ const SelectStudentClassList = ({defaultSelectedKeys, onSelect, ignoreKeys}) => 
       <div className="mt-2 d-flex justify-content-end">
         <Button type="text">
           Đã chọn
-          {' '}
           {selectedKeys.length}
         </Button>
         <Button

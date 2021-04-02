@@ -1,7 +1,7 @@
-import {fetchAuthLoading, fetchLoading} from '../../common/fetch'
-import {configs} from '../../configs'
+import { fetchAuthLoading, fetchLoading } from '../../common/fetch'
+import { configs } from '../../configs'
 
-export const loginService = ({code, password}) =>
+export const loginService = ({ code, password }) =>
   fetchLoading({
     url: `${configs.API}/Authentications/Login`,
     method: 'post',
@@ -11,15 +11,9 @@ export const loginService = ({code, password}) =>
     },
   })
 
-export const getStudentInfoService = (studentId) =>
-  fetchAuthLoading({
-    url:`${configs.API}/Authentications/Login`,
-    method: 'get',
-  })
-
 export const importStudentsService = (students) =>
   fetchAuthLoading({
-    url:`${configs.API}/Authentications/AddStudentsList`,
+    url: `${configs.API}/Authentications/AddStudentsList`,
     method: 'post',
     data: students,
     pageLoading: true,
@@ -27,6 +21,6 @@ export const importStudentsService = (students) =>
 
 export const getAllUsersService = () =>
   fetchAuthLoading({
-    url:`${configs.API}/Authentications/GetAllUsers`,
+    url: `${configs.API}/Authentications/GetAllUsers`,
     method: 'get',
   })

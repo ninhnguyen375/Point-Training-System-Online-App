@@ -16,7 +16,6 @@ const EvaluationListPage = () => (
     />
     <EvaluationList />
   </MainLayout>
-
 )
 
 export default EvaluationListPage

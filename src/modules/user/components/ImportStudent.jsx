@@ -6,16 +6,14 @@ import {
   Popconfirm,
   Table,
   Tooltip,
-  Upload,
 } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
-import nProgress from 'nprogress'
-import React, {useState} from 'react'
-import {useHistory} from 'react-router-dom'
+import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import readExcelFile from 'read-excel-file'
 import ExportCSV from '../../../common/components/widgets/ExportCSV'
 import handleError from '../../../common/utils/handleError'
-import {importStudentsService} from '../services'
+import { importStudentsService } from '../services'
 
 const ImportStudent = () => {
   // state
@@ -30,14 +28,14 @@ const ImportStudent = () => {
       'Họ Tên': 'Nguyễn Văn A',
       Email: 'nguyenvana@gmail.com',
       Lớp: 'DCT0000',
-      'Khoá': 'K17',
+      Khoá: 'K17',
     },
     {
       MSSV: '3117410181',
       'Họ Tên': 'Nguyễn Văn B',
       Email: 'nguyenvanb@gmail.com',
       Lớp: 'DCT0000',
-      'Khoá': 'K17',
+      Khoá: 'K17',
     },
   ]
 
@@ -78,10 +76,10 @@ const ImportStudent = () => {
           },
         },
       })
-      const {errors} = reader
-      let {rows} = reader
+      const { errors } = reader
+      let { rows } = reader
 
-      rows = rows.map((r, i) => ({...r, row: i + 2}))
+      rows = rows.map((r, i) => ({ ...r, row: i + 2 }))
 
       setStudents(rows)
       setFailStudents(
@@ -137,7 +135,7 @@ const ImportStudent = () => {
     try {
       await importStudentsService(students)
 
-      notification.success({message: 'Nhập sinh viên thành công'})
+      notification.success({ message: 'Nhập sinh viên thành công' })
       history.push('/student')
     } catch (err) {
       handleError(err, null, notification)
@@ -150,7 +148,7 @@ const ImportStudent = () => {
         <div className="col-lg-4 mb-2">
           <Dragger
             showUploadList={false}
-            customRequest={({onSuccess}) => onSuccess()}
+            customRequest={({ onSuccess }) => onSuccess()}
             onChange={handleChangeFileEvent}
             fileList={[]}
             accept=".xlsx,.xls"
@@ -180,7 +178,7 @@ const ImportStudent = () => {
             dataSource={students}
             size="small"
             columns={columns}
-            scroll={{x: 600}}
+            scroll={{ x: 600 }}
             bordered
           />
         </div>
@@ -194,13 +192,12 @@ const ImportStudent = () => {
           <div className="d-flex justify-content-end">
             <b>
               TỔNG:
-              {' '}
               {students.length}
             </b>
           </div>
           <div
             className="d-flex justify-content-end mt-3"
-            style={{position: 'sticky', top: 10}}
+            style={{ position: 'sticky', top: 10 }}
           >
             <Tooltip
               disabled={failStudents.length > 0}
@@ -214,7 +211,7 @@ const ImportStudent = () => {
                 placement="rightTop"
                 disabled={failStudents.length > 0 || students.length === 0}
                 title="Xác nhận"
-                okButtonProps={{className: 'success'}}
+                okButtonProps={{ className: 'success' }}
                 onConfirm={handleImportStudent}
               >
                 <Button

@@ -21,7 +21,7 @@ export const evaluationStatus = {
 }
 
 export const evaluationStatusColor = {
-  'Mới': '',
+  Mới: '',
   'Đang lưu nháp': 'gray',
   'Sinh viên đã đánh giá': 'blue',
   'Sinh viên đang khiếu nại kết quả': 'red',
@@ -29,10 +29,4 @@ export const evaluationStatusColor = {
   'Giảng viên đã chấp nhận': 'green',
 }
 
-export const classification = [
-  'Kém',
-  'Yếu',
-  'Trung bình',
-  'Giỏi',
-  'Xuất sắc',
-]
+export const classification = ['Kém', 'Yếu', 'Trung bình', 'Giỏi', 'Xuất sắc']

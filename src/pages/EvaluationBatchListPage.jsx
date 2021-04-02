@@ -5,18 +5,19 @@ import EvaluationBatchList from '../modules/evaluation/components/EvaluationBatc
 
 const EvaluationBatchListPage = () => (
   <MainLayout>
-    <CustomBreadcrumb items={[
-      {
-        url: '/dashboard',
-        title: 'Bảng Điều Khiển',
-        icon: 'fas fa-home',
-      },
-      {
-        url: '/evaluation/created',
-        title: 'Đợt đánh giá rèn luyện đã tạo',
-        icon: '',
-      },
-    ]}
+    <CustomBreadcrumb
+      items={[
+        {
+          url: '/dashboard',
+          title: 'Bảng Điều Khiển',
+          icon: 'fas fa-home',
+        },
+        {
+          url: '/evaluation/created',
+          title: 'Đợt đánh giá rèn luyện đã tạo',
+          icon: '',
+        },
+      ]}
     />
     <EvaluationBatchList />
   </MainLayout>

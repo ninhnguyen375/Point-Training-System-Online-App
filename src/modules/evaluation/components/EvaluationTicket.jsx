@@ -14,8 +14,8 @@ import {
   Tooltip,
   Upload,
 } from 'antd'
-import React, {useCallback, useEffect, useRef, useState} from 'react'
-import {useSelector} from 'react-redux'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 import readExcelFile from 'read-excel-file'
 import PropTypes from 'prop-types'
 import handleError from '../../../common/utils/handleError'
@@ -33,17 +33,17 @@ import {
   validateDeadline,
   getDeadline,
 } from '../services'
-import {MODULE_NAME as MODULE_USER, ROLE} from '../../user/model'
+import { MODULE_NAME as MODULE_USER, ROLE } from '../../user/model'
 import {
   MODULE_NAME as MODULE_EVALUATION,
   disableEvaluationItems,
   evaluationStatus,
 } from '../model'
 
-import {cloneObj} from '../../../common/utils/object'
-import {configs} from '../../../configs'
+import { cloneObj } from '../../../common/utils/object'
+import { configs } from '../../../configs'
 
-const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
+const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
   // store
   const profile = useSelector((state) => state[MODULE_USER].profile)
   const pointTrainingGroups = useSelector(
@@ -58,7 +58,6 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
   const [evaluation, setEvaluation] = useState(null)
   const [yearId, setYearId] = useState(yearIdProp)
   const [semesterId, setSemesterId] = useState(semesterIdProp)
-  const [loading, setLoading] = useState(false)
   const [attachments, setAttachments] = useState([])
   const [note, setNote] = useState('')
   const [reasonRefuseComplain, setReasonRefuseComplain] = useState('')
@@ -70,11 +69,15 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
   const inputNote = useRef(null)
 
   const studentId = studentIdProp || profile.id
-  const {isMonitor} = profile
+  const { isMonitor } = profile
   const isTicketOfMonitor =
     isMonitor && evaluation && evaluation.studentId === profile.id
   const viewRole =
     isMonitor && !isTicketOfMonitor ? ROLE.monitor : profile.roleName
+  const isShowNote =
+    profile.roleName === ROLE.student &&
+    (evaluation.status === evaluationStatus.AcceptEvaluationStatus ||
+      evaluation.status === evaluationStatus.ComplainEvaluationStatus)
 
   const deadlineString = getDeadline(evaluation, viewRole)
 
@@ -119,7 +122,7 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
 
   const getEvaluationBatch = useCallback(async () => {
     try {
-      let {data} = await getEvaluationBatchListService()
+      let { data } = await getEvaluationBatchListService()
       data = data.data
       data = data.sort((a, b) => (a.year.title < b.year.title ? 1 : -1))
       setEvaluationBatches(data)
@@ -154,13 +157,13 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
       return true
     })
 
-    return {isValid, k}
+    return { isValid, k }
   }
 
   const getEvaluationWithNewPoint = (id, point, clone) => {
     const newEvaluationTicket = clone.map((group) => {
       if (group.id === id) {
-        return {...group, point}
+        return { ...group, point }
       }
 
       const cloneGroup = cloneObj(group)
@@ -254,10 +257,9 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
           },
         },
       })
-      const {errors} = reader
-      let {rows} = reader
+      let { rows } = reader
 
-      rows = rows.map((r, i) => ({...r, row: i + 2}))
+      rows = rows.map((r, i) => ({ ...r, row: i + 2 }))
 
       const pointForStudent = rows.find(
         (r) => String(r.code) === String(evaluation.student.code),
@@ -299,7 +301,7 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
 
       if (d.pointTrainingItemList) {
         d.pointTrainingItemList.forEach((item) => {
-          displayEvalutionTicket.push({...item, class: 'fw-bold'})
+          displayEvalutionTicket.push({ ...item, class: 'fw-bold' })
 
           if (item.childrenItemList) {
             item.childrenItemList.forEach((child) => {
@@ -309,7 +311,7 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
                 parentId: d.id,
                 point: 0,
               })
-              displayEvalutionTicket.push({...child, class: 'ms-3'})
+              displayEvalutionTicket.push({ ...child, class: 'ms-3' })
             })
           } else {
             evaluationDataItem.push({
@@ -551,12 +553,11 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
     },
   ]
 
+  // eslint-disable-next-line no-unused-vars
   const handleGetPointOnline = async () => {
-    setLoading(true)
-
-    const code = evaluation.student.code
+    const { code } = evaluation.student
     try {
-      const {data} = await getPointOnlineService(code)
+      const { data } = await getPointOnlineService(code)
       if (!data) {
         notification.info({
           message: `Chưa có điểm cho MSSV ${code}`,
@@ -570,13 +571,11 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
     } catch (err) {
       handleError(err, null, notification)
     }
-
-    setLoading(false)
   }
 
   const handleRemoveAttachment = async (file) => {
     try {
-      const {data} = await removeFileService(
+      await removeFileService(
         evaluation.id,
         file.url.split('/')[file.url.split('/').length - 1],
       )
@@ -588,9 +587,9 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
     }
   }
 
-  const handleAddAttachment = async ({onSuccess, file}) => {
+  const handleAddAttachment = async ({ onSuccess, file }) => {
     try {
-      const {data} = await uploadFileService(evaluation.id, file)
+      const { data } = await uploadFileService(evaluation.id, file)
 
       setAttachments([
         ...attachments,
@@ -621,9 +620,10 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
         pointTrainingGroups,
       )
       if (notify) {
-        notification.success({message: 'Lưu nháp thành công'})
+        notification.success({ message: 'Lưu nháp thành công' })
       }
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.log(err)
     }
   }
@@ -748,12 +748,12 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
   const handleComplain = async () => {
     try {
       if (!note) {
-        notification.info({message: 'Vui lòng nhập Ghi chú khiếu nại'})
+        notification.info({ message: 'Vui lòng nhập Ghi chú khiếu nại' })
         inputNote.current.focus()
         return
       }
       await complainService(evaluation.id, note)
-      notification.success({message: 'Gửi khiếu nại thành công'})
+      notification.success({ message: 'Gửi khiếu nại thành công' })
       getEvaluationPrivate(studentId, yearId, semesterId, pointTrainingGroups)
     } catch (err) {
       handleError(err, null, notification)
@@ -827,10 +827,9 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
         </div>
         <div className="mt-2">
           <b>
-            Nhập điểm hệ 4 học kỳ hiện tại
-            {' '}
+            <span className="me-2">Nhập điểm hệ 4 học kỳ hiện tại</span>
             {isMonitor ? '' : '(bỏ trống nếu chưa có)'}
-            :
+            <span>:</span>
           </b>
           <div className="mt-2 d-flex flex-wrap align-items-center">
             <InputNumber
@@ -866,7 +865,7 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
         pagination={false}
         columns={cols}
         dataSource={display}
-        scroll={{x: 360}}
+        scroll={{ x: 360 }}
         summary={() => (
           <Table.Summary.Row>
             <Table.Summary.Cell colSpan={3}>
@@ -893,7 +892,7 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
       />
 
       <div className="mt-4 d-flex flex-wrap">
-        <div style={{maxWidth: 318}} className="card p-3 me-3 mt-2">
+        <div style={{ maxWidth: 318 }} className="card p-3 me-3 mt-2">
           <Upload
             customRequest={handleAddAttachment}
             onRemove={handleRemoveAttachment}
@@ -926,30 +925,26 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
             </Button>
           </Upload>
         </div>
-        {profile.roleName === ROLE.student &&
-        (evaluation.status === evaluationStatus.AcceptEvaluationStatus ||
-          evaluation.status === evaluationStatus.ComplainEvaluationStatus) ? (
-            <div style={{maxWidth: 318}} className="me-3 card p-3 mt-2">
-              <div>Ghi chú:</div>
-              <Input.TextArea
-                onChange={(e) => setNote(e.target.value)}
-                value={note}
-                ref={inputNote}
-                style={{width: 284}}
-              />
-            </div>
-          ) : (
-            ''
-          )}
+        {isShowNote && (
+          <div style={{ maxWidth: 318 }} className="me-3 card p-3 mt-2">
+            <div>Ghi chú:</div>
+            <Input.TextArea
+              onChange={(e) => setNote(e.target.value)}
+              value={note}
+              ref={inputNote}
+              style={{ width: 284 }}
+            />
+          </div>
+        )}
         {isMonitor && (
-          <div style={{maxWidth: 318}} className="mt-2 text-end">
+          <div style={{ maxWidth: 318 }} className="mt-2 text-end">
             <Upload
               disabled={
                 evaluation.status === evaluationStatus.AcceptEvaluationStatus ||
                 !isValidDeadline
               }
               showUploadList={false}
-              customRequest={({onSuccess}) => onSuccess()}
+              customRequest={({ onSuccess }) => onSuccess()}
               onChange={handleChangeFileEvent}
               fileList={[]}
             >
@@ -1037,8 +1032,8 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
         {(evaluation.status === evaluationStatus.ConfirmEvaluationStatus ||
           evaluation.status === evaluationStatus.ComplainEvaluationStatus) &&
           isMonitor && (
-          <>
-            {evaluation.status ===
+            <>
+              {evaluation.status ===
               evaluationStatus.ComplainEvaluationStatus ? (
                 <Button
                   disabled={!isValidDeadline}
@@ -1051,10 +1046,29 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
               ) : (
                 ''
               )}
+              <Popconfirm
+                disabled={!isValidDeadline}
+                title="CẬP NHẬT đánh giá?"
+                onConfirm={handleSubmit}
+              >
+                <Button
+                  disabled={!isValidDeadline}
+                  className="success"
+                  size="large"
+                  type="primary"
+                >
+                  CẬP NHẬT
+                </Button>
+              </Popconfirm>
+            </>
+          )}
+
+        {evaluation.status === evaluationStatus.ConfirmEvaluationStatus &&
+          profile.roleName === ROLE.lecturer && (
             <Popconfirm
               disabled={!isValidDeadline}
-              title="CẬP NHẬT đánh giá?"
-              onConfirm={handleSubmit}
+              title="DUYỆT đánh giá?"
+              onConfirm={handleLecturerApprove}
             >
               <Button
                 disabled={!isValidDeadline}
@@ -1062,42 +1076,23 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
                 size="large"
                 type="primary"
               >
-                CẬP NHẬT
+                DUYỆT ĐÁNH GIÁ
               </Button>
             </Popconfirm>
-          </>
-        )}
-
-        {evaluation.status === evaluationStatus.ConfirmEvaluationStatus &&
-          profile.roleName === ROLE.lecturer && (
-          <Popconfirm
-            disabled={!isValidDeadline}
-            title="DUYỆT đánh giá?"
-            onConfirm={handleLecturerApprove}
-          >
-            <Button
-              disabled={!isValidDeadline}
-              className="success"
-              size="large"
-              type="primary"
-            >
-              DUYỆT ĐÁNH GIÁ
-            </Button>
-          </Popconfirm>
-        )}
+          )}
 
         {evaluation.status === evaluationStatus.ConfirmEvaluationStatus &&
           profile.roleName === ROLE.student &&
           !isMonitor && (
-          <Button
-            onClick={handleComplain}
-            size="large"
-            className="me-2"
-            type="primary"
-          >
-            KHIẾU NẠI
-          </Button>
-        )}
+            <Button
+              onClick={handleComplain}
+              size="large"
+              className="me-2"
+              type="primary"
+            >
+              KHIẾU NẠI
+            </Button>
+          )}
       </div>
     </div>
   )
@@ -1128,7 +1123,7 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
                   setYearId(v.split('-')[0])
                   setSemesterId(v.split('-')[1])
                 }}
-                style={{width: '100%'}}
+                style={{ width: '100%' }}
                 placeholder="Chọn học kỳ"
                 value={yearId && semesterId ? `${yearId}-${semesterId}` : null}
               >
@@ -1170,15 +1165,9 @@ const EvaluationTicket = ({studentIdProp, yearIdProp, semesterIdProp}) => {
         <Tooltip placement="topLeft" title="Tổng dựa trên lớp trưởng đánh giá">
           <div className="tag-total-point">
             <div className="me-2">
-              Tổng:
-              {' '}
-              <b>
-                {getTotalPoint(monitorEvaluation)}
-                đ
-                {' '}
-              </b>
-              - Xếp loại:
-              {' '}
+              <span className="me-2">Tổng:</span>
+              <b>{`${getTotalPoint(monitorEvaluation)}đ`}</b>
+              <span className="me-2 ms-2">- Xếp loại:</span>
               <b>{evaluation.classification || '--'}</b>
             </div>
             <div className="tag-total-point__status">

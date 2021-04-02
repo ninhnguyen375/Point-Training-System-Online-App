@@ -16,7 +16,6 @@ const StudentClassListPage = () => (
     />
     <StudentClassList />
   </MainLayout>
-
 )
 
 export default StudentClassListPage

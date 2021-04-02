@@ -11,12 +11,12 @@ import {
   Tooltip,
 } from 'antd'
 import moment from 'moment'
-import React, {useState} from 'react'
-import {useHistory} from 'react-router-dom'
+import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import handleError from '../../../common/utils/handleError'
 import SelectStudentClassList from '../../student-class/components/SelectStudentClassList'
-import {semesters} from '../model'
-import {startEvaluationService} from '../services'
+import { semesters } from '../model'
+import { startEvaluationService } from '../services'
 
 const CreateEvaluationForm = () => {
   const [form] = Form.useForm()
@@ -35,7 +35,7 @@ const CreateEvaluationForm = () => {
         studentClassesId: selectedStudentClasses.map((c) => c.id),
         overdueStudentClassesId: selectedOverdueStudentClasses.map((c) => c.id),
       })
-      notification.success({message: 'Bắt đầu thành công'})
+      notification.success({ message: 'Bắt đầu thành công' })
       history.push('/evaluation-batch')
     } catch (err) {
       handleError(err, null, notification)
@@ -80,7 +80,7 @@ const CreateEvaluationForm = () => {
       />,
       {
         title: <b>CHỌN LỚP</b>,
-        style: {top: 10},
+        style: { top: 10 },
       },
     )
   }
@@ -95,7 +95,7 @@ const CreateEvaluationForm = () => {
       />,
       {
         title: <b>CHỌN LỚP QUÁ HẠN RA TRƯỜNG</b>,
-        style: {top: 10},
+        style: { top: 10 },
       },
     )
   }
@@ -136,54 +136,54 @@ const CreateEvaluationForm = () => {
             rules={
               isValidate
                 ? [
-                  {required: true, message: 'Bắc buộc'},
-                  {
-                    validator: (_, value) =>
-                      moment(value, 'YYYY-MM-YYYY').isBefore(moment())
-                        ? Promise.reject(
-                          new Error('Phải lớn hơn ngày hiện tại'),
-                        )
-                        : Promise.resolve(),
-                  },
-                ]
+                    { required: true, message: 'Bắc buộc' },
+                    {
+                      validator: (_, value) =>
+                        moment(value, 'YYYY-MM-YYYY').isBefore(moment())
+                          ? Promise.reject(
+                              new Error('Phải lớn hơn ngày hiện tại'),
+                            )
+                          : Promise.resolve(),
+                    },
+                  ]
                 : []
             }
             label="Hạn chót đánh giá dành cho sinh viên:"
             name="deadlineDateForStudent"
           >
-            <DatePicker style={{width: '100%'}} />
+            <DatePicker style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item
             rules={
               isValidate
                 ? [
-                  {required: true, message: 'Bắc buộc'},
-                  {
-                    validator: validator('deadlineDateForStudent'),
-                  },
-                ]
+                    { required: true, message: 'Bắc buộc' },
+                    {
+                      validator: validator('deadlineDateForStudent'),
+                    },
+                  ]
                 : []
             }
             label="Hạn chót đánh giá dành cho lớp trưởng:"
             name="deadlineDateForMonitor"
           >
-            <DatePicker style={{width: '100%'}} />
+            <DatePicker style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item
             rules={
               isValidate
                 ? [
-                  {required: true, message: 'Bắc buộc'},
-                  {
-                    validator: validator('deadlineDateForMonitor'),
-                  },
-                ]
+                    { required: true, message: 'Bắc buộc' },
+                    {
+                      validator: validator('deadlineDateForMonitor'),
+                    },
+                  ]
                 : []
             }
             label="Hạn chót đánh giá dành cho cố vấn học tập:"
             name="deadlineDateForLecturer"
           >
-            <DatePicker style={{width: '100%'}} />
+            <DatePicker style={{ width: '100%' }} />
           </Form.Item>
           <div>
             <Checkbox
@@ -193,7 +193,7 @@ const CreateEvaluationForm = () => {
               Validate
             </Checkbox>
             <Popconfirm
-              okButtonProps={{className: 'success'}}
+              okButtonProps={{ className: 'success' }}
               placement="topRight"
               title="Xác nhận"
               onConfirm={() => form.submit()}

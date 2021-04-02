@@ -1,5 +1,5 @@
-import {createReducer, current} from '@reduxjs/toolkit'
-import {clearAll} from '../../common/actions'
+import { createReducer, current } from '@reduxjs/toolkit'
+import { clearAll } from '../../common/actions'
 import * as actions from './actions'
 
 const initialState = {
