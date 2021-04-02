@@ -7,6 +7,7 @@ import {
   notification,
   Popconfirm,
   Select,
+  Table,
 } from 'antd'
 import moment from 'moment'
 import React, {useState} from 'react'
@@ -22,7 +23,7 @@ const CreateEvaluationForm = () => {
 
   const handleSubmit = async (values) => {
     try {
-      await startEvaluationService(values)
+      await startEvaluationService({...values, studentClassesId: [1]})
       notification.success({message: 'Bắt đầu thành công'})
       history.push('/evaluation-batch')
     } catch (err) {
@@ -60,108 +61,125 @@ const CreateEvaluationForm = () => {
 
   return (
     <Card title={<b>BẮT ĐẦU ĐỢT ĐÁNH GIÁ RÈN LUYỆN</b>}>
-      <Form
-        className="col-lg-4"
-        layout="vertical"
-        form={form}
-        onFinish={handleSubmit}
-        scrollToFirstError
-      >
-        <Form.Item label="Năm Học:" name="yearTitle" initialValue={years[0]}>
-          <Select>
-            {years.map((y) => (
-              <Select.Option key={y} value={y}>
-                {y}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-        <Form.Item
-          label="Học Kỳ:"
-          name="semesterId"
-          initialValue={semesters[0].id}
+      <div className="row">
+        <Form
+          className="col-lg-4"
+          layout="vertical"
+          form={form}
+          onFinish={handleSubmit}
+          scrollToFirstError
         >
-          <Select>
-            {semesters.map((s) => (
-              <Select.Option value={s.id} key={s.id}>
-                {s.title}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-        <Form.Item
-          rules={
-            isValidate
-              ? [
-                {required: true, message: 'Bắc buộc'},
-                {
-                  validator: (_, value) =>
-                    moment(value, 'YYYY-MM-YYYY').isBefore(moment())
-                      ? Promise.reject(
-                        new Error('Phải lớn hơn ngày hiện tại'),
-                      )
-                      : Promise.resolve(),
-                },
-              ]
-              : []
-          }
-          label="Hạn chót đánh giá dành cho sinh viên:"
-          name="deadlineDateForStudent"
-        >
-          <DatePicker style={{width: '100%'}} />
-        </Form.Item>
-        <Form.Item
-          rules={
-            isValidate
-              ? [
-                {required: true, message: 'Bắc buộc'},
-                {
-                  validator: validator('deadlineDateForStudent'),
-                },
-              ]
-              : []
-          }
-          label="Hạn chót đánh giá dành cho lớp trưởng:"
-          name="deadlineDateForMonitor"
-        >
-          <DatePicker style={{width: '100%'}} />
-        </Form.Item>
-        <Form.Item
-          rules={
-            isValidate
-              ? [
-                {required: true, message: 'Bắc buộc'},
-                {
-                  validator: validator('deadlineDateForMonitor'),
-                },
-              ]
-              : []
-          }
-          label="Hạn chót đánh giá dành cho cố vấn học tập:"
-          name="deadlineDateForLecturer"
-        >
-          <DatePicker style={{width: '100%'}} />
-        </Form.Item>
-        <div>
-          <Checkbox
-            checked={isValidate}
-            onClick={() => setIsValidate(!isValidate)}
+          <Form.Item label="Năm Học:" name="yearTitle" initialValue={years[0]}>
+            <Select>
+              {years.map((y) => (
+                <Select.Option key={y} value={y}>
+                  {y}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label="Học Kỳ:"
+            name="semesterId"
+            initialValue={semesters[0].id}
           >
-            Validate
-          </Checkbox>
-          <Popconfirm
-            okButtonProps={{className: 'success'}}
-            placement="topRight"
-            title="Xác nhận"
-            onConfirm={() => form.submit()}
+            <Select>
+              {semesters.map((s) => (
+                <Select.Option value={s.id} key={s.id}>
+                  {s.title}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            rules={
+              isValidate
+                ? [
+                  {required: true, message: 'Bắc buộc'},
+                  {
+                    validator: (_, value) =>
+                      moment(value, 'YYYY-MM-YYYY').isBefore(moment())
+                        ? Promise.reject(
+                          new Error('Phải lớn hơn ngày hiện tại'),
+                        )
+                        : Promise.resolve(),
+                  },
+                ]
+                : []
+            }
+            label="Hạn chót đánh giá dành cho sinh viên:"
+            name="deadlineDateForStudent"
           >
-            <Button size="large" className="success" type="primary" block>
-              <i className="fas fa-play-circle me-2" />
-              BẮT ĐẦU
-            </Button>
-          </Popconfirm>
+            <DatePicker style={{width: '100%'}} />
+          </Form.Item>
+          <Form.Item
+            rules={
+              isValidate
+                ? [
+                  {required: true, message: 'Bắc buộc'},
+                  {
+                    validator: validator('deadlineDateForStudent'),
+                  },
+                ]
+                : []
+            }
+            label="Hạn chót đánh giá dành cho lớp trưởng:"
+            name="deadlineDateForMonitor"
+          >
+            <DatePicker style={{width: '100%'}} />
+          </Form.Item>
+          <Form.Item
+            rules={
+              isValidate
+                ? [
+                  {required: true, message: 'Bắc buộc'},
+                  {
+                    validator: validator('deadlineDateForMonitor'),
+                  },
+                ]
+                : []
+            }
+            label="Hạn chót đánh giá dành cho cố vấn học tập:"
+            name="deadlineDateForLecturer"
+          >
+            <DatePicker style={{width: '100%'}} />
+          </Form.Item>
+          <div>
+            <Checkbox
+              checked={isValidate}
+              onClick={() => setIsValidate(!isValidate)}
+            >
+              Validate
+            </Checkbox>
+            <Popconfirm
+              okButtonProps={{className: 'success'}}
+              placement="topRight"
+              title="Xác nhận"
+              onConfirm={() => form.submit()}
+            >
+              <Button size="large" className="success" type="primary" block>
+                <i className="fas fa-play-circle me-2" />
+                BẮT ĐẦU
+              </Button>
+            </Popconfirm>
+          </div>
+        </Form>
+
+        <div className="col-lg-4">
+          <Button>CHỌN LỚP</Button>
+          <Table
+            size="small"
+            rowKey={r => r.id}
+            columns={[{
+              key: 'studentClass',
+              title: 'Lớp',
+              dataIndex: '',
+            }]}
+          />
         </div>
-      </Form>
+      </div>
+
+
     </Card>
   )
 }

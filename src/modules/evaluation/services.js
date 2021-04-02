@@ -146,6 +146,12 @@ export const getClassesOfLecturerService = (id) =>
     method: 'get',
   })
 
+export const activeEvaluationBatchService = (yearId, semesterId) =>
+  fetchAuthLoading({
+    url: `${configs.API}/Evaluations/ActivateEvaluationPeriod/${semesterId},${yearId},true`,
+    method: 'put',
+  })
+
 export const validateDeadline = (deadline) => {
   if (!deadline) {
     return false

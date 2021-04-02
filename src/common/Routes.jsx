@@ -17,6 +17,7 @@ import StudentClassListPage from '../pages/StudentClassListPage'
 import ImportStudentClassPage from '../pages/ImportStudentClassPage'
 import Home from '../pages/Home'
 import ClassStatistic from '../pages/ClassStatistic'
+import TestExportPDF from '../pages/TestExportPDF'
 
 const Routes = () => {
   const profile = useSelector(state => state[MODULE_USER].profile)
@@ -77,6 +78,7 @@ const Routes = () => {
 
   return (
     <Switch>
+      <Route exact path="/test" component={TestExportPDF} />
       <Route exact path="*" component={Login} />
     </Switch>
   )

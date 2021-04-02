@@ -11,6 +11,7 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module',
   },
+  'ignorePatterns': ['src/assets/fonts/*'],
   plugins: ['react'],
   rules: {
     'react/jsx-props-no-spreading': 'off',

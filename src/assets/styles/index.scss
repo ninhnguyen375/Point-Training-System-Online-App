@@ -42,10 +42,22 @@ a {
 .raw-table {
   width: 100%;
   text-align: center;
-  border: 1px solid black;
+  border-top: 1px solid black;
+  border-left: 1px solid black;
 
   th, td {
     border-bottom: 1px solid black;
     border-right: 1px solid black;
+  }
+}
+#pdf-element {
+  * {
+    font-family: 'times' !important;
+  }
+  i {
+    font-family: 'timesi' !important;
+  }
+  b {
+    font-family: 'timesbd' !important;
   }
 }

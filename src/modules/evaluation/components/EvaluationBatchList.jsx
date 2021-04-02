@@ -1,8 +1,8 @@
-import {Button, Card, notification, Table} from 'antd'
+import {Button, Card, notification, Table, Tag} from 'antd'
 import React, {useCallback, useEffect, useState} from 'react'
 import {useHistory} from 'react-router-dom'
 import handleError from '../../../common/utils/handleError'
-import {getEvaluationBatchListService} from '../services'
+import {activeEvaluationBatchService, getEvaluationBatchListService} from '../services'
 
 const EvaluationBatchList = () => {
   const [evaluationBatches, setEvaluationBatches] = useState([])
@@ -22,6 +22,21 @@ const EvaluationBatchList = () => {
     getEvaluationBatch()
   }, [getEvaluationBatch])
 
+  const handleActiveEvaluationBatch = async (r) => {
+    if(!r.year || !r.year.id || !r.semester || !r.semester.id) {
+      return
+    }
+
+    try {
+      await activeEvaluationBatchService(r.year.id, r.semester.id)
+
+      notification.success({message: 'Kích hoạt thành công'})
+      getEvaluationBatch()
+    } catch (err) {
+      handleError(err, null, notification)
+    }
+  }
+
   return (
     <Card title={<b>ĐỢT ĐÁNH GIÁ RÈN LUYỆN ĐÃ TẠO</b>} size="small">
       <Table
@@ -40,11 +55,27 @@ const EvaluationBatchList = () => {
             render: (r) => r.semester.title,
           },
           {
+            key: 'active',
+            title: <b>Trạng Thái</b>,
+            align: 'center',
+            render: (r) => r.isInDeadline ? <Tag color="geekblue">ĐANG KÍCH HOẠT</Tag> : '',
+          },
+          {
             key: 'actions',
             title: <b>Hành Động</b>,
             align: 'right',
             render: (r) => (
               <div>
+                {!r.isInDeadline && (
+                  <Button
+                    type="primary"
+                    className="me-2 success"
+                    icon={<i className="fas fa-play me-2" />}
+                    onClick={() => handleActiveEvaluationBatch(r)}
+                  >
+                    KÍCH HOẠT
+                  </Button>
+                )}
                 <Button
                   type="primary"
                   icon={<i className="fas fa-info-circle me-2" />}
