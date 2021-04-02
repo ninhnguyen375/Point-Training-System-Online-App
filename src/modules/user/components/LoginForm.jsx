@@ -5,8 +5,6 @@ import Logo from '../../../assets/images/sgu-logo.png'
 import handleError from '../../../common/utils/handleError'
 import {addPointTrainingGroup} from '../../evaluation/actions'
 import {getPointTrainingGroupsService} from '../../evaluation/services'
-import {addStudentsInClass} from '../../student-class/actions'
-import {getStudentsOfClassByMonitorIdService} from '../../student-class/services'
 import {login} from '../actions'
 import {ROLE} from '../model'
 import {loginService} from '../services'
@@ -83,23 +81,23 @@ const LoginForm = () => {
                 <Button
                   htmlType="button"
                   onClick={() =>
-                    handleSubmit({code: '3117410241', password: '3117410241'})}
+                    handleSubmit({code: '3117410001', password: '3117410001'})}
                 >
-                  Sinh viên 30
+                  Lop truong
                 </Button>
                 <Button
                   htmlType="button"
                   onClick={() =>
-                    handleSubmit({code: '3117410240', password: '3117410240'})}
+                    handleSubmit({code: '3117410000', password: '3117410000'})}
                 >
-                  Sinh viên 29 - lop truong
+                  Sinh viên
                 </Button>
                 <Button
                   htmlType="button"
                   onClick={() =>
-                    handleSubmit({code: '54321', password: '54321'})}
+                    handleSubmit({code: '9999', password: '9999'})}
                 >
-                  Giảng viên A
+                  Giảng viên
                 </Button>
                 <Button
                   htmlType="button"

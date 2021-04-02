@@ -133,25 +133,6 @@ const MainLayout = ({children}) => {
       trigger={['click']}
       overlay={
         <Menu style={{width: 200}}>
-          <Menu.Item>
-            <div className="d-flex" style={{paddingBottom: 5}}>
-              <img
-                src={userIcon}
-                alt="avatar"
-                width={42}
-                style={{marginRight: 10}}
-              />
-
-              <div>
-                <span>{userName || ''}</span>
-                <br />
-                <Tag color="geekblue">
-                  {userRole}
-                </Tag>
-              </div>
-            </div>
-          </Menu.Item>
-          <Menu.Divider />
           <Menu.Item onClick={handleLogout}>
             <i className="fas fa-sign-out-alt me-2" />
             Đăng xuất

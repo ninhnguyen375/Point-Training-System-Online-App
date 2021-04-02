@@ -23,6 +23,7 @@ class CustomModal extends Component {
   }
 
   clear() {
+    console.log('clear')
     this.setState({isShow: false, content: '', options: {}})
   }
 
@@ -39,7 +40,7 @@ class CustomModal extends Component {
         zIndex={options.zIndex}
         visible={isShow}
         footer={null}
-        onCancel={() => this.hide()}
+        onCancel={() => this.clear()}
         style={{width: '99vw'}}
         {...options}
         bodyStyle={{padding: 10, ...(options.bodyStyle || {})}}

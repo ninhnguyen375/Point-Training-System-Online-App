@@ -58,7 +58,7 @@ const EvaluationBatchList = () => {
             key: 'active',
             title: <b>Trạng Thái</b>,
             align: 'center',
-            render: (r) => r.isInDeadline ? <Tag color="geekblue">ĐANG KÍCH HOẠT</Tag> : '',
+            render: (r) => r.isInDeadline ? <Tag className="m-0" color="geekblue">ĐANG KÍCH HOẠT</Tag> : '',
           },
           {
             key: 'actions',

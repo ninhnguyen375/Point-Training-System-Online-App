@@ -45,7 +45,8 @@ a {
   border-top: 1px solid black;
   border-left: 1px solid black;
 
-  th, td {
+  th,
+  td {
     border-bottom: 1px solid black;
     border-right: 1px solid black;
   }
@@ -54,9 +55,11 @@ a {
   * {
     font-family: 'times' !important;
   }
+
   i {
     font-family: 'timesi' !important;
   }
+
   b {
     font-family: 'timesbd' !important;
   }

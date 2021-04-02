@@ -8,3 +8,13 @@
     border-color: darken($success-color, 10) !important;
   }
 }
+.warning {
+  background: $warning-color !important;
+  border-color: $warning-color !important;
+  color: white !important;
+
+  &:hover, &:active {
+    background: darken($warning-color, 10) !important;
+    border-color: darken($warning-color, 10) !important;
+  }
+}
