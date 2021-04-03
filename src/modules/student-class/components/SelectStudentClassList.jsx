@@ -126,7 +126,7 @@ const SelectStudentClassList = ({
 
       <div className="mt-2 d-flex justify-content-end">
         <Button type="text">
-          Đã chọn
+          <span className="me-2">Đã chọn</span>
           {selectedKeys.length}
         </Button>
         <Button

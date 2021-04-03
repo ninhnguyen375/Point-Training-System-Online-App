@@ -4,16 +4,13 @@ import {
   Divider,
   Input,
   notification,
-  Popconfirm,
   Select,
   Table,
   Tag,
-  Tooltip,
 } from 'antd'
 import qs from 'query-string'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import handleError from '../../../common/utils/handleError'
 import {
@@ -22,16 +19,13 @@ import {
   evaluationStatusColor,
 } from '../model'
 import {
-  getClassesOfLecturerService,
-  getDeadline,
   getEvaluationBatchListService,
   getEvaluationListService,
-  lecturerApproveService,
-  validateDeadline,
+  getEvaluationPrivateService,
 } from '../services'
-import { MODULE_NAME as MODULE_USER, ROLE } from '../../user/model'
+import { MODULE_NAME as MODULE_USER } from '../../user/model'
 
-const EvaluationList = () => {
+const EvaluationListOfStudentClass = () => {
   // store
   const profile = useSelector((state) => state[MODULE_USER].profile)
   // state
@@ -40,7 +34,6 @@ const EvaluationList = () => {
   const [evaluationList, setEvaluationList] = useState(null)
   const [filteredEvaluationList, setFilteredEvaluationList] = useState(null)
   const [evaluationBatches, setEvaluationBatches] = useState([])
-  const [classesOfLecturer, setClassesOfLecturer] = useState([])
   const [search, setSearch] = useState({})
 
   const history = useHistory()
@@ -78,21 +71,6 @@ const EvaluationList = () => {
     }
   }, [])
 
-  const getClassesOfLecturer = useCallback(async (id) => {
-    try {
-      const { data } = await getClassesOfLecturerService(id)
-      setClassesOfLecturer(data.data)
-    } catch (err) {
-      handleError(err, null, notification)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (profile.roleName === ROLE.lecturer) {
-      getClassesOfLecturer(profile.id)
-    }
-  }, [getClassesOfLecturer, profile.roleName])
-
   useEffect(() => {
     getEvaluationBatch()
   }, [getEvaluationBatch])
@@ -101,20 +79,19 @@ const EvaluationList = () => {
     if (!yearId || !semesterId) {
       return
     }
-
-    const params = {}
-
-    if (profile.roleName === ROLE.lecturer) {
-      params.lecturerId = profile.id
-    } else {
-      params.monitorId = profile.id
-    }
-
     try {
+      let evaluationPrivate = await getEvaluationPrivateService({
+        semesterId,
+        yearId,
+        studentId: profile.id,
+      })
+
+      evaluationPrivate = evaluationPrivate.data.data
+
       const { data } = await getEvaluationListService({
         yearId,
         semesterId,
-        ...params,
+        monitorId: evaluationPrivate.monitorId,
       })
 
       setEvaluationList(data.data)
@@ -130,7 +107,7 @@ const EvaluationList = () => {
 
   const gotoConfirmPage = (r) => {
     history.push(
-      `/evaluation/confirm?${qs.stringify({
+      `/make-evaluation?${qs.stringify({
         studentId: r.studentId,
         yearId: r.yearId,
         semesterId: r.semesterId,
@@ -138,24 +115,15 @@ const EvaluationList = () => {
     )
   }
 
-  const handleLecturerApprove = async (evaluationId) => {
-    try {
-      await lecturerApproveService(evaluationId)
-      await getEvaluationList()
-      notification.success({
-        message: 'Cố vấn học tập xét duyệt',
-        description: 'Thành công',
-      })
-    } catch (err) {
-      handleError(err, null, notification)
-    }
-  }
-
   const columns = [
     {
       key: 'fullName',
       title: <b>Sinh Viên</b>,
-      render: (r) => <b>{r.student.fullName}</b>,
+      render: (r) => (
+        <span className={r.studentId === profile.id ? 'fw-bold' : ''}>
+          {r.student.fullName}
+        </span>
+      ),
     },
     {
       key: 'code',
@@ -186,78 +154,12 @@ const EvaluationList = () => {
       key: 'action',
       title: <b>Hành Động</b>,
       align: 'right',
-      render: (r) => {
-        if (
-          profile.isMonitor &&
-          r.status === evaluationStatus.SubmitEvaluationStatus
-        ) {
-          return (
-            <Button onClick={() => gotoConfirmPage(r)} type="primary">
-              <i className="fas fa-pen-alt me-2" />
-              ĐÁNH GIÁ
-            </Button>
-          )
-        }
-
-        if (
-          (profile.isMonitor &&
-            r.status === evaluationStatus.ConfirmEvaluationStatus) ||
-          r.status === evaluationStatus.ComplainEvaluationStatus
-        ) {
-          return (
-            <Button onClick={() => gotoConfirmPage(r)} type="default">
-              <i className="fas fa-edit me-2" />
-              CHỈNH SỬA
-            </Button>
-          )
-        }
-
-        if (
-          profile.roleName === ROLE.lecturer &&
-          r.status === evaluationStatus.ConfirmEvaluationStatus
-        ) {
-          const isValidDeadline = validateDeadline(
-            getDeadline(r, ROLE.lecturer).split(' - ').pop(),
-          )
-          return (
-            <Tooltip
-              title={
-                isValidDeadline
-                  ? ''
-                  : `Quá hạn chót ${moment(r.deadlineDateForLecturer).format(
-                      'DD-MM-YYYY',
-                    )}`
-              }
-            >
-              <Popconfirm
-                title="Xác nhận"
-                onConfirm={() => handleLecturerApprove(r.studentId)}
-                disabled={!isValidDeadline}
-              >
-                <Button
-                  disabled={!isValidDeadline}
-                  className="success me-2"
-                  type="primary"
-                >
-                  <i className="fas fa-check me-2" />
-                  DUYỆT NGAY
-                </Button>
-              </Popconfirm>
-              <Button onClick={() => gotoConfirmPage(r)}>
-                <i className="fas fa-info me-2" />
-                XEM
-              </Button>
-            </Tooltip>
-          )
-        }
-
-        return (
-          <Button onClick={() => gotoConfirmPage(r)}>
-            <i className="fas fa-info me-2" />
-            XEM
-          </Button>
-        )
-      },
+      render: (r) => (
+        <Button onClick={() => gotoConfirmPage(r)}>
+          <i className="fas fa-info me-2" />
+          XEM
+        </Button>
+      ),
     },
   ]
 
@@ -405,24 +307,6 @@ const EvaluationList = () => {
                   </Select.Option>
                 ))}
               </Select>
-              {profile.roleName === ROLE.lecturer && classesOfLecturer[0] && (
-                <div className="me-2 mb-2">
-                  <Select
-                    allowClear
-                    onChange={(v) =>
-                      setSearch({ ...search, studentClassId: v })
-                    }
-                    placeholder="Chọn lớp"
-                    style={{ width: '100%' }}
-                  >
-                    {classesOfLecturer.map((c) => (
-                      <Select.Option key={c.id} value={c.id}>
-                        {c.title}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </div>
-              )}
             </div>
             <Button onClick={() => getEvaluationList()} type="primary">
               <i className="fas fa-sync me-2" />
@@ -442,4 +326,4 @@ const EvaluationList = () => {
   )
 }
 
-export default EvaluationList
+export default EvaluationListOfStudentClass

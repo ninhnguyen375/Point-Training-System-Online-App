@@ -4,6 +4,7 @@ import {
   Checkbox,
   DatePicker,
   Form,
+  message,
   notification,
   Popconfirm,
   Select,
@@ -29,6 +30,13 @@ const CreateEvaluationForm = () => {
   ] = useState([])
 
   const handleSubmit = async (values) => {
+    if (
+      selectedStudentClasses.length === 0 &&
+      selectedOverdueStudentClasses.length === 0
+    ) {
+      message.error('Vui lòng chọn lớp')
+      return
+    }
     try {
       await startEvaluationService({
         ...values,
@@ -233,7 +241,7 @@ const CreateEvaluationForm = () => {
         </div>
 
         <div className="col-lg-4">
-          <Tooltip title="Phiếu của lớp này do chuyên viên chấm">
+          <Tooltip title="Phiếu của lớp này do chuyên viên đánh giá">
             <Button
               className="warning"
               onClick={handleClickSelectOverdueStudentClass}

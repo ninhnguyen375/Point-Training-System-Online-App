@@ -92,52 +92,6 @@ const EvaluationBatch = () => {
               <span className="me-2">Học kỳ:</span>
               <b>{state.semester.title}</b>
             </div>
-            <div className="mt-3">
-              <Form.Item
-                rules={[
-                  { required: true, message: 'Bắc buộc' },
-                  {
-                    validator: (_, value) =>
-                      moment(value, 'YYYY-MM-YYYY').isBefore(moment())
-                        ? Promise.reject(
-                            new Error('Phải lớn hơn ngày hiện tại'),
-                          )
-                        : Promise.resolve(),
-                  },
-                ]}
-                label="Hạn chót đánh giá dành cho sinh viên:"
-                name="deadlineDateForStudent"
-              >
-                <DatePicker style={{ width: '100%' }} />
-              </Form.Item>
-              <Form.Item
-                rules={[
-                  { required: true, message: 'Bắc buộc' },
-                  {
-                    validator: validator('deadlineDateForStudent'),
-                  },
-                ]}
-                label="Hạn chót đánh giá dành cho lớp trưởng:"
-                name="deadlineDateForMonitor"
-              >
-                <DatePicker style={{ width: '100%' }} />
-              </Form.Item>
-              <Form.Item
-                rules={[
-                  { required: true, message: 'Bắc buộc' },
-                  {
-                    validator: validator('deadlineDateForMonitor'),
-                  },
-                ]}
-                label="Hạn chót đánh giá dành cho cố vấn học tập:"
-                name="deadlineDateForLecturer"
-              >
-                <DatePicker style={{ width: '100%' }} />
-              </Form.Item>
-              <Button htmlType="submit" type="primary" block>
-                CẬP NHẬT
-              </Button>
-            </div>
           </div>
         ) : (
           'Không hợp lệ'

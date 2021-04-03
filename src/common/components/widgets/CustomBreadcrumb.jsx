@@ -10,7 +10,9 @@ const CustomBreadcrumb = ({ items = [] }) => (
         items.map((item) => (
           <Breadcrumb.Item key={item}>
             <Link to={item.url || ''}>
-              {item.icon ? <i className={item.icon} /> : ''}
+              <span className="me-2">
+                {item.icon ? <i className={item.icon} /> : ''}
+              </span>
               {item.title || ''}
             </Link>
           </Breadcrumb.Item>

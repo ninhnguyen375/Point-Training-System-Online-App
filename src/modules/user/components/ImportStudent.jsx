@@ -8,6 +8,7 @@ import {
   Tooltip,
 } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
+import moment from 'moment'
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import readExcelFile from 'read-excel-file'
@@ -27,6 +28,7 @@ const ImportStudent = () => {
       MSSV: '3117410180',
       'Họ Tên': 'Nguyễn Văn A',
       Email: 'nguyenvana@gmail.com',
+      'Ngày Sinh(ngày/tháng/năm)': '05/07/1999',
       Lớp: 'DCT0000',
       Khoá: 'K17',
     },
@@ -34,6 +36,7 @@ const ImportStudent = () => {
       MSSV: '3117410181',
       'Họ Tên': 'Nguyễn Văn B',
       Email: 'nguyenvanb@gmail.com',
+      'Ngày Sinh(ngày/tháng/năm)': '05/07/1999',
       Lớp: 'DCT0000',
       Khoá: 'K17',
     },
@@ -63,6 +66,11 @@ const ImportStudent = () => {
             prop: 'email',
             type: String,
             required: false,
+          },
+          'Ngày Sinh(ngày/tháng/năm)': {
+            prop: 'dateOfBirth',
+            type: String,
+            required: true,
           },
           Lớp: {
             prop: 'studentClassTitle',
@@ -120,6 +128,11 @@ const ImportStudent = () => {
       dataIndex: 'email',
     },
     {
+      key: 'dateOfBirth',
+      title: 'Ngày Sinh',
+      render: (r) => moment(r.dateOfBirth).format('DD/MM/YYYY'),
+    },
+    {
       key: 'studentClassTitle',
       title: 'Lớp',
       dataIndex: 'studentClassTitle',
@@ -172,60 +185,58 @@ const ImportStudent = () => {
       </div>
 
       <div className="row mt-3">
-        <div className="col-lg-8">
-          <Table
-            rowKey={(r) => r.code}
-            dataSource={students}
-            size="small"
-            columns={columns}
-            scroll={{ x: 600 }}
-            bordered
-          />
+        <Table
+          rowKey={(r) => r.code}
+          dataSource={students}
+          size="small"
+          columns={columns}
+          scroll={{ x: 600 }}
+          bordered
+        />
+      </div>
+      <div>
+        {failStudents.map((f) => (
+          <div className="text-danger" key={f}>
+            {f}
+          </div>
+        ))}
+        <Divider />
+        <div className="d-flex justify-content-end">
+          <b>
+            TỔNG:
+            {students.length}
+          </b>
         </div>
-        <div className="col-lg-4">
-          {failStudents.map((f) => (
-            <div className="text-danger" key={f}>
-              {f}
-            </div>
-          ))}
-          <Divider />
-          <div className="d-flex justify-content-end">
-            <b>
-              TỔNG:
-              {students.length}
-            </b>
-          </div>
-          <div
-            className="d-flex justify-content-end mt-3"
-            style={{ position: 'sticky', top: 10 }}
+        <div
+          className="d-flex justify-content-end mt-3"
+          style={{ position: 'sticky', top: 10 }}
+        >
+          <Tooltip
+            disabled={failStudents.length > 0}
+            title={
+              failStudents.length > 0
+                ? 'Vui lòng xử lý lỗi trên file excel'
+                : ''
+            }
           >
-            <Tooltip
-              disabled={failStudents.length > 0}
-              title={
-                failStudents.length > 0
-                  ? 'Vui lòng xử lý lỗi trên file excel'
-                  : ''
-              }
+            <Popconfirm
+              placement="rightTop"
+              disabled={failStudents.length > 0 || students.length === 0}
+              title="Xác nhận"
+              okButtonProps={{ className: 'success' }}
+              onConfirm={handleImportStudent}
             >
-              <Popconfirm
-                placement="rightTop"
+              <Button
                 disabled={failStudents.length > 0 || students.length === 0}
-                title="Xác nhận"
-                okButtonProps={{ className: 'success' }}
-                onConfirm={handleImportStudent}
+                size="large"
+                className="success"
+                type="primary"
               >
-                <Button
-                  disabled={failStudents.length > 0 || students.length === 0}
-                  size="large"
-                  className="success"
-                  type="primary"
-                >
-                  <i className="fas fa-file-import me-2" />
-                  NHẬP VÀO HỆ THỐNG
-                </Button>
-              </Popconfirm>
-            </Tooltip>
-          </div>
+                <i className="fas fa-file-import me-2" />
+                NHẬP VÀO HỆ THỐNG
+              </Button>
+            </Popconfirm>
+          </Tooltip>
         </div>
       </div>
     </Card>

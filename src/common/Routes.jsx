@@ -18,6 +18,8 @@ import ImportStudentClassPage from '../pages/ImportStudentClassPage'
 import Home from '../pages/Home'
 import ClassStatistic from '../pages/ClassStatistic'
 import TestExportPDF from '../pages/TestExportPDF'
+import EvaluationListOfStudentPage from '../pages/EvaluationListOfStudentPage'
+import EvaluationListOfStudentClassPage from '../pages/EvaluationListOfStudentClassPage'
 
 const Routes = () => {
   const profile = useSelector((state) => state[MODULE_USER].profile)
@@ -34,6 +36,16 @@ const Routes = () => {
           component={ConfirmEvaluationPage}
         />
         <Route exact path="/class-statistic" component={ClassStatistic} />
+        <Route
+          exact
+          path="/evaluation-list-of-student"
+          component={EvaluationListOfStudentPage}
+        />
+        <Route
+          exact
+          path="/evaluation-list-of-class"
+          component={EvaluationListOfStudentClassPage}
+        />
 
         <Route exact path="/">
           <Redirect to="/make-evaluation" />

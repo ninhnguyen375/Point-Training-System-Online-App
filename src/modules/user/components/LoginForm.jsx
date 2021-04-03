@@ -41,7 +41,10 @@ const LoginForm = () => {
       <Card className="login-form">
         <div className="container-fluid">
           <div className="row">
-            <div className="col-lg-4 text-center">
+            <div
+              className="col-lg-4 text-center"
+              style={{ width: 100, height: 100 }}
+            >
               <img src={Logo} alt="logo" width={100} />
             </div>
             <div className="col-lg-8 text-secondary text-center">

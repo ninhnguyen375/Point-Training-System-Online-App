@@ -18,7 +18,9 @@ export const startEvaluationService = (data) =>
     data,
   })
 
-export const getEvaluationPrivateService = (params) =>
+export const getEvaluationPrivateService = (
+  params = { studentId: null, semesterId: null, yearId: null },
+) =>
   fetchAuthLoading({
     url: `${configs.API}/Evaluations/Private`,
     method: 'get',
@@ -32,11 +34,11 @@ export const getPointOnlineService = (code) =>
     params: { code },
   })
 
-export const uploadFileService = (evaluationId, file) => {
+export const uploadFileService = (evaluationId, file, fileName) => {
   const form = new FormData()
 
   form.append('evaluationId', evaluationId)
-  form.append('imageFile', file, file.name)
+  form.append('imageFile', file, fileName)
 
   return fetchAuthLoading({
     url: `${configs.API}/files/add`,

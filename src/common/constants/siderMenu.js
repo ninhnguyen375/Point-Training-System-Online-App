@@ -6,9 +6,19 @@ export default {
       itemGroup: 'Tổng Quan',
       items: [
         {
+          key: 'evaluation-list-of-student',
+          iconClass: 'fas fa-copy',
+          title: 'Phiếu Của Bạn',
+        },
+        {
           key: 'make-evaluation',
           iconClass: 'fas fa-list-alt',
           title: 'Đánh Giá Rèn Luyện',
+        },
+        {
+          key: 'evaluation-list-of-class',
+          iconClass: 'fas fa-copy',
+          title: 'Danh Sách Phiếu Của Lớp',
         },
       ],
     },
@@ -17,6 +27,11 @@ export default {
     {
       itemGroup: 'Tổng Quan',
       items: [
+        {
+          key: 'evaluation-list-of-student',
+          iconClass: 'fas fa-copy',
+          title: 'Phiếu Của Bạn',
+        },
         {
           key: 'make-evaluation',
           iconClass: 'fas fa-list-alt',

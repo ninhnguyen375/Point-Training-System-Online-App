@@ -29,4 +29,4 @@ export const evaluationStatusColor = {
   'Giảng viên đã chấp nhận': 'green',
 }
 
-export const classification = ['Kém', 'Yếu', 'Trung bình', 'Giỏi', 'Xuất sắc']
+export const classification = ['Kém', 'Yếu', 'Trung bình', 'Giỏi']
