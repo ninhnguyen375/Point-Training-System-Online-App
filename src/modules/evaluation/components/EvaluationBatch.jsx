@@ -1,4 +1,4 @@
-import { Button, Card, DatePicker, Form, notification } from 'antd'
+import { Card, Form, notification } from 'antd'
 import moment from 'moment'
 import React, { useEffect } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -51,27 +51,6 @@ const EvaluationBatch = () => {
     } catch (err) {
       handleError(err, null, notification)
     }
-  }
-
-  const validator = (name) => (_, date) => {
-    let type = ''
-    if (name === 'deadlineDateForStudent') {
-      type = 'Sinh Viên'
-    }
-    if (name === 'deadlineDateForMonitor') {
-      type = 'Lớp Trưởng'
-    }
-    if (name === 'deadlineDateForLecturer') {
-      type = 'Cố Vấn Học Tập'
-    }
-    if (
-      moment(date, 'YYYY-MM-DD').isBefore(
-        moment(form.getFieldValue(name), 'YYYY-MM-DD').add(1, 'day'),
-      )
-    ) {
-      return Promise.reject(new Error(`Phải lớn hơn hạn chót cho ${type}`))
-    }
-    return Promise.resolve()
   }
 
   return (

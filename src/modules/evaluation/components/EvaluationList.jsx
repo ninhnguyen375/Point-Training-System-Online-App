@@ -22,7 +22,6 @@ import {
   evaluationStatusColor,
 } from '../model'
 import {
-  getClassesOfLecturerService,
   getDeadline,
   getEvaluationBatchListService,
   getEvaluationListService,
@@ -30,6 +29,7 @@ import {
   validateDeadline,
 } from '../services'
 import { MODULE_NAME as MODULE_USER, ROLE } from '../../user/model'
+import { getString } from '../../../common/utils/object'
 
 const EvaluationList = () => {
   // store
@@ -40,7 +40,7 @@ const EvaluationList = () => {
   const [evaluationList, setEvaluationList] = useState(null)
   const [filteredEvaluationList, setFilteredEvaluationList] = useState(null)
   const [evaluationBatches, setEvaluationBatches] = useState([])
-  const [classesOfLecturer, setClassesOfLecturer] = useState([])
+  const [studentClasses, setStudentClasses] = useState([])
   const [search, setSearch] = useState({})
 
   const history = useHistory()
@@ -60,6 +60,20 @@ const EvaluationList = () => {
     return false
   }
 
+  const groupStudentClasses = (src = []) => {
+    try {
+      return src.reduce(
+        (prev, curr) =>
+          prev.includes(curr.student.studentClass.title)
+            ? prev
+            : [...prev, curr.student.studentClass.title],
+        [],
+      )
+    } catch (err) {
+      return []
+    }
+  }
+
   const getEvaluationBatch = useCallback(async () => {
     try {
       let { data } = await getEvaluationBatchListService()
@@ -77,21 +91,6 @@ const EvaluationList = () => {
       handleError(err, null, notification)
     }
   }, [])
-
-  const getClassesOfLecturer = useCallback(async (id) => {
-    try {
-      const { data } = await getClassesOfLecturerService(id)
-      setClassesOfLecturer(data.data)
-    } catch (err) {
-      handleError(err, null, notification)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (profile.roleName === ROLE.lecturer) {
-      getClassesOfLecturer(profile.id)
-    }
-  }, [getClassesOfLecturer, profile.roleName])
 
   useEffect(() => {
     getEvaluationBatch()
@@ -117,6 +116,7 @@ const EvaluationList = () => {
         ...params,
       })
 
+      setStudentClasses(groupStudentClasses(data.data))
       setEvaluationList(data.data)
       setFilteredEvaluationList(data.data)
     } catch (err) {
@@ -151,7 +151,12 @@ const EvaluationList = () => {
     }
   }
 
-  const columns = [
+  let columns = [
+    {
+      key: 'studentClass',
+      title: <b>Lớp</b>,
+      render: (r) => <b>{getString(r, 'student.studentClass.title')}</b>,
+    },
     {
       key: 'fullName',
       title: <b>Sinh Viên</b>,
@@ -261,6 +266,13 @@ const EvaluationList = () => {
     },
   ]
 
+  if (
+    profile.roleName !== ROLE.lecturer ||
+    profile.roleName !== ROLE.employee
+  ) {
+    columns = columns.filter((c) => c.key !== 'studentClass')
+  }
+
   const renderSelectBatch = (batches = []) => {
     if (batches.length === 0) {
       return ''
@@ -338,6 +350,11 @@ const EvaluationList = () => {
         (e) => e.classification === search.classification,
       )
     }
+    if (search.studentClass) {
+      newEvaluationList = newEvaluationList.filter(
+        (e) => e.student.studentClass.title === search.studentClass,
+      )
+    }
 
     setFilteredEvaluationList(newEvaluationList)
   }, [search, evaluationList])
@@ -363,6 +380,22 @@ const EvaluationList = () => {
         <div>
           <div className="d-flex justify-content-between flex-wrap">
             <div className="d-flex flex-wrap">
+              {profile.roleName === ROLE.lecturer && (
+                <div className="me-2 mb-2">
+                  <Select
+                    allowClear
+                    onChange={(v) => setSearch({ ...search, studentClass: v })}
+                    placeholder="Chọn lớp"
+                    style={{ width: '100%' }}
+                  >
+                    {studentClasses.map((c) => (
+                      <Select.Option key={c} value={c}>
+                        {c}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </div>
+              )}
               <Input
                 onChange={(e) =>
                   setSearch({ ...search, fullName: e.target.value })
@@ -405,24 +438,6 @@ const EvaluationList = () => {
                   </Select.Option>
                 ))}
               </Select>
-              {profile.roleName === ROLE.lecturer && classesOfLecturer[0] && (
-                <div className="me-2 mb-2">
-                  <Select
-                    allowClear
-                    onChange={(v) =>
-                      setSearch({ ...search, studentClassId: v })
-                    }
-                    placeholder="Chọn lớp"
-                    style={{ width: '100%' }}
-                  >
-                    {classesOfLecturer.map((c) => (
-                      <Select.Option key={c.id} value={c.id}>
-                        {c.title}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </div>
-              )}
             </div>
             <Button onClick={() => getEvaluationList()} type="primary">
               <i className="fas fa-sync me-2" />

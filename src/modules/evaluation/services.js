@@ -178,19 +178,29 @@ export const getDeadline = (evaluationData, viewRole) => {
 
   // monitor first
   if (viewRole === ROLE.monitor) {
-    return `${moment(evaluationData.deadlineDateForStudent).format(
+    return `${moment(
+      evaluationData.deadlineDateForStudent,
       'DD/MM/yyyy',
-    )} - ${moment(evaluationData.deadlineDateForMonitor).format('DD/MM/yyyy')}`
+    ).format('DD/MM/yyyy')} - ${moment(
+      evaluationData.deadlineDateForMonitor,
+      'DD/MM/yyyy',
+    ).format('DD/MM/yyyy')}`
   }
 
   if (viewRole === ROLE.student) {
-    return moment(evaluationData.deadlineDateForStudent).format('DD/MM/yyyy')
+    return moment(evaluationData.deadlineDateForStudent, 'DD/MM/yyyy').format(
+      'DD/MM/yyyy',
+    )
   }
 
   if (viewRole === ROLE.lecturer) {
-    return `${moment(evaluationData.deadlineDateForMonitor).format(
+    return `${moment(
+      evaluationData.deadlineDateForMonitor,
       'DD/MM/yyyy',
-    )} - ${moment(evaluationData.deadlineDateForLecturer).format('DD/MM/yyyy')}`
+    ).format('DD/MM/yyyy')} - ${moment(
+      evaluationData.deadlineDateForLecturer,
+      'DD/MM/yyyy',
+    ).format('DD/MM/yyyy')}`
   }
 
   return ''
