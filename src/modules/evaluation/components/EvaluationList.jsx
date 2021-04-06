@@ -3,6 +3,7 @@ import {
   Card,
   Divider,
   Input,
+  message,
   notification,
   Popconfirm,
   Select,
@@ -20,8 +21,10 @@ import {
   classification,
   evaluationStatus,
   evaluationStatusColor,
+  reasonForCancellation,
 } from '../model'
 import {
+  cancelEvaluationService,
   getDeadline,
   getEvaluationBatchListService,
   getEvaluationListService,
@@ -30,6 +33,7 @@ import {
 } from '../services'
 import { MODULE_NAME as MODULE_USER, ROLE } from '../../user/model'
 import { getString } from '../../../common/utils/object'
+import SelectReasonCancellationForm from './SelectReasonCancellationForm'
 
 const EvaluationList = () => {
   // store
@@ -151,6 +155,36 @@ const EvaluationList = () => {
     }
   }
 
+  const cancelEvaluation = (evaluationId) => async (
+    reasonForCancellationInput,
+  ) => {
+    if (!reasonForCancellationInput) {
+      message.error('Chọn lý do hủy')
+      return
+    }
+
+    try {
+      await cancelEvaluationService(evaluationId, reasonForCancellationInput)
+
+      notification.success({ message: 'Hủy phiếu thành công' })
+      await getEvaluationList()
+      window.Modal.clear()
+    } catch (err) {
+      handleError(err, null, notification)
+    }
+  }
+
+  const handleCancelEvaluation = (evaluationId) => {
+    window.Modal.show(
+      <SelectReasonCancellationForm
+        onSubmit={cancelEvaluation(evaluationId)}
+      />,
+      {
+        title: <b>Chọn lý do hủy</b>,
+      },
+    )
+  }
+
   let columns = [
     {
       key: 'studentClass',
@@ -176,47 +210,97 @@ const EvaluationList = () => {
       ),
     },
     {
+      key: 'reasonForCancellation',
+      title: <b>Phiếu Hủy</b>,
+      align: 'center',
+      render: (r) =>
+        r.reasonForCancellation ? (
+          <Tag color="red">{r.reasonForCancellation}</Tag>
+        ) : (
+          ''
+        ),
+    },
+    {
       key: 'conclustionPoint',
       title: <b>Tổng Điểm</b>,
       align: 'center',
-      render: (r) => r.conclusionPoint,
+      render: (r) =>
+        r.conclusionPoint === null ? (
+          <i className="text-secondary">chưa có</i>
+        ) : (
+          r.conclusionPoint
+        ),
     },
     {
       key: 'classification',
       title: <b>Xếp Loại</b>,
       align: 'center',
-      render: (r) => r.classification,
+      render: (r) =>
+        r.classification || <i className="text-secondary">chưa có</i>,
     },
     {
       key: 'action',
       title: <b>Hành Động</b>,
       align: 'right',
       render: (r) => {
+        const actions = []
+
+        // monitor confirm
         if (
           profile.isMonitor &&
           r.status === evaluationStatus.SubmitEvaluationStatus
         ) {
-          return (
-            <Button onClick={() => gotoConfirmPage(r)} type="primary">
+          actions.push(
+            <Button
+              key="monitor-confirm"
+              onClick={() => gotoConfirmPage(r)}
+              type="primary"
+            >
               <i className="fas fa-pen-alt me-2" />
               ĐÁNH GIÁ
-            </Button>
+            </Button>,
           )
         }
 
+        // monitor cancel
+        if (
+          profile.isMonitor &&
+          r.status === evaluationStatus.NewEvaluationStatus
+        ) {
+          actions.push(
+            <Button
+              key="monitor-cancel"
+              onClick={() => handleCancelEvaluation(r.id)}
+              danger
+              type="primary"
+              className="ms-2"
+            >
+              <i className="fas fa-ban me-2" />
+              HỦY PHIẾU
+            </Button>,
+          )
+        }
+
+        // monitor update
         if (
           (profile.isMonitor &&
             r.status === evaluationStatus.ConfirmEvaluationStatus) ||
-          r.status === evaluationStatus.ComplainEvaluationStatus
+          r.status === evaluationStatus.ComplainWithMonitorAboutEvaluationStatus
         ) {
-          return (
-            <Button onClick={() => gotoConfirmPage(r)} type="default">
+          actions.push(
+            <Button
+              key="monitor-update"
+              onClick={() => gotoConfirmPage(r)}
+              type="default"
+              className="ms-2"
+            >
               <i className="fas fa-edit me-2" />
               CHỈNH SỬA
-            </Button>
+            </Button>,
           )
         }
 
+        // lecuturer confirm
         if (
           profile.roleName === ROLE.lecturer &&
           r.status === evaluationStatus.ConfirmEvaluationStatus
@@ -224,8 +308,9 @@ const EvaluationList = () => {
           const isValidDeadline = validateDeadline(
             getDeadline(r, ROLE.lecturer).split(' - ').pop(),
           )
-          return (
+          actions.push(
             <Tooltip
+              key="lecuturer confirm"
               title={
                 isValidDeadline
                   ? ''
@@ -241,33 +326,35 @@ const EvaluationList = () => {
               >
                 <Button
                   disabled={!isValidDeadline}
-                  className="success me-2"
+                  className="success ms-2"
                   type="primary"
                 >
                   <i className="fas fa-check me-2" />
                   DUYỆT NGAY
                 </Button>
               </Popconfirm>
-              <Button onClick={() => gotoConfirmPage(r)}>
-                <i className="fas fa-info me-2" />
-                XEM
-              </Button>
-            </Tooltip>
+            </Tooltip>,
           )
         }
 
-        return (
-          <Button onClick={() => gotoConfirmPage(r)}>
+        actions.push(
+          <Button
+            className="ms-2"
+            key="default"
+            onClick={() => gotoConfirmPage(r)}
+          >
             <i className="fas fa-info me-2" />
             XEM
-          </Button>
+          </Button>,
         )
+
+        return actions.map((a) => a)
       },
     },
   ]
 
   if (
-    profile.roleName !== ROLE.lecturer ||
+    profile.roleName !== ROLE.lecturer &&
     profile.roleName !== ROLE.employee
   ) {
     columns = columns.filter((c) => c.key !== 'studentClass')
@@ -355,6 +442,11 @@ const EvaluationList = () => {
         (e) => e.student.studentClass.title === search.studentClass,
       )
     }
+    if (search.reasonForCancellation) {
+      newEvaluationList = newEvaluationList.filter(
+        (e) => e.reasonForCancellation === search.reasonForCancellation,
+      )
+    }
 
     setFilteredEvaluationList(newEvaluationList)
   }, [search, evaluationList])
@@ -416,12 +508,27 @@ const EvaluationList = () => {
                 onChange={(v) => setSearch({ ...search, status: v })}
                 placeholder="Trạng thái"
                 className="me-2 mb-2"
-                style={{ width: 200 }}
+                style={{ width: 150 }}
                 allowClear
               >
                 {Object.keys(evaluationStatus).map((k) => (
                   <Select.Option key={k} value={evaluationStatus[k]}>
                     {evaluationStatus[k]}
+                  </Select.Option>
+                ))}
+              </Select>
+              <Select
+                onChange={(v) =>
+                  setSearch({ ...search, reasonForCancellation: v })
+                }
+                placeholder="Phiếu hủy"
+                className="me-2 mb-2"
+                style={{ width: 150 }}
+                allowClear
+              >
+                {reasonForCancellation.map((c) => (
+                  <Select.Option key={c} value={c}>
+                    {c}
                   </Select.Option>
                 ))}
               </Select>

@@ -37,9 +37,19 @@ const CreateEvaluationForm = () => {
       message.error('Vui lòng chọn lớp')
       return
     }
+
     try {
       await startEvaluationService({
         ...values,
+        deadlineDateForStudent: moment(values.deadlineDateForStudent).format(
+          'yyyy/MM/DD',
+        ),
+        deadlineDateForLecturer: moment(values.deadlineDateForLecturer).format(
+          'yyyy/MM/DD',
+        ),
+        deadlineDateForMonitor: moment(values.deadlineDateForMonitor).format(
+          'yyyy/MM/DD',
+        ),
         studentClassesId: selectedStudentClasses.map((c) => c.id),
         overdueStudentClassesId: selectedOverdueStudentClasses.map((c) => c.id),
       })

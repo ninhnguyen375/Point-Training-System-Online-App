@@ -15,9 +15,15 @@ export const evaluationStatus = {
   NewEvaluationStatus: 'Mới',
   DraftEvaluationStatus: 'Đang lưu nháp',
   SubmitEvaluationStatus: 'Sinh viên đã đánh giá',
-  ComplainEvaluationStatus: 'Sinh viên đang khiếu nại kết quả',
   ConfirmEvaluationStatus: 'Lớp trưởng đã xác nhận',
+  ComplainWithMonitorAboutEvaluationStatus:
+    'Sinh viên đang khiếu nại kết quả với Lớp trưởng',
+  ComplainWithLecturerAboutEvaluationStatus:
+    'Sinh viên đang khiếu nại kết quả với Giảng viên',
   AcceptEvaluationStatus: 'Giảng viên đã chấp nhận',
+  CompleteEvalutionStatus: 'Hoàn tất',
+  EmployeeSubmitEvaluationStatus: 'Chuyên viên đã đánh giá',
+  CancelEvaluationStatus: 'Phiếu bị hủy',
 }
 
 export const evaluationStatusColor = {
@@ -30,3 +36,10 @@ export const evaluationStatusColor = {
 }
 
 export const classification = ['Kém', 'Yếu', 'Trung bình', 'Giỏi']
+
+export const reasonForCancellation = [
+  'Không chấm',
+  'Nghỉ học',
+  'Bảo lưu kết quả',
+  'Đình chỉ học tập',
+]

@@ -154,6 +154,16 @@ export const activeEvaluationBatchService = (yearId, semesterId) =>
     method: 'put',
   })
 
+export const cancelEvaluationService = (evaluationId, reasonForCancellation) =>
+  fetchAuthLoading({
+    url: `${configs.API}/Evaluations/CanceledByMonitor`,
+    method: 'post',
+    data: {
+      id: evaluationId,
+      reasonForCancellation,
+    },
+  })
+
 export const validateDeadline = (deadline) => {
   if (!deadline) {
     return false
@@ -169,6 +179,14 @@ export const validateDeadline = (deadline) => {
   }
 
   return false
+}
+
+export const getNote = (note) => {
+  try {
+    return JSON.parse(note) || {}
+  } catch (err) {
+    return {}
+  }
 }
 
 export const getDeadline = (evaluationData, viewRole) => {

@@ -10,17 +10,17 @@ const Root = () => (
   <ConfigProvider locale={viVN}>
     <Router>
       <Routes />
-      <PageLoading
-        ref={(ref) => {
-          window.PageLoading = ref
-        }}
-      />
-      <CustomModal
-        ref={(ref) => {
-          window.Modal = ref
-        }}
-      />
     </Router>
+    <PageLoading
+      ref={(ref) => {
+        window.PageLoading = ref
+      }}
+    />
+    <CustomModal
+      ref={(ref) => {
+        window.Modal = ref
+      }}
+    />
   </ConfigProvider>
 )
 
