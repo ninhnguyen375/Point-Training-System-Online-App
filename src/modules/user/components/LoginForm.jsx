@@ -81,44 +81,53 @@ const LoginForm = () => {
                   placeholder="Nhập mật khẩu"
                 />
               </Form.Item>
-              <div className="mb-2">
-                <Button
-                  htmlType="button"
-                  onClick={() =>
-                    handleSubmit({ code: '3117410001', password: '3117410001' })
-                  }
-                >
-                  Lop truong
-                </Button>
-                <Button
-                  htmlType="button"
-                  onClick={() =>
-                    handleSubmit({ code: '3117410000', password: '3117410000' })
-                  }
-                >
-                  Sinh viên
-                </Button>
-                <Button
-                  htmlType="button"
-                  onClick={() =>
-                    handleSubmit({ code: '9999', password: '9999' })
-                  }
-                >
-                  Giảng viên
-                </Button>
-                <Button
-                  htmlType="button"
-                  onClick={() =>
-                    handleSubmit({ code: '12345', password: '12345' })
-                  }
-                >
-                  Nhân viên A
-                </Button>
-              </div>
               <Button size="large" htmlType="submit" type="primary" block>
                 <i className="fas fa-sign-in-alt me-2" />
                 ĐĂNG NHẬP
               </Button>
+
+              <Card className="mt-3" title="Demo account" size="small">
+                <div className="d-flex justify-content-between">
+                  <Button
+                    htmlType="button"
+                    onClick={() =>
+                      handleSubmit({
+                        code: '3117410001',
+                        password: '3117410001',
+                      })
+                    }
+                  >
+                    Lớp trưởng
+                  </Button>
+                  <Button
+                    htmlType="button"
+                    onClick={() =>
+                      handleSubmit({
+                        code: '3117410000',
+                        password: '3117410000',
+                      })
+                    }
+                  >
+                    Sinh viên
+                  </Button>
+                  <Button
+                    htmlType="button"
+                    onClick={() =>
+                      handleSubmit({ code: '9999', password: '9999' })
+                    }
+                  >
+                    Giảng viên
+                  </Button>
+                  <Button
+                    htmlType="button"
+                    onClick={() =>
+                      handleSubmit({ code: '12345', password: '12345' })
+                    }
+                  >
+                    Nhân viên
+                  </Button>
+                </div>
+              </Card>
             </Form>
           </div>
         </div>

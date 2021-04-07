@@ -180,7 +180,7 @@ const EvaluationList = () => {
         onSubmit={cancelEvaluation(evaluationId)}
       />,
       {
-        title: <b>Chọn lý do hủy</b>,
+        title: <b>CHỌN LÝ DO HỦY</b>,
       },
     )
   }
@@ -251,14 +251,15 @@ const EvaluationList = () => {
           r.status === evaluationStatus.SubmitEvaluationStatus
         ) {
           actions.push(
-            <Button
-              key="monitor-confirm"
-              onClick={() => gotoConfirmPage(r)}
-              type="primary"
-            >
-              <i className="fas fa-pen-alt me-2" />
-              ĐÁNH GIÁ
-            </Button>,
+            <Tooltip title="Đánh giá">
+              <Button
+                key="monitor-confirm"
+                onClick={() => gotoConfirmPage(r)}
+                type="primary"
+              >
+                <i className="fas fa-pen-alt" />
+              </Button>
+            </Tooltip>,
           )
         }
 
@@ -268,35 +269,38 @@ const EvaluationList = () => {
           r.status === evaluationStatus.NewEvaluationStatus
         ) {
           actions.push(
-            <Button
-              key="monitor-cancel"
-              onClick={() => handleCancelEvaluation(r.id)}
-              danger
-              type="primary"
-              className="ms-2"
-            >
-              <i className="fas fa-ban me-2" />
-              HỦY PHIẾU
-            </Button>,
+            <Tooltip title="Hủy phiếu">
+              <Button
+                key="monitor-cancel"
+                onClick={() => handleCancelEvaluation(r.id)}
+                danger
+                type="primary"
+                className="ms-2"
+              >
+                <i className="fas fa-ban" />
+              </Button>
+            </Tooltip>,
           )
         }
 
         // monitor update
         if (
-          (profile.isMonitor &&
-            r.status === evaluationStatus.ConfirmEvaluationStatus) ||
-          r.status === evaluationStatus.ComplainWithMonitorAboutEvaluationStatus
+          profile.isMonitor &&
+          (r.status === evaluationStatus.ConfirmEvaluationStatus ||
+            r.status ===
+              evaluationStatus.ComplainWithMonitorAboutEvaluationStatus)
         ) {
           actions.push(
-            <Button
-              key="monitor-update"
-              onClick={() => gotoConfirmPage(r)}
-              type="default"
-              className="ms-2"
-            >
-              <i className="fas fa-edit me-2" />
-              CHỈNH SỬA
-            </Button>,
+            <Tooltip title="Chỉnh sửa">
+              <Button
+                key="monitor-update"
+                onClick={() => gotoConfirmPage(r)}
+                type="default"
+                className="ms-2"
+              >
+                <i className="fas fa-edit" />
+              </Button>
+            </Tooltip>,
           )
         }
 
@@ -309,16 +313,7 @@ const EvaluationList = () => {
             getDeadline(r, ROLE.lecturer).split(' - ').pop(),
           )
           actions.push(
-            <Tooltip
-              key="lecuturer confirm"
-              title={
-                isValidDeadline
-                  ? ''
-                  : `Quá hạn chót ${moment(r.deadlineDateForLecturer).format(
-                      'DD-MM-YYYY',
-                    )}`
-              }
-            >
+            <Tooltip key="lecuturer confirm" title="Duyệt ngay">
               <Popconfirm
                 title="Xác nhận"
                 onConfirm={() => handleLecturerApprove(r.studentId)}
@@ -329,8 +324,7 @@ const EvaluationList = () => {
                   className="success ms-2"
                   type="primary"
                 >
-                  <i className="fas fa-check me-2" />
-                  DUYỆT NGAY
+                  <i className="fas fa-check" />
                 </Button>
               </Popconfirm>
             </Tooltip>,
@@ -341,10 +335,10 @@ const EvaluationList = () => {
           <Button
             className="ms-2"
             key="default"
+            shape="circle"
             onClick={() => gotoConfirmPage(r)}
           >
-            <i className="fas fa-info me-2" />
-            XEM
+            <i className="fas fa-info" />
           </Button>,
         )
 

@@ -329,7 +329,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       displayEvalutionTicket.push({
         ...d,
         class: 'fw-bold',
-        id: `main_${d.id}`,
+        id: `1_${d.id}`,
         title: `${d.title} (tối đa ${d.maxPoint} điểm)`,
       })
 
@@ -359,7 +359,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       }
 
       evaluationData.push({
-        id: `main_${d.id}`,
+        id: `1_${d.id}`,
         maxPoint: d.maxPoint,
         point: 0,
         isAnotherItem: d.isAnotherItem,
@@ -470,6 +470,9 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
 
     if (isMonitor) {
       setMonitorEvaluation(newEvaluation)
+      if (isTicketOfMonitor) {
+        setStudentEvaluation(newEvaluation)
+      }
     } else {
       setStudentEvaluation(newEvaluation)
     }
@@ -506,18 +509,22 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     return item
   }
 
-  const handleViewImage = (url) => {
+  const handleViewImage = (atts) => {
     window.Modal.show(
-      <div
-        style={{
-          backgroundImage: `url('${url}')`,
-          maxWidth: '90vw',
-          height: '62vh',
-          backgroundSize: 'contain',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
-        }}
-      />,
+      <div>
+        {atts.map((a) => (
+          <div
+            style={{
+              backgroundImage: `url('${a.url}')`,
+              maxWidth: '90vw',
+              height: 300,
+              backgroundSize: 'contain',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
+            }}
+          />
+        ))}
+      </div>,
       {
         title: 'MINH CHỨNG',
         width: '98vw',
@@ -544,7 +551,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         // col2 - student can't edit col2
         (!forStudent && isStudent) ||
         // col1 - monitor can't edit col1, but can edit own ticket
-        (forStudent && isMonitor) ||
+        (forStudent && isMonitor && !isTicketOfMonitor) ||
         // col1 - lecturer can't edit col1
         (forStudent && isLecturer) ||
         // disable all by done
@@ -555,7 +562,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       const value = currItem.point || 0
       const defaultValue = currItem.point || 0
       const onChange = (v) => handleChangePoint(r.id, v, forStudent)
-      const attachment = attachments.find(
+      const attachment = attachments.filter(
         (a) => parseInt(a.name.split('_')[0], 10) === parseInt(r.id, 10),
       )
 
@@ -571,10 +578,10 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
             onChange={onChange}
             defaultValue={defaultValue}
           />
-          {forStudent && attachment && (
+          {forStudent && attachment[0] && (
             <Tooltip title="Xem minh chứng">
               <i
-                onClick={() => handleViewImage(attachment.url)}
+                onClick={() => handleViewImage(attachment)}
                 aria-hidden
                 className="fas fa-image ms-2"
                 style={{ marginRight: '-1.2em', cursor: 'pointer' }}
@@ -754,10 +761,11 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     return 'Kém'
   }
 
-  const monitorMakeEvaluation = async (noti = true, note) => {
+  const monitorMakeEvaluation = async (isRefuse = false, note) => {
     try {
       const totalPoint = getTotalPoint(monitorEvaluation)
 
+      // monitor make own ticket
       try {
         if (isTicketOfMonitor) {
           await handleClickSaveAsDraft(false)
@@ -765,27 +773,38 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         }
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('monitor update ticket')
-
+        console.log('monitor update own ticket')
         await complainService(evaluation.id, '')
+      }
+
+      // monitor update student ticket
+      try {
+        await complainService(evaluation.id, '')
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('monitor update student ticket')
       }
 
       await monitorMakeEvaluationService(
         evaluation.id,
-        JSON.stringify(monitorEvaluation),
+        isRefuse
+          ? evaluation.monitorEvaluation
+          : JSON.stringify(monitorEvaluation),
         previousResult,
         currentResult,
         totalPoint,
         getClassification(totalPoint),
-        JSON.stringify({
-          ...getNote(evaluation.note),
-          monitorNote: note,
-        }),
+        isRefuse
+          ? JSON.stringify({
+              ...getNote(evaluation.note),
+              monitorNote: note,
+            })
+          : '',
       )
 
-      if (noti) {
+      if (!isRefuse) {
         notification.success({
-          message: 'Lớp trưởng đánh giá thành công',
+          message: 'Thành công',
         })
       }
 
@@ -811,7 +830,16 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
           inputPreviousResult.current.focus()
           return
         }
-        monitorMakeEvaluation(true, 'Đã cập nhật')
+
+        if (
+          evaluation.status ===
+          evaluationStatus.ComplainWithMonitorAboutEvaluationStatus
+        ) {
+          monitorMakeEvaluation(false, 'Đã cập nhật')
+        } else {
+          monitorMakeEvaluation(false)
+        }
+
         return
       }
 
@@ -873,9 +901,15 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
   }
 
   const handleComplain = () => {
-    window.Modal.show(<TextAreaForm onSubmit={complain} />, {
-      title: <b>NHẬP NỘI DUNG KHIẾU NẠI</b>,
-    })
+    window.Modal.show(
+      <TextAreaForm
+        onSubmit={complain}
+        placeholder="Nhập nội dung khiếu nại"
+      />,
+      {
+        title: <b>NHẬP NỘI DUNG KHIẾU NẠI</b>,
+      },
+    )
   }
 
   const refuseComplain = async (note) => {
@@ -885,7 +919,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     }
 
     try {
-      await monitorMakeEvaluation(false, note)
+      await monitorMakeEvaluation(true, note)
 
       notification.success({
         message: 'Từ chối khiếu nại thành công',
@@ -1032,16 +1066,22 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
           </Upload>
         </div>
         {isShowNote && (
-          <div style={{ maxWidth: 318 }} className="me-3 card p-3 mt-2">
-            <div>
-              {getNote(evaluation.note).studentNote
-                ? `Ghi chú sinh viên: ${getNote(evaluation.note).studentNote}`
-                : ''}
+          <div style={{ maxWidth: 318 }} className="me-3 card mt-2">
+            <div className="card-header">
+              <b>GHI CHÚ KHIẾU NẠI</b>
             </div>
-            <div>
-              {getNote(evaluation.note).monitorNote
-                ? `Ghi chú lớp trưởng: ${getNote(evaluation.note).monitorNote}`
-                : ''}
+            <div className="card-body">
+              {getNote(evaluation.note).studentNote && (
+                <div>
+                  <b>Sinh viên:</b> {getNote(evaluation.note).studentNote}
+                </div>
+              )}
+
+              {getNote(evaluation.note).monitorNote && (
+                <div>
+                  <b>Lớp trưởng:</b> {getNote(evaluation.note).monitorNote}
+                </div>
+              )}
             </div>
           </div>
         )}

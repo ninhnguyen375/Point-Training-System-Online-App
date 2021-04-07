@@ -1,4 +1,4 @@
-import { Button, Radio, Tag } from 'antd'
+import { Button, Divider, Radio, Tag } from 'antd'
 import { func } from 'prop-types'
 import React, { useState } from 'react'
 import { reasonForCancellation } from '../model'
@@ -19,12 +19,15 @@ const SelectReasonCancellationForm = ({ onSubmit }) => {
           </Radio>
         ))}
       </Radio.Group>
+
+      <Divider />
       <div className="d-flex justify-content-end">
         <Button
           type="primary"
+          danger
           onClick={() => onSubmit(reasonForCancellationInput)}
         >
-          OK
+          HỦY PHIẾU
         </Button>
       </div>
     </div>

@@ -16,10 +16,8 @@ export const evaluationStatus = {
   DraftEvaluationStatus: 'Đang lưu nháp',
   SubmitEvaluationStatus: 'Sinh viên đã đánh giá',
   ConfirmEvaluationStatus: 'Lớp trưởng đã xác nhận',
-  ComplainWithMonitorAboutEvaluationStatus:
-    'Sinh viên đang khiếu nại kết quả với Lớp trưởng',
-  ComplainWithLecturerAboutEvaluationStatus:
-    'Sinh viên đang khiếu nại kết quả với Giảng viên',
+  ComplainWithMonitorAboutEvaluationStatus: 'Đang khiếu nại Lớp trưởng',
+  ComplainWithLecturerAboutEvaluationStatus: 'Đang khiếu nại Giảng viên',
   AcceptEvaluationStatus: 'Giảng viên đã chấp nhận',
   CompleteEvalutionStatus: 'Hoàn tất',
   EmployeeSubmitEvaluationStatus: 'Chuyên viên đã đánh giá',
