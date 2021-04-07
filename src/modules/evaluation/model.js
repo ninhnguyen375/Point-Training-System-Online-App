@@ -12,25 +12,27 @@ export const semesters = [
 ]
 
 export const evaluationStatus = {
-  NewEvaluationStatus: 'Mới',
-  DraftEvaluationStatus: 'Đang lưu nháp',
-  SubmitEvaluationStatus: 'Sinh viên đã đánh giá',
-  ConfirmEvaluationStatus: 'Lớp trưởng đã xác nhận',
-  ComplainWithMonitorAboutEvaluationStatus: 'Đang khiếu nại Lớp trưởng',
-  ComplainWithLecturerAboutEvaluationStatus: 'Đang khiếu nại Giảng viên',
-  AcceptEvaluationStatus: 'Giảng viên đã chấp nhận',
-  CompleteEvalutionStatus: 'Hoàn tất',
-  EmployeeSubmitEvaluationStatus: 'Chuyên viên đã đánh giá',
-  CancelEvaluationStatus: 'Phiếu bị hủy',
+  New: 'Mới',
+  Draft: 'Đang lưu nháp',
+  StudentSubmited: 'Sinh viên đã đánh giá',
+  MonitorConfirmed: 'Lớp trưởng đã xác nhận',
+  ComplainingMonitor: 'Đang khiếu nại Lớp trưởng',
+  ComplainingLecturer: 'Đang khiếu nại Giảng viên',
+  LecturerConfirmed: 'Giảng viên đã chấp nhận',
+  Done: 'Hoàn tất',
+  EmployeeConfirmed: 'Chuyên viên đã đánh giá',
+  Canceled: 'Phiếu bị hủy',
 }
 
 export const evaluationStatusColor = {
   Mới: '',
   'Đang lưu nháp': 'gray',
   'Sinh viên đã đánh giá': 'blue',
-  'Sinh viên đang khiếu nại kết quả': 'red',
-  'Lớp trưởng đã xác nhận': 'geekblue',
-  'Giảng viên đã chấp nhận': 'green',
+  'Lớp trưởng đã xác nhận': 'purple',
+  'Đang khiếu nại Lớp trưởng': 'red',
+  'Đang khiếu nại Giảng viên': 'red',
+  'Giảng viên đã chấp nhận': 'cyan',
+  'Hoàn tất': 'green',
 }
 
 export const classification = ['Kém', 'Yếu', 'Trung bình', 'Giỏi']

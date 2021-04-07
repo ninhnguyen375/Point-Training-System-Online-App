@@ -14,7 +14,6 @@ import {
 import qs from 'query-string'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import handleError from '../../../common/utils/handleError'
 import {
@@ -28,7 +27,7 @@ import {
   getDeadline,
   getEvaluationBatchListService,
   getEvaluationListService,
-  lecturerApproveService,
+  lecturerConfirmService,
   validateDeadline,
 } from '../services'
 import { MODULE_NAME as MODULE_USER, ROLE } from '../../user/model'
@@ -144,7 +143,7 @@ const EvaluationList = () => {
 
   const handleLecturerApprove = async (evaluationId) => {
     try {
-      await lecturerApproveService(evaluationId)
+      await lecturerConfirmService(evaluationId)
       await getEvaluationList()
       notification.success({
         message: 'Cố vấn học tập xét duyệt',
@@ -248,7 +247,7 @@ const EvaluationList = () => {
         // monitor confirm
         if (
           profile.isMonitor &&
-          r.status === evaluationStatus.SubmitEvaluationStatus
+          r.status === evaluationStatus.StudentSubmited
         ) {
           actions.push(
             <Tooltip title="Đánh giá">
@@ -264,10 +263,7 @@ const EvaluationList = () => {
         }
 
         // monitor cancel
-        if (
-          profile.isMonitor &&
-          r.status === evaluationStatus.NewEvaluationStatus
-        ) {
+        if (profile.isMonitor && r.status === evaluationStatus.New) {
           actions.push(
             <Tooltip title="Hủy phiếu">
               <Button
@@ -286,9 +282,8 @@ const EvaluationList = () => {
         // monitor update
         if (
           profile.isMonitor &&
-          (r.status === evaluationStatus.ConfirmEvaluationStatus ||
-            r.status ===
-              evaluationStatus.ComplainWithMonitorAboutEvaluationStatus)
+          (r.status === evaluationStatus.MonitorConfirmed ||
+            r.status === evaluationStatus.ComplainingMonitor)
         ) {
           actions.push(
             <Tooltip title="Chỉnh sửa">
@@ -307,7 +302,7 @@ const EvaluationList = () => {
         // lecuturer confirm
         if (
           profile.roleName === ROLE.lecturer &&
-          r.status === evaluationStatus.ConfirmEvaluationStatus
+          r.status === evaluationStatus.MonitorConfirmed
         ) {
           const isValidDeadline = validateDeadline(
             getDeadline(r, ROLE.lecturer).split(' - ').pop(),
@@ -327,6 +322,26 @@ const EvaluationList = () => {
                   <i className="fas fa-check" />
                 </Button>
               </Popconfirm>
+            </Tooltip>,
+          )
+        }
+
+        // lecturer update
+        if (
+          profile.roleName === ROLE.lecturer &&
+          (r.status === evaluationStatus.LecturerConfirmed ||
+            r.status === evaluationStatus.ComplainingLecturer)
+        ) {
+          actions.push(
+            <Tooltip title="Chỉnh sửa">
+              <Button
+                key="lecturer-update"
+                onClick={() => gotoConfirmPage(r)}
+                type="default"
+                className="ms-2"
+              >
+                <i className="fas fa-edit" />
+              </Button>
             </Tooltip>,
           )
         }
@@ -495,14 +510,14 @@ const EvaluationList = () => {
                 onChange={(e) => setSearch({ ...search, code: e.target.value })}
                 allowClear
                 className="me-2 mb-2"
-                style={{ width: 200 }}
+                style={{ width: 150 }}
                 placeholder="MSSV"
               />
               <Select
                 onChange={(v) => setSearch({ ...search, status: v })}
                 placeholder="Trạng thái"
                 className="me-2 mb-2"
-                style={{ width: 150 }}
+                style={{ width: 200 }}
                 allowClear
               >
                 {Object.keys(evaluationStatus).map((k) => (

@@ -3,10 +3,8 @@ import {
   Button,
   Card,
   Divider,
-  Input,
   InputNumber,
   message,
-  Modal,
   notification,
   Popconfirm,
   Select,
@@ -27,7 +25,7 @@ import {
   studentMakeDraftEvaluationService,
   studentMakeEvaluationService,
   monitorMakeEvaluationService,
-  lecturerApproveService,
+  lecturerConfirmService,
   complainService,
   getEvaluationBatchListService,
   validateDeadline,
@@ -76,10 +74,24 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     isMonitor && !isTicketOfMonitor ? ROLE.monitor : profile.roleName
   const isShowNote =
     evaluation &&
-    profile.roleName === ROLE.student &&
-    (evaluation.status === evaluationStatus.ConfirmEvaluationStatus ||
-      evaluation.status ===
-        evaluationStatus.ComplainWithMonitorAboutEvaluationStatus)
+    (evaluation.status === evaluationStatus.MonitorConfirmed ||
+      evaluation.status === evaluationStatus.LecturerConfirmed ||
+      evaluation.status === evaluationStatus.ComplainingMonitor ||
+      evaluation.status === evaluationStatus.ComplainingLecturer)
+  const isMySubmited =
+    evaluation &&
+    ((viewRole === ROLE.monitor &&
+      evaluation.status === evaluationStatus.MonitorConfirmed) ||
+      (viewRole === ROLE.lecturer &&
+        evaluation.status === evaluationStatus.LecturerConfirmed) ||
+      (viewRole === ROLE.employee &&
+        evaluation.status === evaluationStatus.EmployeeConfirmed))
+  const isComplainMe =
+    evaluation &&
+    ((viewRole === ROLE.monitor &&
+      evaluation.status === evaluationStatus.ComplainingMonitor) ||
+      (viewRole === ROLE.lecturer &&
+        evaluation.status === evaluationStatus.ComplainingLecturer))
 
   const deadlineString = getDeadline(evaluation, viewRole)
 
@@ -108,26 +120,25 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
 
     if (
       role === ROLE.monitor &&
-      (evalStatus === evaluationStatus.SubmitEvaluationStatus ||
-        evalStatus ===
-          evaluationStatus.ComplainWithMonitorAboutEvaluationStatus ||
-        evalStatus === evaluationStatus.ConfirmEvaluationStatus)
+      (evalStatus === evaluationStatus.StudentSubmited ||
+        evalStatus === evaluationStatus.ComplainingMonitor ||
+        evalStatus === evaluationStatus.MonitorConfirmed)
     ) {
       return true
     }
 
     if (
       role === ROLE.student &&
-      (evalStatus === evaluationStatus.DraftEvaluationStatus ||
-        evalStatus === evaluationStatus.SubmitEvaluationStatus ||
-        evalStatus === evaluationStatus.NewEvaluationStatus)
+      (evalStatus === evaluationStatus.Draft ||
+        evalStatus === evaluationStatus.StudentSubmited ||
+        evalStatus === evaluationStatus.New)
     ) {
       return true
     }
 
     if (
       role === ROLE.lecturer &&
-      evalStatus === evaluationStatus.ConfirmEvaluationStatus
+      evalStatus === evaluationStatus.MonitorConfirmed
     ) {
       return true
     }
@@ -232,10 +243,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         cloneObj(monitorEvaluation),
       )
 
-      if (
-        evaluation &&
-        evaluation.status === evaluationStatus.NewEvaluationStatus
-      ) {
+      if (evaluation && evaluation.status === evaluationStatus.New) {
         setStudentEvaluation(newEvaluation)
       }
 
@@ -509,20 +517,51 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     return item
   }
 
+  const handleRemoveAttachment = async (attachment) => {
+    try {
+      await removeFileService(
+        evaluation.id,
+        attachment.url.split('/')[attachment.url.split('/').length - 1],
+      )
+
+      const newAtts = attachments.filter((a) => a.name !== attachment.name)
+      setAttachments(newAtts)
+      message.success('Xóa thành công')
+      window.Modal.clear()
+    } catch (err) {
+      handleError(err, null, notification)
+    }
+  }
+
   const handleViewImage = (atts) => {
     window.Modal.show(
       <div>
         {atts.map((a) => (
-          <div
-            style={{
-              backgroundImage: `url('${a.url}')`,
-              maxWidth: '90vw',
-              height: 300,
-              backgroundSize: 'contain',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center',
-            }}
-          />
+          <div className="mt-2" key={a.url}>
+            <div
+              style={{
+                backgroundImage: `url('${a.url}')`,
+                maxWidth: '90vw',
+                height: 300,
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+              }}
+            />
+            <div
+              style={{ maxWidth: '90vw' }}
+              className="d-flex justify-content-center"
+            >
+              <Button
+                onClick={() => handleRemoveAttachment(a)}
+                type="primary"
+                danger
+              >
+                <i className="fas fa-times me-2" />
+                XÓA ẢNH
+              </Button>
+            </div>
+          </div>
         ))}
       </div>,
       {
@@ -533,6 +572,30 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     )
   }
 
+  const handleUploadAttachment = (r) => async ({ onSuccess, file }) => {
+    try {
+      const { data } = await uploadFileService(
+        evaluation.id,
+        file,
+        `${r.id}_${file.name}`,
+      )
+
+      setAttachments([
+        ...attachments,
+        {
+          uid: data.data,
+          name: data.data.split(':')[0],
+          url: configs.APIHost + data.data.split(':')[1],
+        },
+      ])
+
+      message.success('Tải lên thành công')
+      onSuccess()
+    } catch (err) {
+      handleError(err, null, notification)
+    }
+  }
+
   const renderInputPoint = (r, forStudent) => {
     const currItem = getEvaluationTicketItemById(
       r.id,
@@ -540,7 +603,6 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     )
     const isStudent = viewRole === ROLE.student && !isMonitor
     const isLecturer = viewRole === ROLE.lecturer
-    const isEmployee = viewRole === ROLE.employee
 
     if ((r.point !== null && r.point !== undefined) || r.isAnotherItem) {
       const style = {
@@ -555,7 +617,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         // col1 - lecturer can't edit col1
         (forStudent && isLecturer) ||
         // disable all by done
-        evaluation.status === evaluationStatus.CompleteEvalutionStatus ||
+        evaluation.status === evaluationStatus.Done ||
         !isValidDeadline
       const min = r.isAnotherItem ? 0 : r.point > 0 ? 0 : -100
       const max = r.isAnotherItem ? r.maxPoint : r.point > 0 ? r.point : 0
@@ -568,6 +630,25 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
 
       return (
         <div>
+          {forStudent && (
+            <Tooltip title="Tải lên minh chứng">
+              <Upload
+                customRequest={handleUploadAttachment(r)}
+                fileList={attachments}
+                disabled={
+                  profile.roleName !== ROLE.student ||
+                  (!isMonitor && !isTicketOfCurrentStudent)
+                }
+                showUploadList={false}
+                accept="image/*"
+              >
+                <i
+                  className="fas fa-file-upload me-2"
+                  style={{ marginLeft: '-1.2em', cursor: 'pointer' }}
+                />
+              </Upload>
+            </Tooltip>
+          )}
           <InputNumber
             style={style}
             readOnly={readOnly}
@@ -650,20 +731,6 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         message.success('Lấy điểm thành công')
         setCurrentResult(parseFloat(data))
       }
-    } catch (err) {
-      handleError(err, null, notification)
-    }
-  }
-
-  const handleRemoveAttachment = async (file) => {
-    try {
-      await removeFileService(
-        evaluation.id,
-        file.url.split('/')[file.url.split('/').length - 1],
-      )
-
-      const newAtts = attachments.filter((a) => a.name !== file.name)
-      setAttachments(newAtts)
     } catch (err) {
       handleError(err, null, notification)
     }
@@ -814,27 +881,79 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     }
   }
 
+  const validateInputPoint = (curr = true, prev = true) => {
+    if (currentResult === null && curr) {
+      message.error('Vui lòng nhập điểm hệ 4')
+      inputCurrentResult.current.focus()
+      return false
+    }
+
+    if (previousResult === null && prev) {
+      message.error('Vui lòng nhập điểm hệ 4')
+      inputPreviousResult.current.focus()
+      return false
+    }
+
+    return true
+  }
+
+  const handleLecturerConfirm = async (isRefuse = false, note) => {
+    try {
+      const totalPoint = getTotalPoint(monitorEvaluation)
+      const classification = getClassification(totalPoint)
+      const evaluationString = isRefuse
+        ? evaluation.monitorEvaluation
+        : JSON.stringify(monitorEvaluation)
+      const evaluationId = evaluation.id
+      const noteString = isRefuse
+        ? JSON.stringify({
+            ...getNote(evaluation.note),
+            lecturerNote: note,
+          })
+        : ''
+
+      // update ticket
+      try {
+        await complainService(evaluation.id, '')
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('lecturer update student ticket')
+      }
+
+      await lecturerConfirmService(
+        evaluationId,
+        evaluationString,
+        previousResult,
+        currentResult,
+        totalPoint,
+        classification,
+        noteString,
+      )
+
+      await getEvaluationPrivate(
+        studentId,
+        yearId,
+        semesterId,
+        pointTrainingGroups,
+      )
+
+      if (!isRefuse) {
+        notification.success({
+          message: 'Cố vấn học tập xét duyệt',
+          description: 'Thành công',
+        })
+      }
+    } catch (err) {
+      handleError(err, null, notification)
+    }
+  }
+
   const handleSubmit = async () => {
     // for student
-    if (profile.roleName === ROLE.student) {
+    if (profile.roleName === ROLE.student && validateInputPoint(false, true)) {
       // for monitor
-      if (isMonitor) {
-        // validate
-        if (currentResult === null) {
-          message.error('Vui lòng nhập điểm hệ 4')
-          inputCurrentResult.current.focus()
-          return
-        }
-        if (previousResult === null) {
-          message.error('Vui lòng nhập điểm hệ 4')
-          inputPreviousResult.current.focus()
-          return
-        }
-
-        if (
-          evaluation.status ===
-          evaluationStatus.ComplainWithMonitorAboutEvaluationStatus
-        ) {
+      if (isMonitor && validateInputPoint(true, true)) {
+        if (evaluation.status === evaluationStatus.ComplainingMonitor) {
           monitorMakeEvaluation(false, 'Đã cập nhật')
         } else {
           monitorMakeEvaluation(false)
@@ -843,32 +962,15 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         return
       }
 
-      // not monitor
-      if (previousResult === null) {
-        message.error('Vui lòng nhập điểm hệ 4')
-        inputPreviousResult.current.focus()
-        return
-      }
+      // student
       await handleClickSaveAsDraft(false)
-      studentMakeEvaluation(evaluation.id)
+      await studentMakeEvaluation(evaluation.id)
+      return
     }
-  }
 
-  const handleLecturerApprove = async () => {
-    try {
-      await lecturerApproveService(evaluation.id)
-      await getEvaluationPrivate(
-        studentId,
-        yearId,
-        semesterId,
-        pointTrainingGroups,
-      )
-      notification.success({
-        message: 'Cố vấn học tập xét duyệt',
-        description: 'Thành công',
-      })
-    } catch (err) {
-      handleError(err, null, notification)
+    // for lecturer
+    if (viewRole === ROLE.lecturer && validateInputPoint(true, true)) {
+      await handleLecturerConfirm(false)
     }
   }
 
@@ -905,6 +1007,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       <TextAreaForm
         onSubmit={complain}
         placeholder="Nhập nội dung khiếu nại"
+        buttonText="KHIẾU NẠI"
       />,
       {
         title: <b>NHẬP NỘI DUNG KHIẾU NẠI</b>,
@@ -919,7 +1022,11 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     }
 
     try {
-      await monitorMakeEvaluation(true, note)
+      if (viewRole === ROLE.monitor) {
+        await monitorMakeEvaluation(true, note)
+      } else if (viewRole === ROLE.lecturer) {
+        await handleLecturerConfirm(true, note)
+      }
 
       notification.success({
         message: 'Từ chối khiếu nại thành công',
@@ -1048,22 +1155,27 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       />
 
       <div className="mt-4 d-flex flex-wrap">
-        <div style={{ maxWidth: 318 }} className="card p-3 me-3 mt-2">
-          <Upload
-            customRequest={handleAddAttachment}
-            onRemove={handleRemoveAttachment}
-            fileList={attachments}
-            disabled={
-              profile.roleName !== ROLE.student ||
-              (!isMonitor && !isTicketOfCurrentStudent)
-            }
-            accept="image/*"
-            onPreview={(file) => handleViewImage(file.url)}
-          >
-            <Button icon={<i className="fas fa-file-upload me-2" />}>
-              Tải lên ảnh minh chứng
-            </Button>
-          </Upload>
+        <div style={{ maxWidth: 318 }} className="card me-3 mt-2">
+          <div className="card-header">
+            <b>MINH CHỨNG</b>
+          </div>
+          <div className="card-body">
+            <Upload
+              customRequest={handleAddAttachment}
+              onRemove={handleRemoveAttachment}
+              fileList={attachments}
+              disabled={
+                profile.roleName !== ROLE.student ||
+                (!isMonitor && !isTicketOfCurrentStudent)
+              }
+              accept="image/*"
+              onPreview={(file) => handleViewImage(file.url)}
+            >
+              <Button icon={<i className="fas fa-file-upload me-2" />}>
+                Tải lên ảnh minh chứng
+              </Button>
+            </Upload>
+          </div>
         </div>
         {isShowNote && (
           <div style={{ maxWidth: 318 }} className="me-3 card mt-2">
@@ -1082,6 +1194,12 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
                   <b>Lớp trưởng:</b> {getNote(evaluation.note).monitorNote}
                 </div>
               )}
+
+              {getNote(evaluation.note).lecturereNote && (
+                <div>
+                  <b>Cố vấn:</b> {getNote(evaluation.note).lecturereNote}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1089,7 +1207,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
           <div style={{ maxWidth: 318 }} className="mt-2 text-end">
             <Upload
               disabled={
-                evaluation.status === evaluationStatus.AcceptEvaluationStatus ||
+                evaluation.status === evaluationStatus.LecturerConfirmed ||
                 !isValidDeadline
               }
               showUploadList={false}
@@ -1099,8 +1217,8 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
             >
               <Button
                 disabled={
-                  evaluation.status ===
-                    evaluationStatus.AcceptEvaluationStatus || !isValidDeadline
+                  evaluation.status === evaluationStatus.LecturerConfirmed ||
+                  !isValidDeadline
                 }
                 type="primary"
                 icon={<i className="fas fa-file-import me-2" />}
@@ -1115,27 +1233,22 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       <div className="d-flex justify-content-end mt-3">
         {viewRole === ROLE.student &&
           !(isYourTurn && !isValidDeadline) &&
-          isTicketOfCurrentStudent && (
+          isTicketOfCurrentStudent &&
+          !isMonitor &&
+          !isTicketOfMonitor && (
             <Alert
               message={
                 <div>
-                  {evaluation.status === evaluationStatus.NewEvaluationStatus &&
+                  {evaluation.status === evaluationStatus.New &&
                     'Bạn có thể LƯU NHÁP hoặc chọn HOÀN TẤT để lớp trưởng đánh giá.'}
-                  {evaluation.status ===
-                    evaluationStatus.DraftEvaluationStatus &&
-                    !isMonitor &&
-                    !isTicketOfMonitor &&
+                  {evaluation.status === evaluationStatus.Draft &&
                     'Phiếu hiện tại đang là NHÁP, chọn HOÀN TẤT để lớp trưởng đánh giá.'}
-                  {evaluation.status ===
-                    evaluationStatus.SubmitEvaluationStatus &&
-                    !isMonitor &&
-                    !isTicketOfMonitor &&
+                  {evaluation.status === evaluationStatus.StudentSubmited &&
                     'Bạn đã hoàn tất phiếu đánh giá, phiếu đang chờ lớp trưởng đánh giá, bạn có thể khiếu nại sau này.'}
-                  {evaluation.status ===
-                    evaluationStatus.ConfirmEvaluationStatus &&
-                    !isMonitor &&
-                    !isTicketOfMonitor &&
+                  {evaluation.status === evaluationStatus.MonitorConfirmed &&
                     'Lớp trưởng đã đánh giá phiếu của bạn, bạn có thể khiếu nại nếu thấy sai sót.'}
+                  {evaluation.status === evaluationStatus.LecturerConfirmed &&
+                    'Cố vấn đã đánh giá phiếu của bạn, bạn có thể khiếu nại nếu thấy sai sót.'}
                 </div>
               }
               type="success"
@@ -1148,8 +1261,9 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       </div>
 
       <div className="d-flex justify-content-end mt-3">
-        {(evaluation.status === evaluationStatus.NewEvaluationStatus ||
-          evaluation.status === evaluationStatus.DraftEvaluationStatus) &&
+        {/* on new/draft, is ticket of student */}
+        {(evaluation.status === evaluationStatus.New ||
+          evaluation.status === evaluationStatus.Draft) &&
           viewRole === ROLE.student &&
           isTicketOfCurrentStudent && (
             <>
@@ -1178,9 +1292,9 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
             </>
           )}
 
-        {viewRole === ROLE.monitor &&
-          !isTicketOfCurrentStudent &&
-          evaluation.status === evaluationStatus.SubmitEvaluationStatus && (
+        {/* on student submited, view by monitor */}
+        {evaluation.status === evaluationStatus.StudentSubmited &&
+          viewRole === ROLE.monitor && (
             <Popconfirm
               disabled={!isValidDeadline}
               title="HOÀN TẤT đánh giá?"
@@ -1197,47 +1311,44 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
             </Popconfirm>
           )}
 
-        {(evaluation.status === evaluationStatus.ConfirmEvaluationStatus ||
-          evaluation.status ===
-            evaluationStatus.ComplainWithMonitorAboutEvaluationStatus) &&
-          isMonitor && (
-            <>
-              {evaluation.status ===
-              evaluationStatus.ComplainWithMonitorAboutEvaluationStatus ? (
-                <Button
-                  disabled={!isValidDeadline}
-                  onClick={handleRefuseComplain}
-                  className="me-2"
-                  size="large"
-                >
-                  TỪ CHỐI KHIẾU NẠI
-                </Button>
-              ) : (
-                ''
-              )}
-              <Popconfirm
-                disabled={!isValidDeadline}
-                title="CẬP NHẬT đánh giá?"
-                onConfirm={handleSubmit}
-              >
-                <Button
-                  disabled={!isValidDeadline}
-                  className="success"
-                  size="large"
-                  type="primary"
-                >
-                  CẬP NHẬT
-                </Button>
-              </Popconfirm>
-            </>
+        {/* on complaining, is view by monitor or lecturer */}
+        {(evaluation.status === evaluationStatus.ComplainingMonitor ||
+          evaluation.status === evaluationStatus.ComplainingLecturer) &&
+          (viewRole === ROLE.monitor || viewRole === ROLE.lecturer) && (
+            <Button
+              disabled={!isValidDeadline}
+              onClick={handleRefuseComplain}
+              className="me-2"
+              size="large"
+            >
+              TỪ CHỐI KHIẾU NẠI
+            </Button>
           )}
 
-        {evaluation.status === evaluationStatus.ConfirmEvaluationStatus &&
+        {(isMySubmited || isComplainMe) && (
+          <Popconfirm
+            disabled={!isValidDeadline}
+            title="CẬP NHẬT đánh giá?"
+            onConfirm={handleSubmit}
+          >
+            <Button
+              disabled={!isValidDeadline}
+              className="success"
+              size="large"
+              type="primary"
+            >
+              CẬP NHẬT
+            </Button>
+          </Popconfirm>
+        )}
+
+        {/* on monitor submited, view by lecturer */}
+        {evaluation.status === evaluationStatus.MonitorConfirmed &&
           profile.roleName === ROLE.lecturer && (
             <Popconfirm
               disabled={!isValidDeadline}
               title="DUYỆT đánh giá?"
-              onConfirm={handleLecturerApprove}
+              onConfirm={handleSubmit}
             >
               <Button
                 disabled={!isValidDeadline}
@@ -1250,7 +1361,9 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
             </Popconfirm>
           )}
 
-        {evaluation.status === evaluationStatus.ConfirmEvaluationStatus &&
+        {/* on submited by monitor/lecturer, view by owner student */}
+        {(evaluation.status === evaluationStatus.MonitorConfirmed ||
+          evaluation.status === evaluationStatus.LecturerConfirmed) &&
           profile.roleName === ROLE.student &&
           !isMonitor &&
           isTicketOfCurrentStudent && (
@@ -1343,7 +1456,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       <Divider />
 
       {evaluation && (
-        <Tooltip placement="topLeft" title="Tổng dựa trên lớp trưởng đánh giá">
+        <Tooltip placement="topLeft" title="Tổng dựa trên lớp đánh giá">
           <div className="tag-total-point">
             <div className="me-2">
               Tổng: <b>{`${getTotalPoint(monitorEvaluation)}đ`}</b> - Xếp loại:{' '}

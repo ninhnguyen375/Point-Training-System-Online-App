@@ -83,10 +83,27 @@ export const studentMakeEvaluationService = (evaluationId) =>
     method: 'put',
   })
 
-export const lecturerApproveService = (evaluationId) =>
+export const lecturerConfirmService = (
+  evaluationId,
+  evaluation,
+  previousResult,
+  currentResult,
+  conclusionPoint,
+  classification,
+  note,
+) =>
   fetchAuthLoading({
-    url: `${configs.API}/Evaluations/EvaluatedByLecturer/${evaluationId}`,
-    method: 'put',
+    url: `${configs.API}/Evaluations/EvaluatedByLecturer`,
+    method: 'post',
+    data: {
+      id: evaluationId,
+      lecturerEvaluation: evaluation,
+      previousResult,
+      currentResult,
+      conclusionPoint,
+      classification,
+      note,
+    },
   })
 
 export const complainService = (evaluationId, note) =>

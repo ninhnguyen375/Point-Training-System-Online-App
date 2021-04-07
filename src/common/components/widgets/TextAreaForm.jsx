@@ -2,7 +2,7 @@ import { Button, Divider, Input } from 'antd'
 import { func, string } from 'prop-types'
 import React, { useState } from 'react'
 
-const TextAreaForm = ({ onSubmit, placeholder }) => {
+const TextAreaForm = ({ onSubmit, placeholder, buttonText }) => {
   const [value, setValue] = useState('')
 
   return (
@@ -16,7 +16,7 @@ const TextAreaForm = ({ onSubmit, placeholder }) => {
       <Divider />
       <div className="d-flex justify-content-end">
         <Button type="primary" onClick={() => onSubmit(value)}>
-          OK
+          {buttonText}
         </Button>
       </div>
     </div>
@@ -26,10 +26,12 @@ const TextAreaForm = ({ onSubmit, placeholder }) => {
 TextAreaForm.propTypes = {
   onSubmit: func.isRequired,
   placeholder: string,
+  buttonText: string,
 }
 
 TextAreaForm.defaultProps = {
   placeholder: '',
+  buttonText: 'HOÀN TẤT',
 }
 
 export default TextAreaForm
