@@ -76,6 +76,11 @@ export default {
           iconClass: 'fas fa-copy',
           title: 'Đợt Đánh Giá Đã Tạo',
         },
+        {
+          key: 'evaluation',
+          iconClass: 'fas fa-copy',
+          title: 'Phiếu Của Lớp Quá Hạn',
+        },
       ],
     },
     {
@@ -105,6 +110,28 @@ export default {
           key: 'student/import',
           iconClass: 'fas fa-file-import',
           title: 'Nhập Sinh Viên',
+        },
+      ],
+    },
+  ],
+  [ROLE.manager]: [
+    {
+      itemGroup: 'Quản lý',
+      items: [
+        {
+          key: 'manager',
+          iconClass: 'fas fa-users',
+          title: 'Quản Lý',
+        },
+        {
+          key: 'employee',
+          iconClass: 'fas fa-users',
+          title: 'Nhân Viên',
+        },
+        {
+          key: 'deputydean',
+          iconClass: 'fas fa-users',
+          title: 'Phó Khoa',
         },
       ],
     },

@@ -18,6 +18,7 @@ export const evaluationStatus = {
   MonitorConfirmed: 'Lớp trưởng đã xác nhận',
   ComplainingMonitor: 'Đang khiếu nại Lớp trưởng',
   ComplainingLecturer: 'Đang khiếu nại Giảng viên',
+  ComplainingEmployee: 'Đang khiếu nại Chuyên viên',
   LecturerConfirmed: 'Giảng viên đã chấp nhận',
   Done: 'Hoàn tất',
   EmployeeConfirmed: 'Chuyên viên đã đánh giá',
@@ -31,7 +32,9 @@ export const evaluationStatusColor = {
   'Lớp trưởng đã xác nhận': 'purple',
   'Đang khiếu nại Lớp trưởng': 'red',
   'Đang khiếu nại Giảng viên': 'red',
+  'Đang khiếu nại Chuyên viên': 'red',
   'Giảng viên đã chấp nhận': 'cyan',
+  'Chuyên viên đã đánh giá': 'cyan',
   'Hoàn tất': 'green',
 }
 

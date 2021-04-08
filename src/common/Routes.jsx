@@ -103,10 +103,24 @@ const Routes = () => {
           component={ImportStudentClassPage}
         />
         <Route exact path="/class-statistic" component={ClassStatistic} />
+        <Route exact path="/evaluation" component={EvaluationListPage} />
+        <Route
+          exact
+          path="/evaluation/confirm"
+          component={ConfirmEvaluationPage}
+        />
 
         <Route exact path="/">
           <Redirect to="/evaluation-batch" />
         </Route>
+        <Route exact path="*" component={NotFound} />
+      </Switch>
+    )
+  }
+
+  if (profile && profile.roleName === ROLE.manager) {
+    return (
+      <Switch>
         <Route exact path="*" component={NotFound} />
       </Switch>
     )

@@ -113,10 +113,29 @@ const LoginForm = () => {
                   <Button
                     htmlType="button"
                     onClick={() =>
+                      handleSubmit({
+                        code: '3115410000',
+                        password: '3115410000',
+                      })
+                    }
+                  >
+                    SV Quá Hạn
+                  </Button>
+                  <Button
+                    htmlType="button"
+                    onClick={() =>
                       handleSubmit({ code: '9999', password: '9999' })
                     }
                   >
                     Giảng viên
+                  </Button>
+                  <Button
+                    htmlType="button"
+                    onClick={() =>
+                      handleSubmit({ code: '00000', password: '00000' })
+                    }
+                  >
+                    Manager
                   </Button>
                   <Button
                     htmlType="button"

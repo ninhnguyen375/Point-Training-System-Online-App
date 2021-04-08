@@ -106,6 +106,31 @@ export const lecturerConfirmService = (
     },
   })
 
+export const employeeConfirmService = (
+  evaluationId,
+  evaluation,
+  previousResult,
+  currentResult,
+  conclusionPoint,
+  classification,
+  note,
+  employeeId,
+) =>
+  fetchAuthLoading({
+    url: `${configs.API}/Evaluations/EvaluatedByEmployee`,
+    method: 'post',
+    data: {
+      id: evaluationId,
+      employeeEvaluation: evaluation,
+      previousResult,
+      currentResult,
+      conclusionPoint,
+      classification,
+      note,
+      employeeId,
+    },
+  })
+
 export const complainService = (evaluationId, note) =>
   fetchAuthLoading({
     url: `${configs.API}/Evaluations/ComplainedByStudent`,
@@ -222,15 +247,28 @@ export const getDeadline = (evaluationData, viewRole) => {
     ).format('DD/MM/yyyy')}`
   }
 
+  // deadline for student
   if (viewRole === ROLE.student) {
     return moment(evaluationData.deadlineDateForStudent, 'DD/MM/yyyy').format(
       'DD/MM/yyyy',
     )
   }
 
+  // deadline for lecturer
   if (viewRole === ROLE.lecturer) {
     return `${moment(
       evaluationData.deadlineDateForMonitor,
+      'DD/MM/yyyy',
+    ).format('DD/MM/yyyy')} - ${moment(
+      evaluationData.deadlineDateForLecturer,
+      'DD/MM/yyyy',
+    ).format('DD/MM/yyyy')}`
+  }
+
+  // deadline for employee
+  if (viewRole === ROLE.employee) {
+    return `${moment(
+      evaluationData.deadlineDateForStudent,
       'DD/MM/yyyy',
     ).format('DD/MM/yyyy')} - ${moment(
       evaluationData.deadlineDateForLecturer,

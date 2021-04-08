@@ -1,6 +1,6 @@
 import { Button, Card, notification, Table, Tag } from 'antd'
 import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import handleError from '../../../common/utils/handleError'
 import {
   activeEvaluationBatchService,
@@ -45,6 +45,14 @@ const EvaluationBatchList = () => {
 
   return (
     <Card title={<b>ĐỢT ĐÁNH GIÁ RÈN LUYỆN ĐÃ TẠO</b>} size="small">
+      <div className="d-flex justify-content-end mb-2">
+        <Link to="/evaluation/create">
+          <Button type="primary">
+            <i className="fas fa-play-circle me-2" />
+            BẮT ĐẦU ĐỢT ĐÁNH GIÁ
+          </Button>
+        </Link>
+      </div>
       <Table
         rowKey={(r) => `${r.year.id}-${r.semester.id}`}
         dataSource={evaluationBatches}
@@ -90,11 +98,10 @@ const EvaluationBatchList = () => {
                   </Button>
                 )}
                 <Button
-                  type="primary"
-                  icon={<i className="fas fa-info-circle me-2" />}
+                  shape="circle"
                   onClick={() => history.push('/evaluation-batch/detail', r)}
                 >
-                  XEM
+                  <i className="fas fa-info" />
                 </Button>
               </div>
             ),

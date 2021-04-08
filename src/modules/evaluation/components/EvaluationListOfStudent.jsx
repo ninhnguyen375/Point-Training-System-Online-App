@@ -99,12 +99,14 @@ const EvaluationListOfStudent = () => {
     {
       title: <b>Tổng Điểm</b>,
       align: 'center',
-      render: (r) => r.conclusionPoint || '--',
+      render: (r) =>
+        r.conclusionPoint || <i className="text-secondary">chưa có</i>,
     },
     {
       title: <b>Xếp Loại</b>,
       align: 'center',
-      render: (r) => r.classification || '--',
+      render: (r) =>
+        r.classification || <i className="text-secondary">chưa có</i>,
     },
     {
       title: <b>Hành Động</b>,
@@ -117,9 +119,8 @@ const EvaluationListOfStudent = () => {
             semesterId: r.semesterId,
           })}`}
         >
-          <Button>
-            <i className="fas fa-info me-2" />
-            XEM
+          <Button shape="circle">
+            <i className="fas fa-info" />
           </Button>
         </Link>
       ),

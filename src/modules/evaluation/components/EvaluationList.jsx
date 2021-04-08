@@ -5,7 +5,6 @@ import {
   Input,
   message,
   notification,
-  Popconfirm,
   Select,
   Table,
   Tag,
@@ -24,11 +23,8 @@ import {
 } from '../model'
 import {
   cancelEvaluationService,
-  getDeadline,
   getEvaluationBatchListService,
   getEvaluationListService,
-  lecturerConfirmService,
-  validateDeadline,
 } from '../services'
 import { MODULE_NAME as MODULE_USER, ROLE } from '../../user/model'
 import { getString } from '../../../common/utils/object'
@@ -91,7 +87,9 @@ const EvaluationList = () => {
         setSemesterId(currentActive.semester.id)
       }
     } catch (err) {
-      handleError(err, null, notification)
+      notification.info({
+        message: 'Chưa có đợt đánh giá',
+      })
     }
   }, [])
 
@@ -108,8 +106,14 @@ const EvaluationList = () => {
 
     if (profile.roleName === ROLE.lecturer) {
       params.lecturerId = profile.id
-    } else {
+    }
+
+    if (profile.isMonitor) {
       params.monitorId = profile.id
+    }
+
+    if (profile.roleName === ROLE.employee) {
+      params.overdue = true
     }
 
     try {
@@ -139,19 +143,6 @@ const EvaluationList = () => {
         semesterId: r.semesterId,
       })}`,
     )
-  }
-
-  const handleLecturerApprove = async (evaluationId) => {
-    try {
-      await lecturerConfirmService(evaluationId)
-      await getEvaluationList()
-      notification.success({
-        message: 'Cố vấn học tập xét duyệt',
-        description: 'Thành công',
-      })
-    } catch (err) {
-      handleError(err, null, notification)
-    }
   }
 
   const cancelEvaluation = (evaluationId) => async (
@@ -304,24 +295,15 @@ const EvaluationList = () => {
           profile.roleName === ROLE.lecturer &&
           r.status === evaluationStatus.MonitorConfirmed
         ) {
-          const isValidDeadline = validateDeadline(
-            getDeadline(r, ROLE.lecturer).split(' - ').pop(),
-          )
           actions.push(
-            <Tooltip key="lecuturer confirm" title="Duyệt ngay">
-              <Popconfirm
-                title="Xác nhận"
-                onConfirm={() => handleLecturerApprove(r.studentId)}
-                disabled={!isValidDeadline}
+            <Tooltip title="Đánh giá">
+              <Button
+                key="lecturer-confirm"
+                onClick={() => gotoConfirmPage(r)}
+                type="primary"
               >
-                <Button
-                  disabled={!isValidDeadline}
-                  className="success ms-2"
-                  type="primary"
-                >
-                  <i className="fas fa-check" />
-                </Button>
-              </Popconfirm>
+                <i className="fas fa-pen-alt" />
+              </Button>
             </Tooltip>,
           )
         }
@@ -341,6 +323,24 @@ const EvaluationList = () => {
                 className="ms-2"
               >
                 <i className="fas fa-edit" />
+              </Button>
+            </Tooltip>,
+          )
+        }
+
+        // employee confirm
+        if (
+          profile.roleName === ROLE.employee &&
+          r.status === evaluationStatus.StudentSubmited
+        ) {
+          actions.push(
+            <Tooltip title="Đánh giá">
+              <Button
+                key="employee-confirm"
+                onClick={() => gotoConfirmPage(r)}
+                type="primary"
+              >
+                <i className="fas fa-pen-alt" />
               </Button>
             </Tooltip>,
           )
@@ -481,7 +481,8 @@ const EvaluationList = () => {
         <div>
           <div className="d-flex justify-content-between flex-wrap">
             <div className="d-flex flex-wrap">
-              {profile.roleName === ROLE.lecturer && (
+              {(profile.roleName === ROLE.lecturer ||
+                profile.roleName === ROLE.employee) && (
                 <div className="me-2 mb-2">
                   <Select
                     allowClear
