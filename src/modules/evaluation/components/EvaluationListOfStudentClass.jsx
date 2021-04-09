@@ -20,7 +20,7 @@ import {
 } from '../model'
 import {
   getEvaluationBatchListService,
-  getEvaluationListService,
+  getEvaluationsService,
   getEvaluationPrivateService,
 } from '../services'
 import { MODULE_NAME as MODULE_USER } from '../../user/model'
@@ -88,7 +88,7 @@ const EvaluationListOfStudentClass = () => {
 
       evaluationPrivate = evaluationPrivate.data.data
 
-      const { data } = await getEvaluationListService({
+      const { data } = await getEvaluationsService({
         yearId,
         semesterId,
         monitorId: evaluationPrivate.monitorId,

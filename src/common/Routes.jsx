@@ -16,13 +16,12 @@ import ImportStudentPage from '../pages/ImportStudentPage'
 import StudentClassListPage from '../pages/StudentClassListPage'
 import ImportStudentClassPage from '../pages/ImportStudentClassPage'
 import Home from '../pages/Home'
-import ClassStatistic from '../pages/ClassStatistic'
-import TestExportPDF from '../pages/TestExportPDF'
 import EvaluationListOfStudentPage from '../pages/EvaluationListOfStudentPage'
 import EvaluationListOfStudentClassPage from '../pages/EvaluationListOfStudentClassPage'
 import ManagerListPage from '../pages/ManagerListPage'
 import EmployeeListPage from '../pages/EmployeeListPage'
 import DeputyDeanListPage from '../pages/DeputyDeanListPage'
+import ClassStatisticExport from '../pages/ClassStatisticExport'
 
 const Routes = () => {
   const profile = useSelector((state) => state[MODULE_USER].profile)
@@ -38,7 +37,6 @@ const Routes = () => {
           path="/evaluation/confirm"
           component={ConfirmEvaluationPage}
         />
-        <Route exact path="/class-statistic" component={ClassStatistic} />
         <Route
           exact
           path="/evaluation-list-of-student"
@@ -123,7 +121,11 @@ const Routes = () => {
           path="/student-class/import"
           component={ImportStudentClassPage}
         />
-        <Route exact path="/class-statistic" component={ClassStatistic} />
+        <Route
+          exact
+          path="/class-statistic-export"
+          component={ClassStatisticExport}
+        />
         <Route exact path="/evaluation" component={EvaluationListPage} />
         <Route
           exact
@@ -156,7 +158,6 @@ const Routes = () => {
 
   return (
     <Switch>
-      <Route exact path="/test" component={TestExportPDF} />
       <Route exact path="*" component={Login} />
     </Switch>
   )

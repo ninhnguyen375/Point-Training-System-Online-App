@@ -99,7 +99,11 @@ const EvaluationBatchList = () => {
                 )}
                 <Button
                   shape="circle"
-                  onClick={() => history.push('/evaluation-batch/detail', r)}
+                  onClick={() =>
+                    history.push(
+                      `/evaluation-batch/detail?yearId=${r.year.id}&semesterId=${r.semester.id}`,
+                    )
+                  }
                 >
                   <i className="fas fa-info" />
                 </Button>

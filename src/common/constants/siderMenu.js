@@ -99,6 +99,11 @@ export default {
       itemGroup: 'Quản Lý',
       items: [
         {
+          key: 'evaluation-batch/detail',
+          iconClass: 'fas fa-copy',
+          title: 'DS Phiếu Rèn Luyện',
+        },
+        {
           key: 'student',
           iconClass: 'fas fa-user-graduate',
           title: 'Sinh Viên',

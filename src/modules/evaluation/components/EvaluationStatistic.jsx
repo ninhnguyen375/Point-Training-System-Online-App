@@ -1,51 +1,48 @@
 import {
-  Alert,
   Button,
   Card,
   Divider,
   Input,
-  message,
   notification,
-  Popconfirm,
   Select,
-  Switch,
   Table,
   Tag,
   Tooltip,
 } from 'antd'
 import qs from 'query-string'
-import React, { useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom'
+import { number } from 'prop-types'
 import handleError from '../../../common/utils/handleError'
 import {
+  a4,
   classification,
   evaluationStatus,
   evaluationStatusColor,
   reasonForCancellation,
 } from '../model'
 import {
-  cancelEvaluationService,
-  deputydeanConfirmService,
   getEvaluationBatchListService,
   getEvaluationsService,
 } from '../services'
-import { MODULE_NAME as MODULE_USER, ROLE } from '../../user/model'
 import { getString } from '../../../common/utils/object'
-import SelectReasonCancellationForm from './SelectReasonCancellationForm'
+import ClassStatisticExport from '../../../pages/ClassStatisticExport'
 
-const EvaluationList = () => {
-  // store
-  const profile = useSelector((state) => state[MODULE_USER].profile)
+const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
   // state
-  const [yearId, setYearId] = useState(null)
-  const [semesterId, setSemesterId] = useState(null)
+  const [yearId, setYearId] = useState(yearIdProp)
+  const [semesterId, setSemesterId] = useState(semesterIdProp)
   const [evaluations, setEvaluations] = useState(null)
   const [filteredEvaluations, setFilteredEvaluation] = useState(null)
   const [evaluationBatches, setEvaluationBatches] = useState([])
   const [studentClasses, setStudentClasses] = useState([])
   const [search, setSearch] = useState({})
-  const [isShowWaitForApproval, setIsShowWaitForApproval] = useState(false)
+  const [
+    isShowTooltipSelectStudentClass,
+    setIsShowTooltipSelectStudentClass,
+  ] = useState(false)
+  // ref
+  const selectStudentClassRef = useRef(null)
 
   const history = useHistory()
 
@@ -85,11 +82,13 @@ const EvaluationList = () => {
       data = data.sort((a, b) => (a.year.title < b.year.title ? 1 : -1))
       setEvaluationBatches(data)
 
-      // default active select batch
-      const currentActive = getCurrentActive(data)
-      if (currentActive) {
-        setYearId(currentActive.year.id)
-        setSemesterId(currentActive.semester.id)
+      if (!yearId && !semesterId) {
+        // default active select batch
+        const currentActive = getCurrentActive(data)
+        if (currentActive) {
+          setYearId(currentActive.year.id)
+          setSemesterId(currentActive.semester.id)
+        }
       }
     } catch (err) {
       notification.info({
@@ -107,25 +106,10 @@ const EvaluationList = () => {
       return
     }
 
-    const params = {}
-
-    if (profile.roleName === ROLE.lecturer) {
-      params.lecturerId = profile.id
-    }
-
-    if (profile.isMonitor) {
-      params.monitorId = profile.id
-    }
-
-    if (profile.roleName === ROLE.employee) {
-      params.overdue = true
-    }
-
     try {
       const { data } = await getEvaluationsService({
         yearId,
         semesterId,
-        ...params,
       })
 
       setStudentClasses(groupStudentClasses(data.data))
@@ -150,58 +134,7 @@ const EvaluationList = () => {
     )
   }
 
-  const cancelEvaluation = (evaluationId) => async (
-    reasonForCancellationInput,
-  ) => {
-    if (!reasonForCancellationInput) {
-      message.error('Chọn lý do hủy')
-      return
-    }
-
-    try {
-      await cancelEvaluationService(
-        evaluationId,
-        reasonForCancellationInput,
-        profile.id,
-        profile.isMonitor ? ROLE.monitor : profile.roleName,
-      )
-
-      notification.success({ message: 'Hủy phiếu thành công' })
-      await getEvaluations()
-      window.Modal.clear()
-    } catch (err) {
-      handleError(err, null, notification)
-    }
-  }
-
-  const handleCancelEvaluation = (evaluationId) => {
-    window.Modal.show(
-      <SelectReasonCancellationForm
-        onSubmit={cancelEvaluation(evaluationId)}
-      />,
-      {
-        title: <b>CHỌN LÝ DO HỦY</b>,
-        key: 'cancel-modal',
-      },
-    )
-  }
-
-  const deputydeanConfirm = async (evaluationId) => {
-    try {
-      await deputydeanConfirmService(evaluationId, profile.id)
-
-      notification.success({
-        message: 'Phó Khoa Xét Duyệt',
-        description: 'Thành công',
-      })
-
-      getEvaluations()
-    } catch (err) {
-      handleError(err, null, notification)
-    }
-  }
-
-  let columns = [
+  const columns = [
     {
       key: 'studentClass',
       title: <b>Lớp</b>,
@@ -258,166 +191,18 @@ const EvaluationList = () => {
       key: 'action',
       title: <b>Hành Động</b>,
       align: 'right',
-      render: (r) => {
-        const actions = []
-
-        // monitor confirm
-        if (
-          profile.isMonitor &&
-          r.status === evaluationStatus.StudentSubmited
-        ) {
-          actions.push(
-            <Tooltip title="Đánh giá">
-              <Button
-                key="monitor-confirm"
-                onClick={() => gotoConfirmPage(r)}
-                type="primary"
-              >
-                <i className="fas fa-pen-alt" />
-              </Button>
-            </Tooltip>,
-          )
-        }
-
-        // monitor/employee cancel
-        if (
-          (profile.isMonitor || profile.roleName === ROLE.employee) &&
-          r.status === evaluationStatus.New
-        ) {
-          actions.push(
-            <Tooltip title="Hủy phiếu">
-              <Button
-                key="monitor-cancel"
-                onClick={() => handleCancelEvaluation(r.id)}
-                danger
-                type="primary"
-                className="ms-2"
-              >
-                <i className="fas fa-ban" />
-              </Button>
-            </Tooltip>,
-          )
-        }
-
-        // monitor update
-        if (
-          profile.isMonitor &&
-          (r.status === evaluationStatus.MonitorConfirmed ||
-            r.status === evaluationStatus.ComplainingMonitor)
-        ) {
-          actions.push(
-            <Tooltip title="Chỉnh sửa">
-              <Button
-                key="monitor-update"
-                onClick={() => gotoConfirmPage(r)}
-                type="default"
-                className="ms-2"
-              >
-                <i className="fas fa-edit" />
-              </Button>
-            </Tooltip>,
-          )
-        }
-
-        // lecuturer confirm
-        if (
-          profile.roleName === ROLE.lecturer &&
-          r.status === evaluationStatus.MonitorConfirmed
-        ) {
-          actions.push(
-            <Tooltip title="Đánh giá">
-              <Button
-                key="lecturer-confirm"
-                onClick={() => gotoConfirmPage(r)}
-                type="primary"
-              >
-                <i className="fas fa-pen-alt" />
-              </Button>
-            </Tooltip>,
-          )
-        }
-
-        // lecturer update
-        if (
-          profile.roleName === ROLE.lecturer &&
-          (r.status === evaluationStatus.LecturerConfirmed ||
-            r.status === evaluationStatus.ComplainingLecturer)
-        ) {
-          actions.push(
-            <Tooltip title="Chỉnh sửa">
-              <Button
-                key="lecturer-update"
-                onClick={() => gotoConfirmPage(r)}
-                type="default"
-                className="ms-2"
-              >
-                <i className="fas fa-edit" />
-              </Button>
-            </Tooltip>,
-          )
-        }
-
-        // employee confirm
-        if (
-          profile.roleName === ROLE.employee &&
-          r.status === evaluationStatus.StudentSubmited
-        ) {
-          actions.push(
-            <Tooltip title="Đánh giá">
-              <Button
-                key="employee-confirm"
-                onClick={() => gotoConfirmPage(r)}
-                type="primary"
-              >
-                <i className="fas fa-pen-alt" />
-              </Button>
-            </Tooltip>,
-          )
-        }
-
-        // deputydean confirm
-        if (
-          profile.roleName === ROLE.deputydean &&
-          (r.status === evaluationStatus.EmployeeConfirmed ||
-            r.status === evaluationStatus.LecturerConfirmed)
-        ) {
-          actions.push(
-            <Tooltip title="Duyệt ngay">
-              <Popconfirm
-                title="Xác nhận"
-                onConfirm={() => deputydeanConfirm(r.id)}
-              >
-                <Button
-                  className="success"
-                  key="deputydean-confirm"
-                  type="primary"
-                >
-                  <i className="fas fa-check" />
-                </Button>
-              </Popconfirm>
-            </Tooltip>,
-          )
-        }
-
-        actions.push(
-          <Button
-            className="ms-2"
-            key="default"
-            shape="circle"
-            onClick={() => gotoConfirmPage(r)}
-          >
-            <i className="fas fa-info" />
-          </Button>,
-        )
-
-        return actions.map((a) => a)
-      },
+      render: (r) => (
+        <Button
+          className="ms-2"
+          key="default"
+          shape="circle"
+          onClick={() => gotoConfirmPage(r)}
+        >
+          <i className="fas fa-info" />
+        </Button>
+      ),
     },
   ]
-
-  if (profile.roleName === ROLE.student) {
-    columns = columns.filter((c) => c.key !== 'studentClass')
-  }
 
   const renderSelectBatch = (batches = []) => {
     if (batches.length === 0) {
@@ -506,45 +291,47 @@ const EvaluationList = () => {
         (e) => e.reasonForCancellation === search.reasonForCancellation,
       )
     }
-    if (isShowWaitForApproval) {
-      if (profile.roleName === ROLE.deputydean) {
-        newEvaluationList = newEvaluationList.filter(
-          (e) =>
-            e.status === evaluationStatus.EmployeeConfirmed ||
-            e.status === evaluationStatus.LecturerConfirmed,
-        )
-      }
-      if (profile.isMonitor) {
-        newEvaluationList = newEvaluationList.filter(
-          (e) =>
-            e.status === evaluationStatus.New ||
-            e.status === evaluationStatus.StudentSubmited ||
-            e.status === evaluationStatus.ComplainingMonitor,
-        )
-      }
-      if (profile.roleName === ROLE.lecturer) {
-        newEvaluationList = newEvaluationList.filter(
-          (e) =>
-            e.status === evaluationStatus.MonitorConfirmed ||
-            e.status === evaluationStatus.ComplainingLecturer,
-        )
-      }
-      if (profile.roleName === ROLE.employee) {
-        newEvaluationList = newEvaluationList.filter(
-          (e) =>
-            e.status === evaluationStatus.New ||
-            e.status === evaluationStatus.StudentSubmited ||
-            e.status === evaluationStatus.ComplainingEmployee,
-        )
-      }
-    }
 
     setFilteredEvaluation(newEvaluationList)
-  }, [search, evaluations, isShowWaitForApproval])
+  }, [search, evaluations])
 
   useEffect(() => {
     applySearch()
   }, [applySearch])
+
+  const handleClickExportClassStatistic = () => {
+    if (!search.studentClass) {
+      selectStudentClassRef.current.focus()
+      setIsShowTooltipSelectStudentClass(true)
+      return
+    }
+
+    const raw = []
+    for (let i = 1; i <= 98; i += 1) {
+      raw.push(i)
+    }
+    window.Modal.show(
+      <div
+        style={{
+          height: '85vh',
+          overflow: 'auto',
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
+        <ClassStatisticExport
+          evaluations={evaluations.filter(
+            (e) => e.student.studentClass.title === search.studentClass,
+          )}
+        />
+      </div>,
+      {
+        title: <b>BẢNG ĐIỂM CỦA LỚP</b>,
+        style: { top: 10 },
+        width: a4.width + 40,
+      },
+    )
+  }
 
   return (
     <Card
@@ -559,20 +346,23 @@ const EvaluationList = () => {
 
       <Divider />
 
-      <div className="col-lg-2">
-        <Alert
-          type={isShowWaitForApproval ? 'success' : 'warning'}
-          message={
-            <div className="d-flex align-items-center">
-              <Switch
-                onChange={(checked) => setIsShowWaitForApproval(checked)}
-                checked={isShowWaitForApproval}
-                className="me-2"
-              />
-              CHỜ ĐÁNH GIÁ
-            </div>
-          }
-        />
+      <div className="d-flex flex-wrap">
+        <Button type="primary" className="success me-2 mb-2">
+          <i className="fas fa-file-pdf me-2" />
+          XUẤT BẢNG ĐIỂM HK{semesterId}{' '}
+          {getString(
+            evaluationBatches.find((b) => b.year.id === yearId),
+            'year.title',
+          )}
+        </Button>
+        <Button
+          onClick={handleClickExportClassStatistic}
+          type="primary"
+          className="success me-2 mb-2"
+        >
+          <i className="fas fa-file-pdf me-2" />
+          XUẤT BẢNG ĐIỂM THEO LỚP
+        </Button>
       </div>
 
       <Divider />
@@ -581,13 +371,21 @@ const EvaluationList = () => {
         <div>
           <div className="d-flex justify-content-between flex-wrap">
             <div className="d-flex flex-wrap">
-              {profile.roleName !== ROLE.student && (
-                <div className="me-2 mb-2">
+              <div className="me-2 mb-2">
+                <Tooltip
+                  visible={isShowTooltipSelectStudentClass}
+                  title="Chọn lớp để xuất bảng điểm theo lớp"
+                  placement="topRight"
+                >
                   <Select
                     allowClear
-                    onChange={(v) => setSearch({ ...search, studentClass: v })}
+                    onChange={(v) => {
+                      setSearch({ ...search, studentClass: v })
+                      setIsShowTooltipSelectStudentClass(false)
+                    }}
                     placeholder="Chọn lớp"
                     style={{ width: '100%' }}
+                    ref={selectStudentClassRef}
                   >
                     {studentClasses.map((c) => (
                       <Select.Option key={c} value={c}>
@@ -595,8 +393,8 @@ const EvaluationList = () => {
                       </Select.Option>
                     ))}
                   </Select>
-                </div>
-              )}
+                </Tooltip>
+              </div>
               <Input
                 onChange={(e) =>
                   setSearch({ ...search, fullName: e.target.value })
@@ -673,4 +471,14 @@ const EvaluationList = () => {
   )
 }
 
-export default EvaluationList
+EvaluationStatistic.propTypes = {
+  semesterIdProp: number,
+  yearIdProp: number,
+}
+
+EvaluationStatistic.defaultProps = {
+  semesterIdProp: null,
+  yearIdProp: null,
+}
+
+export default EvaluationStatistic

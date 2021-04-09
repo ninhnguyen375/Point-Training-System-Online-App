@@ -47,3 +47,10 @@ export const reasonForCancellation = [
   'Đình chỉ học tập',
   'Ra trường',
 ]
+
+export const a4 = {
+  width: 595,
+  height: 842,
+  padding: 50,
+  fontSize: 12,
+}

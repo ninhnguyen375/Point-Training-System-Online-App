@@ -183,7 +183,7 @@ export const updateEvaluationBatchService = (semesterId, yearId, data) =>
     data,
   })
 
-export const getEvaluationListService = (params) =>
+export const getEvaluationsService = (params) =>
   fetchAuthLoading({
     url: `${configs.API}/Evaluations`,
     method: 'get',
