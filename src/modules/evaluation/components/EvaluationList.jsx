@@ -1,11 +1,14 @@
 import {
+  Alert,
   Button,
   Card,
   Divider,
   Input,
   message,
   notification,
+  Popconfirm,
   Select,
+  Switch,
   Table,
   Tag,
   Tooltip,
@@ -23,6 +26,7 @@ import {
 } from '../model'
 import {
   cancelEvaluationService,
+  deputydeanConfirmService,
   getEvaluationBatchListService,
   getEvaluationListService,
 } from '../services'
@@ -41,6 +45,7 @@ const EvaluationList = () => {
   const [evaluationBatches, setEvaluationBatches] = useState([])
   const [studentClasses, setStudentClasses] = useState([])
   const [search, setSearch] = useState({})
+  const [isShowWaitForApproval, setIsShowWaitForApproval] = useState(false)
 
   const history = useHistory()
 
@@ -154,7 +159,12 @@ const EvaluationList = () => {
     }
 
     try {
-      await cancelEvaluationService(evaluationId, reasonForCancellationInput)
+      await cancelEvaluationService(
+        evaluationId,
+        reasonForCancellationInput,
+        profile.id,
+        profile.isMonitor ? ROLE.monitor : profile.roleName,
+      )
 
       notification.success({ message: 'Hủy phiếu thành công' })
       await getEvaluationList()
@@ -171,8 +181,24 @@ const EvaluationList = () => {
       />,
       {
         title: <b>CHỌN LÝ DO HỦY</b>,
+        key: 'cancel-modal',
       },
     )
+  }
+
+  const deputydeanConfirm = async (evaluationId) => {
+    try {
+      await deputydeanConfirmService(evaluationId, profile.id)
+
+      notification.success({
+        message: 'Phó Khoa Xét Duyệt',
+        description: 'Thành công',
+      })
+
+      getEvaluationList()
+    } catch (err) {
+      handleError(err, null, notification)
+    }
   }
 
   let columns = [
@@ -253,8 +279,11 @@ const EvaluationList = () => {
           )
         }
 
-        // monitor cancel
-        if (profile.isMonitor && r.status === evaluationStatus.New) {
+        // monitor/employee cancel
+        if (
+          (profile.isMonitor || profile.roleName === ROLE.employee) &&
+          r.status === evaluationStatus.New
+        ) {
           actions.push(
             <Tooltip title="Hủy phiếu">
               <Button
@@ -346,6 +375,30 @@ const EvaluationList = () => {
           )
         }
 
+        // deputydean confirm
+        if (
+          profile.roleName === ROLE.deputydean &&
+          (r.status === evaluationStatus.EmployeeConfirmed ||
+            r.status === evaluationStatus.LecturerConfirmed)
+        ) {
+          actions.push(
+            <Tooltip title="Duyệt ngay">
+              <Popconfirm
+                title="Xác nhận"
+                onConfirm={() => deputydeanConfirm(r.id)}
+              >
+                <Button
+                  className="success"
+                  key="deputydean-confirm"
+                  type="primary"
+                >
+                  <i className="fas fa-check" />
+                </Button>
+              </Popconfirm>
+            </Tooltip>,
+          )
+        }
+
         actions.push(
           <Button
             className="ms-2"
@@ -362,10 +415,7 @@ const EvaluationList = () => {
     },
   ]
 
-  if (
-    profile.roleName !== ROLE.lecturer &&
-    profile.roleName !== ROLE.employee
-  ) {
+  if (profile.roleName === ROLE.student) {
     columns = columns.filter((c) => c.key !== 'studentClass')
   }
 
@@ -456,9 +506,41 @@ const EvaluationList = () => {
         (e) => e.reasonForCancellation === search.reasonForCancellation,
       )
     }
+    if (isShowWaitForApproval) {
+      if (profile.roleName === ROLE.deputydean) {
+        newEvaluationList = newEvaluationList.filter(
+          (e) =>
+            e.status === evaluationStatus.EmployeeConfirmed ||
+            e.status === evaluationStatus.LecturerConfirmed,
+        )
+      }
+      if (profile.isMonitor) {
+        newEvaluationList = newEvaluationList.filter(
+          (e) =>
+            e.status === evaluationStatus.New ||
+            e.status === evaluationStatus.StudentSubmited ||
+            e.status === evaluationStatus.ComplainingMonitor,
+        )
+      }
+      if (profile.roleName === ROLE.lecturer) {
+        newEvaluationList = newEvaluationList.filter(
+          (e) =>
+            e.status === evaluationStatus.MonitorConfirmed ||
+            e.status === evaluationStatus.ComplainingLecturer,
+        )
+      }
+      if (profile.roleName === ROLE.employee) {
+        newEvaluationList = newEvaluationList.filter(
+          (e) =>
+            e.status === evaluationStatus.New ||
+            e.status === evaluationStatus.StudentSubmited ||
+            e.status === evaluationStatus.ComplainingEmployee,
+        )
+      }
+    }
 
     setFilteredEvaluationList(newEvaluationList)
-  }, [search, evaluationList])
+  }, [search, evaluationList, isShowWaitForApproval])
 
   useEffect(() => {
     applySearch()
@@ -477,12 +559,29 @@ const EvaluationList = () => {
 
       <Divider />
 
+      <div className="col-lg-2">
+        <Alert
+          type={isShowWaitForApproval ? 'success' : 'warning'}
+          message={
+            <div className="d-flex align-items-center">
+              <Switch
+                onChange={(checked) => setIsShowWaitForApproval(checked)}
+                checked={isShowWaitForApproval}
+                className="me-2"
+              />
+              CHỜ ĐÁNH GIÁ
+            </div>
+          }
+        />
+      </div>
+
+      <Divider />
+
       {filteredEvaluationList && (
         <div>
           <div className="d-flex justify-content-between flex-wrap">
             <div className="d-flex flex-wrap">
-              {(profile.roleName === ROLE.lecturer ||
-                profile.roleName === ROLE.employee) && (
+              {profile.roleName !== ROLE.student && (
                 <div className="me-2 mb-2">
                   <Select
                     allowClear

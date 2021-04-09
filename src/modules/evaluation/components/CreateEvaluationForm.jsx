@@ -99,6 +99,7 @@ const CreateEvaluationForm = () => {
       {
         title: <b>CHỌN LỚP</b>,
         style: { top: 10 },
+        key: 'select-student-class-modal',
       },
     )
   }
@@ -114,6 +115,7 @@ const CreateEvaluationForm = () => {
       {
         title: <b>CHỌN LỚP QUÁ HẠN RA TRƯỜNG</b>,
         style: { top: 10 },
+        key: 'select-overdue-student-class-modal',
       },
     )
   }

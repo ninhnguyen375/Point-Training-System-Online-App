@@ -62,6 +62,18 @@ export default {
       ],
     },
   ],
+  [ROLE.deputydean]: [
+    {
+      itemGroup: 'Quản lý',
+      items: [
+        {
+          key: 'evaluation',
+          iconClass: 'fas fa-copy',
+          title: 'Duyệt Phiếu Rèn Luyện',
+        },
+      ],
+    },
+  ],
   [ROLE.employee]: [
     {
       itemGroup: 'Tổng Quan',
@@ -121,17 +133,17 @@ export default {
         {
           key: 'manager',
           iconClass: 'fas fa-users',
-          title: 'Quản Lý',
+          title: 'Tài Khoản Quản Lý',
         },
         {
           key: 'employee',
           iconClass: 'fas fa-users',
-          title: 'Nhân Viên',
+          title: 'Tài Khoản Nhân Viên',
         },
         {
           key: 'deputydean',
           iconClass: 'fas fa-users',
-          title: 'Phó Khoa',
+          title: 'Tài Khoản Phó Khoa',
         },
       ],
     },

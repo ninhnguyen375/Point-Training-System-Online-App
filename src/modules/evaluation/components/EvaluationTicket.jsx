@@ -32,6 +32,7 @@ import {
   getDeadline,
   getNote,
   employeeConfirmService,
+  deputydeanConfirmService,
 } from '../services'
 import { MODULE_NAME as MODULE_USER, ROLE } from '../../user/model'
 import {
@@ -557,7 +558,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
 
   const handleViewImage = (atts) => {
     window.Modal.show(
-      <div>
+      <div className="pb-5">
         {atts.map((a) => (
           <div className="mt-2" key={a.url}>
             <div
@@ -592,6 +593,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         title: 'MINH CHỨNG',
         width: '98vw',
         style: { maxWidth: 800, top: 10 },
+        key: 'view-image-modal',
       },
     )
   }
@@ -797,6 +799,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         title: <b>CHỌN MỤC CỦA MINH CHỨNG</b>,
         width: '99vw',
         style: { top: 10, maxWidth: 600 },
+        key: 'select-group-item-modal',
       },
     )
   }
@@ -853,28 +856,18 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     return 'Kém'
   }
 
-  const monitorConfirm = async (isRefuse = false, note) => {
+  const monitorConfirm = async (isRefuse = false, note, isUpdate) => {
     try {
       const totalPoint = getTotalPoint(monitorEvaluation)
 
-      // monitor make own ticket
-      try {
-        if (isTicketOfMonitor) {
-          await handleClickSaveAsDraft(false)
-          await studentMakeEvaluationService(evaluation.id)
-        }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('monitor update own ticket')
+      if (isUpdate) {
         await complainService(evaluation.id, '')
       }
 
-      // monitor update student ticket
-      try {
-        await complainService(evaluation.id, '')
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('monitor update student ticket')
+      // monitor make own ticket
+      if (isTicketOfMonitor && !isUpdate) {
+        await handleClickSaveAsDraft(false)
+        await studentMakeEvaluationService(evaluation.id)
       }
 
       await monitorMakeEvaluationService(
@@ -922,7 +915,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     return true
   }
 
-  const lecturerConfirm = async (isRefuse = false, note) => {
+  const lecturerConfirm = async (isRefuse = false, note, isUpdate) => {
     try {
       const totalPoint = getTotalPoint(monitorEvaluation)
       const classification = getClassification(totalPoint)
@@ -938,11 +931,8 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         : ''
 
       // update ticket
-      try {
+      if (isUpdate) {
         await complainService(evaluation.id, '')
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('lecturer update student ticket')
       }
 
       await lecturerConfirmService(
@@ -955,25 +945,20 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         noteString,
       )
 
-      await getEvaluationPrivate(
-        studentId,
-        yearId,
-        semesterId,
-        pointTrainingGroups,
-      )
-
       if (!isRefuse) {
         notification.success({
           message: 'Cố vấn học tập xét duyệt',
           description: 'Thành công',
         })
       }
+
+      getEvaluationPrivate(studentId, yearId, semesterId, pointTrainingGroups)
     } catch (err) {
       handleError(err, null, notification)
     }
   }
 
-  const employeeConfirm = async (isRefuse = false, note) => {
+  const employeeConfirm = async (isRefuse = false, note, isUpdate) => {
     try {
       const totalPoint = getTotalPoint(monitorEvaluation)
       const classification = getClassification(totalPoint)
@@ -989,12 +974,8 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         : ''
       const employeeId = profile.id
 
-      // update ticket
-      try {
+      if (isUpdate) {
         await complainService(evaluation.id, '')
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('lecturer update student ticket')
       }
 
       await employeeConfirmService(
@@ -1008,25 +989,35 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         employeeId,
       )
 
-      await getEvaluationPrivate(
-        studentId,
-        yearId,
-        semesterId,
-        pointTrainingGroups,
-      )
-
       if (!isRefuse) {
         notification.success({
           message: 'Chuyên viên xét duyệt',
           description: 'Thành công',
         })
       }
+
+      getEvaluationPrivate(studentId, yearId, semesterId, pointTrainingGroups)
     } catch (err) {
       handleError(err, null, notification)
     }
   }
 
-  const handleSubmit = async () => {
+  const deputydeanConfirm = async () => {
+    try {
+      await deputydeanConfirmService(evaluation.id, profile.id)
+
+      notification.success({
+        message: 'Phó Khoa Xét Duyệt',
+        description: 'Thành công',
+      })
+
+      getEvaluationPrivate(studentId, yearId, semesterId, pointTrainingGroups)
+    } catch (err) {
+      handleError(err, null, notification)
+    }
+  }
+
+  const handleSubmit = async (isUpdate) => {
     if (!validateInputPoint(false, true)) {
       return
     }
@@ -1039,12 +1030,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
           return
         }
 
-        if (evaluation.status === evaluationStatus.ComplainingMonitor) {
-          monitorConfirm(false, 'Đã cập nhật')
-        } else {
-          monitorConfirm(false)
-        }
-
+        monitorConfirm(false, null, isUpdate)
         return
       }
 
@@ -1060,12 +1046,17 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
 
     // for lecturer
     if (viewRole === ROLE.lecturer) {
-      await lecturerConfirm(false)
+      await lecturerConfirm(false, null, isUpdate)
     }
 
     // for employee
     if (viewRole === ROLE.employee) {
-      await employeeConfirm(false)
+      await employeeConfirm(false, null, isUpdate)
+    }
+
+    // for deputy dean
+    if (viewRole === ROLE.deputydean) {
+      await deputydeanConfirm()
     }
   }
 
@@ -1106,6 +1097,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       />,
       {
         title: <b>NHẬP NỘI DUNG KHIẾU NẠI</b>,
+        key: 'complain-modal',
       },
     )
   }
@@ -1118,15 +1110,15 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
 
     try {
       if (viewRole === ROLE.monitor) {
-        await monitorConfirm(true, note)
+        await monitorConfirm(true, note, false)
       }
 
       if (viewRole === ROLE.lecturer) {
-        await lecturerConfirm(true, note)
+        await lecturerConfirm(true, note, false)
       }
 
       if (viewRole === ROLE.employee) {
-        await employeeConfirm(true, note)
+        await employeeConfirm(true, note, false)
       }
 
       notification.success({
@@ -1146,6 +1138,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       />,
       {
         title: <b>TỪ CHỐI KHIẾU NẠI</b>,
+        key: 'refuse-complain-modal',
       },
     )
   }
@@ -1371,7 +1364,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
             <Popconfirm
               disabled={!isValidDeadline}
               title="HOÀN TẤT đánh giá?"
-              onConfirm={handleSubmit}
+              onConfirm={() => handleSubmit(false)}
             >
               <Button
                 disabled={!isValidDeadline}
@@ -1399,7 +1392,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
           <Popconfirm
             disabled={!isValidDeadline}
             title="CẬP NHẬT đánh giá?"
-            onConfirm={handleSubmit}
+            onConfirm={() => handleSubmit(true)}
           >
             <Button
               disabled={!isValidDeadline}
@@ -1418,7 +1411,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
             <Popconfirm
               disabled={!isValidDeadline}
               title="DUYỆT đánh giá?"
-              onConfirm={handleSubmit}
+              onConfirm={() => handleSubmit(false)}
             >
               <Button
                 disabled={!isValidDeadline}
@@ -1438,7 +1431,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
             <Popconfirm
               disabled={!isValidDeadline}
               title="DUYỆT đánh giá?"
-              onConfirm={handleSubmit}
+              onConfirm={() => handleSubmit(false)}
             >
               <Button
                 disabled={!isValidDeadline}
@@ -1446,6 +1439,20 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
                 size="large"
                 type="primary"
               >
+                DUYỆT ĐÁNH GIÁ
+              </Button>
+            </Popconfirm>
+          )}
+
+        {/* deputy dean confirm */}
+        {(evaluation.status === evaluationStatus.EmployeeConfirmed ||
+          evaluation.status === evaluationStatus.LecturerConfirmed) &&
+          profile.roleName === ROLE.deputydean && (
+            <Popconfirm
+              title="DUYỆT đánh giá?"
+              onConfirm={() => handleSubmit(false)}
+            >
+              <Button className="success" size="large" type="primary">
                 DUYỆT ĐÁNH GIÁ
               </Button>
             </Popconfirm>

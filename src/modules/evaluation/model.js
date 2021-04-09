@@ -20,9 +20,9 @@ export const evaluationStatus = {
   ComplainingLecturer: 'Đang khiếu nại Giảng viên',
   ComplainingEmployee: 'Đang khiếu nại Chuyên viên',
   LecturerConfirmed: 'Giảng viên đã chấp nhận',
-  Done: 'Hoàn tất',
   EmployeeConfirmed: 'Chuyên viên đã đánh giá',
   Canceled: 'Phiếu bị hủy',
+  Done: 'Hoàn tất',
 }
 
 export const evaluationStatusColor = {
@@ -38,11 +38,12 @@ export const evaluationStatusColor = {
   'Hoàn tất': 'green',
 }
 
-export const classification = ['Kém', 'Yếu', 'Trung bình', 'Giỏi']
+export const classification = ['Giỏi', 'Trung bình', 'Yếu', 'Kém']
 
 export const reasonForCancellation = [
   'Không chấm',
   'Nghỉ học',
   'Bảo lưu kết quả',
   'Đình chỉ học tập',
+  'Ra trường',
 ]

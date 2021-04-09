@@ -87,7 +87,7 @@ const LoginForm = () => {
               </Button>
 
               <Card className="mt-3" title="Demo account" size="small">
-                <div className="d-flex justify-content-between">
+                <div style={{ width: 400 }} className="d-flex flex-wrap">
                   <Button
                     htmlType="button"
                     onClick={() =>
@@ -132,10 +132,10 @@ const LoginForm = () => {
                   <Button
                     htmlType="button"
                     onClick={() =>
-                      handleSubmit({ code: '00000', password: '00000' })
+                      handleSubmit({ code: '11111', password: '11111' })
                     }
                   >
-                    Manager
+                    Phó khoa
                   </Button>
                   <Button
                     htmlType="button"
@@ -144,6 +144,14 @@ const LoginForm = () => {
                     }
                   >
                     Nhân viên
+                  </Button>
+                  <Button
+                    htmlType="button"
+                    onClick={() =>
+                      handleSubmit({ code: '00000', password: '00000' })
+                    }
+                  >
+                    Manager
                   </Button>
                 </div>
               </Card>

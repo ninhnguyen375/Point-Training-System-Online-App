@@ -83,6 +83,12 @@ export const studentMakeEvaluationService = (evaluationId) =>
     method: 'put',
   })
 
+export const deputydeanConfirmService = (evaluationId, deputydeanId) =>
+  fetchAuthLoading({
+    url: `${configs.API}/Evaluations/CompletedByDeputyDean/${evaluationId},${deputydeanId}`,
+    method: 'put',
+  })
+
 export const lecturerConfirmService = (
   evaluationId,
   evaluation,
@@ -196,13 +202,20 @@ export const activeEvaluationBatchService = (yearId, semesterId) =>
     method: 'put',
   })
 
-export const cancelEvaluationService = (evaluationId, reasonForCancellation) =>
+export const cancelEvaluationService = (
+  evaluationId,
+  reasonForCancellation,
+  userId,
+  roleName,
+) =>
   fetchAuthLoading({
     url: `${configs.API}/Evaluations/CanceledByMonitor`,
     method: 'post',
     data: {
       id: evaluationId,
       reasonForCancellation,
+      userId,
+      roleName,
     },
   })
 

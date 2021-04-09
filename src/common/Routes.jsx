@@ -20,6 +20,9 @@ import ClassStatistic from '../pages/ClassStatistic'
 import TestExportPDF from '../pages/TestExportPDF'
 import EvaluationListOfStudentPage from '../pages/EvaluationListOfStudentPage'
 import EvaluationListOfStudentClassPage from '../pages/EvaluationListOfStudentClassPage'
+import ManagerListPage from '../pages/ManagerListPage'
+import EmployeeListPage from '../pages/EmployeeListPage'
+import DeputyDeanListPage from '../pages/DeputyDeanListPage'
 
 const Routes = () => {
   const profile = useSelector((state) => state[MODULE_USER].profile)
@@ -59,6 +62,24 @@ const Routes = () => {
     return (
       <Switch>
         <Route exact path="/dashboard" component={Dashboard} />
+        <Route exact path="/evaluation" component={EvaluationListPage} />
+        <Route
+          exact
+          path="/evaluation/confirm"
+          component={ConfirmEvaluationPage}
+        />
+
+        <Route exact path="/">
+          <Redirect to="/evaluation" />
+        </Route>
+        <Route exact path="*" component={NotFound} />
+      </Switch>
+    )
+  }
+
+  if (profile && profile.roleName === ROLE.deputydean) {
+    return (
+      <Switch>
         <Route exact path="/evaluation" component={EvaluationListPage} />
         <Route
           exact
@@ -121,6 +142,13 @@ const Routes = () => {
   if (profile && profile.roleName === ROLE.manager) {
     return (
       <Switch>
+        <Route exact path="/manager" component={ManagerListPage} />
+        <Route exact path="/employee" component={EmployeeListPage} />
+        <Route exact path="/deputydean" component={DeputyDeanListPage} />
+
+        <Route exact path="/">
+          <Redirect to="/manager" />
+        </Route>
         <Route exact path="*" component={NotFound} />
       </Switch>
     )

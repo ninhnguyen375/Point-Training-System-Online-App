@@ -39,7 +39,7 @@ class CustomModal extends Component {
         zIndex={options.zIndex}
         visible={isShow}
         footer={null}
-        onCancel={() => this.clear()}
+        onCancel={() => this.hide()}
         style={{ width: '99vw' }}
         {...options}
         bodyStyle={{ padding: 10, ...(options.bodyStyle || {}) }}

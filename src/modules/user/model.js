@@ -5,4 +5,5 @@ export const ROLE = {
   lecturer: 'Giảng viên',
   manager: 'Quản lý',
   monitor: 'Lớp trưởng',
+  deputydean: 'Phó khoa',
 }

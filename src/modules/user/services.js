@@ -24,3 +24,28 @@ export const getAllUsersService = () =>
     url: `${configs.API}/Authentications/GetAllUsers`,
     method: 'get',
   })
+
+export const getEmployeesService = () =>
+  fetchAuthLoading({
+    url: `${configs.API}/Authentications/GetAllEmployees`,
+    method: 'get',
+  })
+
+export const addEmployeesService = ({
+  fullName,
+  code,
+  email,
+  password,
+  privateRole,
+}) =>
+  fetchAuthLoading({
+    url: `${configs.API}/Authentications/CreateEmployee`,
+    method: 'post',
+    data: {
+      fullName,
+      code,
+      email,
+      password,
+      privateRole,
+    },
+  })
