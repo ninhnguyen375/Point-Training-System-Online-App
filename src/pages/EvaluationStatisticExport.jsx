@@ -1,6 +1,5 @@
 /* eslint-disable new-cap */
-import { Button, notification, Switch } from 'antd'
-import * as FileSaver from 'file-saver'
+import { Button, Switch } from 'antd'
 import jsPDF from 'jspdf'
 import React, { useCallback, useEffect, useState } from 'react'
 import { any, arrayOf, objectOf, string } from 'prop-types'
@@ -16,8 +15,6 @@ import {
 } from '../modules/evaluation/model'
 import { getString } from '../common/utils/object'
 import { configs } from '../configs'
-import { signPDFAsync } from '../modules/evaluation/services'
-import handleError from '../common/utils/handleError'
 
 // pdfjs
 const pdf = new jsPDF({ unit: 'px', format: 'a4', userUnit: 'px' })
@@ -26,7 +23,7 @@ pdf.setFont('timesi')
 pdf.setFont('timesbd')
 pdf.setFont('timesbi')
 
-const ClassStatisticExport = ({ evaluations, batchTitle }) => {
+const EvaluationStatisticExport = ({ evaluations, batchTitle }) => {
   // state
   const [isFilterValidTicket, setIsFilterValidTicket] = useState(false)
   const [pages, setPages] = useState([])
@@ -37,17 +34,12 @@ const ClassStatisticExport = ({ evaluations, batchTitle }) => {
   // init values
   let course = ''
   let studentClass = ''
-  let overdue = false
   const counter = {}
-  let signatures = []
-  let employee
-  let monitor
-  let lecturer
-  let deputyDean
   // apply
   if (itemsLength > 0) {
-    overdue = evaluations[0].overdue
-    // counter
+    course = getString(evaluations[0], 'student.studentClass.course')
+    studentClass = getString(evaluations[0], 'student.studentClass.title')
+
     for (let i = 0; i < classification.length; i += 1) {
       const item = classification[i]
       counter[item] = evaluations.reduce(
@@ -55,75 +47,6 @@ const ClassStatisticExport = ({ evaluations, batchTitle }) => {
         0,
       )
     }
-
-    for (let i = 0; i < evaluations.length; i += 1) {
-      const item = evaluations[i]
-
-      if (getString(item, 'student.studentClass.course')) {
-        course = getString(item, 'student.studentClass.course')
-      }
-      if (getString(item, 'student.studentClass.title')) {
-        studentClass = getString(item, 'student.studentClass.title')
-      }
-      if (item.employee) {
-        employee = item.employee
-      }
-      if (item.monitor) {
-        monitor = item.monitor
-      }
-      if (item.lecturer) {
-        lecturer = item.lecturer
-      }
-      if (item.deputyDean) {
-        deputyDean = item.deputyDean
-      }
-    }
-
-    if (overdue) {
-      signatures[0] = employee
-        ? {
-            roleTag: 'CHUYÊN VIÊN ĐÁNH GIÁ',
-            fullName: employee.fullName,
-            code: employee.code,
-            email: employee.email,
-          }
-        : null
-      signatures[1] = deputyDean
-        ? {
-            roleTag: 'TRƯỞNG KHOA/NGÀNH',
-            fullName: deputyDean.fullName,
-            code: deputyDean.code,
-            email: deputyDean.email,
-          }
-        : null
-    } else {
-      signatures[0] = monitor
-        ? {
-            roleTag: 'LỚP TRƯỞNG',
-            fullName: monitor.fullName,
-            code: monitor.code,
-            email: monitor.email,
-          }
-        : null
-      signatures[1] = lecturer
-        ? {
-            roleTag: 'CỐ VẤN HỌC TẬP',
-            fullName: lecturer.fullName,
-            code: lecturer.code,
-            email: lecturer.email,
-          }
-        : null
-      signatures[2] = deputyDean
-        ? {
-            roleTag: 'TRƯỞNG KHOA/NGÀNH',
-            fullName: deputyDean.fullName,
-            code: deputyDean.code,
-            email: deputyDean.email,
-          }
-        : null
-    }
-
-    signatures = signatures.filter((s) => s !== null)
   }
 
   const getPages = useCallback(() => {
@@ -135,9 +58,9 @@ const ClassStatisticExport = ({ evaluations, batchTitle }) => {
       src = src.filter((s) => !!s.conclusionPoint)
     }
 
-    const itemNumWithHeaderAndFooter = 22
+    const itemNumWithHeaderAndFooter = 27
     const itemNumWithHeader = 28
-    const itemNumWithFooter = 32
+    const itemNumWithFooter = 37
     const itemNum = 37
     let numPage = 1
     let isSplitFooter = true
@@ -194,54 +117,8 @@ const ClassStatisticExport = ({ evaluations, batchTitle }) => {
     setLoading(true)
     const input = document.getElementById('pdf-element')
 
-    const signSlots = document.getElementsByClassName('signSlot')
-    const pdfElement = document
-      .getElementById('pdf-element')
-      .getBoundingClientRect()
-    const slots = []
-    for (let i = 0; i < signSlots.length; i += 1) {
-      const element = signSlots[i].getBoundingClientRect()
-      const user = signatures[i]
-      slots.push({
-        fullName: user.fullName,
-        email: user.email,
-        code: user.code,
-        x: parseInt(element.x, 10) - parseInt(pdfElement.x, 10),
-        y:
-          parseInt(element.y, 10) -
-          parseInt(pdfElement.y, 10) -
-          parseInt(element.height, 10),
-        width: parseInt(element.width, 10),
-        height: parseInt(element.height, 10) * 2,
-      })
-    }
-
     await pdf.html(input, { html2canvas: { scale: 0.75 } })
-    const arraybuffer = pdf.output('arraybuffer')
-
-    let binary = ''
-    const bytes = new Uint8Array(arraybuffer)
-    const len = bytes.byteLength
-    for (let i = 0; i < len; i += 1) {
-      binary += String.fromCharCode(bytes[i])
-    }
-    const base64 = btoa(binary)
-
-    try {
-      let { data } = await signPDFAsync({
-        base64,
-        slots,
-      })
-
-      data = data.data.signed
-
-      data = new Blob([Buffer.from(data, 'base64')], {
-        type: 'application/pdf',
-      })
-      FileSaver.saveAs(data, `Bảng điểm rèn luyện ${batchTitle}.pdf`)
-    } catch (err) {
-      handleError(err, null, notification)
-    }
+    pdf.save(`${batchTitle}.pdf`)
 
     setLoading(false)
   }
@@ -318,20 +195,6 @@ const ClassStatisticExport = ({ evaluations, batchTitle }) => {
       <div>
         Tổng cộng danh sách này có {itemsLength} sinh viên được đánh giá rèn
         luyện
-      </div>
-
-      <div className="d-flex justify-content-between mt-3">
-        {signatures.map((s) => (
-          <div key={s.roleTag} className="text-center">
-            <div>
-              <b>{s.roleTag}</b>
-            </div>
-            <div className="mt-2 mb-2">
-              <i className="signSlot">Đã ký điện tử</i>
-            </div>
-            <div>{s.fullName}</div>
-          </div>
-        ))}
       </div>
     </div>
   )
@@ -449,9 +312,9 @@ const ClassStatisticExport = ({ evaluations, batchTitle }) => {
   )
 }
 
-ClassStatisticExport.propTypes = {
+EvaluationStatisticExport.propTypes = {
   evaluations: arrayOf(objectOf(any)).isRequired,
   batchTitle: string.isRequired,
 }
 
-export default ClassStatisticExport
+export default EvaluationStatisticExport

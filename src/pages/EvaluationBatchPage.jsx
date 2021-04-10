@@ -20,8 +20,8 @@ const EvaluationBatchPage = () => {
           },
           {
             url: '/evaluation-batch/detail',
-            title: 'Đợt đánh giá rèn luyện đã tạo',
-            icon: '',
+            title: 'Danh Sách Phiếu Rèn Luyện',
+            icon: 'fas fa-copy',
           },
         ]}
       />

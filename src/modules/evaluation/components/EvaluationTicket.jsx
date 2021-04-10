@@ -39,6 +39,7 @@ import {
   MODULE_NAME as MODULE_EVALUATION,
   disableEvaluationItems,
   evaluationStatus,
+  classification as classificationList,
 } from '../model'
 
 import { cloneObj } from '../../../common/utils/object'
@@ -842,19 +843,22 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
   }
 
   const getClassification = (totalPoint) => {
-    if (totalPoint >= 85) {
-      return 'Tốt'
+    if (totalPoint >= 90) {
+      return classificationList[0]
     }
-    if (totalPoint >= 65 && totalPoint < 85) {
-      return 'Khá'
+    if (totalPoint >= 80 && totalPoint < 90) {
+      return classificationList[1]
+    }
+    if (totalPoint >= 65 && totalPoint < 80) {
+      return classificationList[2]
     }
     if (totalPoint >= 50 && totalPoint < 65) {
-      return 'Trung bình'
+      return classificationList[3]
     }
     if (totalPoint >= 35 && totalPoint < 50) {
-      return 'Yếu'
+      return classificationList[4]
     }
-    return 'Kém'
+    return classificationList[5]
   }
 
   const monitorConfirm = async (isRefuse = false, note, isUpdate) => {

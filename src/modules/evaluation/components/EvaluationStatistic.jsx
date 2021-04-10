@@ -27,6 +27,7 @@ import {
 } from '../services'
 import { getString } from '../../../common/utils/object'
 import ClassStatisticExport from '../../../pages/ClassStatisticExport'
+import EvaluationStatisticExport from '../../../pages/EvaluationStatisticExport'
 
 const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
   // state
@@ -214,8 +215,8 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
         <div>Chọn Năm học và Học kỳ:</div>
         <Select
           onChange={(v) => {
-            setYearId(v.split('-')[0])
-            setSemesterId(v.split('-')[1])
+            setYearId(parseInt(v.split('-')[0], 10))
+            setSemesterId(parseInt(v.split('-')[1], 10))
           }}
           placeholder="Chọn Năm học và Học kỳ"
           style={{ width: '100%' }}
@@ -306,10 +307,18 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
       return
     }
 
-    const raw = []
-    for (let i = 1; i <= 98; i += 1) {
-      raw.push(i)
+    // check valid
+    const invalidItems = evaluations.filter(
+      (e) =>
+        e.status !== evaluationStatus.Done &&
+        e.status !== evaluationStatus.Canceled,
+    )
+
+    if (invalidItems.length > 0) {
+      notification.error({ message: 'Lớp chưa hoàn thành đánh giá' })
+      return
     }
+
     window.Modal.show(
       <div
         style={{
@@ -323,10 +332,40 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
           evaluations={evaluations.filter(
             (e) => e.student.studentClass.title === search.studentClass,
           )}
+          batchTitle={`Học kỳ ${semesterId} - Năm học ${getString(
+            evaluationBatches.find((b) => b.year.id === yearId),
+            'year.title',
+          )}`}
         />
       </div>,
       {
         title: <b>BẢNG ĐIỂM CỦA LỚP</b>,
+        style: { top: 10 },
+        width: a4.width + 40,
+      },
+    )
+  }
+
+  const handleClickExportEvaluationStatistic = () => {
+    window.Modal.show(
+      <div
+        style={{
+          height: '85vh',
+          overflow: 'auto',
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
+        <EvaluationStatisticExport
+          evaluations={evaluations}
+          batchTitle={`Học kỳ ${semesterId} - Năm học ${getString(
+            evaluationBatches.find((b) => b.year.id === yearId),
+            'year.title',
+          )}`}
+        />
+      </div>,
+      {
+        title: <b>BẢNG ĐIỂM</b>,
         style: { top: 10 },
         width: a4.width + 40,
       },
@@ -338,7 +377,7 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
       size="small"
       title={
         <span>
-          <b>DANH SÁCH PHIẾU ĐIỂM RÈN LUYỆN CỦA LỚP</b>
+          <b>DANH SÁCH PHIẾU ĐIỂM RÈN LUYỆN</b>
         </span>
       }
     >
@@ -347,7 +386,11 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
       <Divider />
 
       <div className="d-flex flex-wrap">
-        <Button type="primary" className="success me-2 mb-2">
+        <Button
+          onClick={handleClickExportEvaluationStatistic}
+          type="primary"
+          className="success me-2 mb-2"
+        >
           <i className="fas fa-file-pdf me-2" />
           XUẤT BẢNG ĐIỂM HK{semesterId}{' '}
           {getString(

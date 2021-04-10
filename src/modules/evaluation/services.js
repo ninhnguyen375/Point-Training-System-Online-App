@@ -291,3 +291,10 @@ export const getDeadline = (evaluationData, viewRole) => {
 
   return ''
 }
+
+export const signPDFAsync = (data) =>
+  fetchAuthLoading({
+    url: `${configs.API}/PDFSignatures`,
+    method: 'post',
+    data,
+  })

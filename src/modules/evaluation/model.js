@@ -38,7 +38,14 @@ export const evaluationStatusColor = {
   'Hoàn tất': 'green',
 }
 
-export const classification = ['Giỏi', 'Trung bình', 'Yếu', 'Kém']
+export const classification = [
+  'Xuất sắc',
+  'Tốt',
+  'Khá',
+  'Trung bình',
+  'Yếu',
+  'Kém',
+]
 
 export const reasonForCancellation = [
   'Không chấm',
