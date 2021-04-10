@@ -87,7 +87,11 @@ const ImportStudent = () => {
       const { errors } = reader
       let { rows } = reader
 
-      rows = rows.map((r, i) => ({ ...r, row: i + 2 }))
+      rows = rows.map((r, i) => ({
+        ...r,
+        row: i + 2,
+        dateOfBirth: moment(r.dateOfBirth, 'DD/MM/yyyy').format('DD/MM/yyyy'),
+      }))
 
       setStudents(rows)
       setFailStudents(
