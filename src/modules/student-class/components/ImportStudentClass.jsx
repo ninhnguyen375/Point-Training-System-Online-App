@@ -24,14 +24,54 @@ const ImportStudentClass = () => {
 
   const demoData = [
     {
-      'Họ Tên Lớp Trưởng': 'Sinh viên 1',
-      'Mã Lớp Trưởng': '3117410212',
+      'Mã Lớp Trưởng': 3117410001,
+      'Họ Tên Lớp Trưởng': 'Sinh viên 3117410001',
       'Email Lớp Trưởng': '',
-      'Họ Tên CVHT': 'Giang Vien A',
-      'Mã CVHT': '23456',
-      'Email CVHT': 'giangviena@gmail.com',
-      'Mã Lớp': 'DCT0012',
-      Khoá: '17',
+      'Mã CVHT': 9999,
+      'Họ Tên CVHT': 'Giảng viên 9999',
+      'Email CVHT': 'ninhnguyen375@gmail.com',
+      'Mã Lớp': 'DCT1170',
+      Khóa: 'K17',
+    },
+    {
+      'Mã Lớp Trưởng': 3118410001,
+      'Họ Tên Lớp Trưởng': 'Sinh viên 3118410001',
+      'Email Lớp Trưởng': '',
+      'Mã CVHT': 9999,
+      'Họ Tên CVHT': 'Giảng viên 9999',
+      'Email CVHT': 'ninhnguyen375@gmail.com',
+      'Mã Lớp': 'DCT1180',
+      Khóa: 'K18',
+    },
+    {
+      'Mã Lớp Trưởng': 3119410001,
+      'Họ Tên Lớp Trưởng': 'Sinh viên 3119410001',
+      'Email Lớp Trưởng': '',
+      'Mã CVHT': 9999,
+      'Họ Tên CVHT': 'Giảng viên 9999',
+      'Email CVHT': 'ninhnguyen375@gmail.com',
+      'Mã Lớp': 'DCT1190',
+      Khóa: 'K19',
+    },
+    {
+      'Mã Lớp Trưởng': 3116410001,
+      'Họ Tên Lớp Trưởng': 'Sinh viên 3116410001',
+      'Email Lớp Trưởng': '',
+      'Mã CVHT': 9999,
+      'Họ Tên CVHT': 'Giảng viên 9999',
+      'Email CVHT': 'ninhnguyen375@gmail.com',
+      'Mã Lớp': 'DCT1160',
+      Khóa: 'K16',
+    },
+    {
+      'Mã Lớp Trưởng': 3115410001,
+      'Họ Tên Lớp Trưởng': 'Sinh viên 3115410001',
+      'Email Lớp Trưởng': '',
+      'Mã CVHT': 9999,
+      'Họ Tên CVHT': 'Giảng viên 9999',
+      'Email CVHT': 'ninhnguyen375@gmail.com',
+      'Mã Lớp': 'DCT1150',
+      Khóa: 'K15',
     },
   ]
 
@@ -169,7 +209,7 @@ const ImportStudentClass = () => {
   }
 
   return (
-    <Card size="small" title={<b>NHẬP LỚP</b>}>
+    <Card title={<b>NHẬP LỚP</b>}>
       <div className="row">
         <div className="col-lg-4 mb-2">
           <Dragger
@@ -194,7 +234,7 @@ const ImportStudentClass = () => {
       <div className="row mt-3">
         <div>
           <Table
-            rowKey={(r) => r.code}
+            rowKey={(r) => r.row}
             dataSource={studentClasses}
             size="small"
             columns={columns}

@@ -49,3 +49,52 @@ export const addEmployeesService = ({
       privateRole,
     },
   })
+
+export const updateEmployeesService = ({
+  userCode,
+  userRoleName,
+  userEmail,
+  oldPassword,
+  newPassword,
+}) =>
+  fetchAuthLoading({
+    url: `${configs.API}/Authentications/UpdateInformation`,
+    method: 'post',
+    data: {
+      userCode,
+      userRoleName,
+      userEmail,
+      oldPassword,
+      newPassword,
+    },
+  })
+
+export const blockUserService = ({ userId, roleName }) =>
+  fetchAuthLoading({
+    url: `${configs.API}/Authentications/BlockUser`,
+    method: 'put',
+    data: {
+      userId,
+      roleName,
+    },
+  })
+
+export const unblockUserService = ({ userId, roleName }) =>
+  fetchAuthLoading({
+    url: `${configs.API}/Authentications/unblockUser`,
+    method: 'put',
+    data: {
+      userId,
+      roleName,
+    },
+  })
+
+export const resetPasswordService = ({ userId, roleName }) =>
+  fetchAuthLoading({
+    url: `${configs.API}/Authentications/ResetPassword`,
+    method: 'put',
+    data: {
+      userId,
+      roleName,
+    },
+  })

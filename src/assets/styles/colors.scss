@@ -11,7 +11,7 @@
 .warning {
   background: $warning-color !important;
   border-color: $warning-color !important;
-  color: white !important;
+  color: rgb(0, 0, 0) !important;
 
   &:hover, &:active {
     background: darken($warning-color, 10) !important;

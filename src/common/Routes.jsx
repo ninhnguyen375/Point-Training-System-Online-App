@@ -21,7 +21,6 @@ import EvaluationListOfStudentClassPage from '../pages/EvaluationListOfStudentCl
 import ManagerListPage from '../pages/ManagerListPage'
 import EmployeeListPage from '../pages/EmployeeListPage'
 import DeputyDeanListPage from '../pages/DeputyDeanListPage'
-import ClassStatisticExport from '../pages/ClassStatisticExport'
 
 const Routes = () => {
   const profile = useSelector((state) => state[MODULE_USER].profile)
@@ -120,11 +119,6 @@ const Routes = () => {
           exact
           path="/student-class/import"
           component={ImportStudentClassPage}
-        />
-        <Route
-          exact
-          path="/class-statistic-export"
-          component={ClassStatisticExport}
         />
         <Route exact path="/evaluation" component={EvaluationListPage} />
         <Route

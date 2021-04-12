@@ -54,7 +54,7 @@ const EvaluationBatch = () => {
   }
 
   return (
-    <Card size="small" title={<b>CHI TIẾT ĐỢT ĐÁNH GIÁ</b>}>
+    <Card title={<b>CHI TIẾT ĐỢT ĐÁNH GIÁ</b>}>
       <Form
         className="col-lg-4"
         layout="vertical"

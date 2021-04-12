@@ -1,4 +1,5 @@
 export const MODULE_NAME = 'user'
+
 export const ROLE = {
   student: 'Sinh viên',
   employee: 'Nhân viên',
@@ -6,4 +7,14 @@ export const ROLE = {
   manager: 'Quản lý',
   monitor: 'Lớp trưởng',
   deputydean: 'Phó khoa',
+}
+
+export const userStatus = {
+  acitve: 'Còn hoạt động',
+  inacitve: 'Đã bị khóa',
+}
+
+export const userStatusColor = {
+  'Còn hoạt động': 'green',
+  'Đã bị khóa': 'red',
 }

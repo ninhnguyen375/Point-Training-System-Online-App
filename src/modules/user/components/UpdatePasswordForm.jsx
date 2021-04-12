@@ -1,0 +1,57 @@
+import { Button, Divider, Form, Input } from 'antd'
+import { func } from 'prop-types'
+import React from 'react'
+
+const UpdatePasswordForm = ({ onSubmit }) => {
+  const [form] = Form.useForm()
+
+  return (
+    <div className="container-fluid">
+      <Form layout="vertical" form={form} onFinish={(v) => onSubmit(v)}>
+        <Form.Item
+          name="oldPassword"
+          label="Mật khẩu cũ:"
+          rules={[{ required: true, message: 'Vui lòng nhập mật khẩu cũ' }]}
+        >
+          <Input.Password placeholder="Nhập mật khẩu cũ" />
+        </Form.Item>
+        <Form.Item
+          name="newPassword"
+          label="Mật khẩu mới:"
+          rules={[{ required: true, message: 'Vui lòng nhập mật khẩu mới' }]}
+        >
+          <Input.Password placeholder="Nhập mật khẩu mới" />
+        </Form.Item>
+        <Form.Item
+          name="newPasswordConfirm"
+          label="Xác nhận mật khẩu mới:"
+          rules={[
+            {
+              validator: async (_, v, cb) => {
+                if (form.getFieldValue('newPassword') !== v) {
+                  cb('Mật khẩu không khớp')
+                }
+              },
+            },
+          ]}
+        >
+          <Input.Password placeholder="Nhập mật khẩu mới" />
+        </Form.Item>
+
+        <Divider />
+        <div className="d-flex justify-content-end">
+          <Button htmlType="submit" type="primary">
+            <i className="fas fa-edit me-2" />
+            CẬP NHẬT
+          </Button>
+        </div>
+      </Form>
+    </div>
+  )
+}
+
+UpdatePasswordForm.propTypes = {
+  onSubmit: func.isRequired,
+}
+
+export default UpdatePasswordForm

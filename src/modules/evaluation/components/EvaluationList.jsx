@@ -548,7 +548,6 @@ const EvaluationList = () => {
 
   return (
     <Card
-      size="small"
       title={
         <span>
           <b>DANH SÁCH PHIẾU ĐIỂM RÈN LUYỆN CỦA LỚP</b>

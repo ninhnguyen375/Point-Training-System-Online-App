@@ -1,11 +1,26 @@
-import { Button, Card, Input, notification, Select, Table, Tooltip } from 'antd'
+import {
+  Button,
+  Card,
+  Input,
+  notification,
+  Popconfirm,
+  Select,
+  Table,
+  Tag,
+  Tooltip,
+} from 'antd'
 import moment from 'moment'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import handleError from '../../../common/utils/handleError'
 import { getStudentClassListService } from '../../student-class/services'
-import { ROLE } from '../model'
-import { getAllUsersService } from '../services'
+import { ROLE, userStatus, userStatusColor } from '../model'
+import {
+  blockUserService,
+  getAllUsersService,
+  resetPasswordService,
+  unblockUserService,
+} from '../services'
 
 const StudentList = () => {
   // state
@@ -53,6 +68,54 @@ const StudentList = () => {
     getStudents()
   }, [getStudents])
 
+  const blockUser = async (userId, roleName) => {
+    try {
+      await blockUserService({ userId, roleName })
+
+      notification.success({
+        message: 'Khóa tài khoản',
+        description: 'Thành công',
+      })
+
+      getStudents()
+    } catch (err) {
+      handleError(err, null, notification)
+    }
+  }
+
+  const unblockUser = async (userId, roleName) => {
+    try {
+      await unblockUserService({ userId, roleName })
+
+      notification.success({
+        message: 'Mở khóa tài khoản',
+        description: 'Thành công',
+      })
+
+      getStudents()
+    } catch (err) {
+      handleError(err, null, notification)
+    }
+  }
+
+  const resetPassword = async (userId, roleName) => {
+    try {
+      await resetPasswordService({
+        userId,
+        roleName,
+      })
+
+      notification.success({
+        message: 'Reset mật khẩu',
+        description: 'Thành công',
+      })
+      window.Modal.clear()
+      getStudents()
+    } catch (err) {
+      handleError(err, null, notification)
+    }
+  }
+
   const columns = [
     {
       key: 'code',
@@ -79,7 +142,7 @@ const StudentList = () => {
     {
       key: 'dateOfBirth',
       title: 'Ngày Sinh',
-      render: (r) => moment(r.dateOfBirth).format('DD/MM/YYYY'),
+      render: (r) => moment(r.dateOfBirth, 'DD/MM/YYYY').format('DD/MM/YYYY'),
     },
     {
       key: 'studentClass',
@@ -90,6 +153,71 @@ const StudentList = () => {
       key: 'course',
       title: 'Khóa',
       render: (r) => (r.studentClass ? r.studentClass.course : '--'),
+    },
+    {
+      key: 'status',
+      title: 'Trạng Thái',
+      align: 'center',
+      render: (r) => <Tag color={userStatusColor[r.status]}>{r.status}</Tag>,
+    },
+    {
+      key: 'action',
+      title: 'Hành Động',
+      align: 'right',
+      render: (r) => {
+        const actions = []
+
+        actions.push(
+          <Popconfirm
+            title="Reset mật khẩu tài khoản này?"
+            onConfirm={() => resetPassword(r.id, r.roleName)}
+          >
+            <Button className="mb-2 me-2">
+              <i className="fas fa-sync-alt me-2" />
+              RESET MẬT KHẨU
+            </Button>
+          </Popconfirm>,
+        )
+
+        if (r.status === userStatus.acitve) {
+          actions.push(
+            <Tooltip key="block" title="KHÓA">
+              <Popconfirm
+                title="Khóa tài khoản này?"
+                onConfirm={() => blockUser(r.id, r.roleName)}
+              >
+                <Button
+                  className="mb-2 me-2"
+                  type="primary"
+                  danger
+                  shape="circle"
+                >
+                  <i className="fas fa-lock" />
+                </Button>
+              </Popconfirm>
+            </Tooltip>,
+          )
+        } else {
+          actions.push(
+            <Tooltip key="block" title="MỞ KHÓA">
+              <Popconfirm
+                title="Mở khóa tài khoản này?"
+                onConfirm={() => unblockUser(r.id, r.roleName)}
+              >
+                <Button
+                  type="primary"
+                  className="mb-2 me-2 success"
+                  shape="circle"
+                >
+                  <i className="fas fa-unlock" />
+                </Button>
+              </Popconfirm>
+            </Tooltip>,
+          )
+        }
+
+        return actions.map((a) => a)
+      },
     },
   ]
 
@@ -141,7 +269,7 @@ const StudentList = () => {
   }, [applySearch])
 
   return (
-    <Card size="small" title={<b>DANH SÁCH SINH VIÊN</b>}>
+    <Card title={<b>DANH SÁCH SINH VIÊN</b>}>
       <div className="d-flex justify-content-between flex-wrap">
         <div className="d-flex flex-wrap">
           <Input

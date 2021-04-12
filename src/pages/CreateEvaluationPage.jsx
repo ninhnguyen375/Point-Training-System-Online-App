@@ -14,8 +14,8 @@ const CreateEvaluationPage = () => (
         },
         {
           url: '/evaluation/create',
-          title: 'Bắt đầu đợt đánh giá rèn luyện',
-          icon: '',
+          title: 'Bắt Đầu Đợt Đánh Giá',
+          icon: 'fas fa-play-circle',
         },
       ]}
     />

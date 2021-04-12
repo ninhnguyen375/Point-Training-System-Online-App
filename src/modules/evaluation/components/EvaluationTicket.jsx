@@ -1480,7 +1480,6 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
 
   return (
     <Card
-      size="small"
       title={
         <span>
           <b>PHIẾU ĐIỂM RÈN LUYỆN</b>

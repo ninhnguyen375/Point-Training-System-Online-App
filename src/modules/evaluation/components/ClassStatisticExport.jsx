@@ -4,20 +4,16 @@ import * as FileSaver from 'file-saver'
 import jsPDF from 'jspdf'
 import React, { useCallback, useEffect, useState } from 'react'
 import { any, arrayOf, objectOf, string } from 'prop-types'
-import logo from '../assets/images/sgu-logo.png'
-import '../assets/fonts/times-normal'
-import '../assets/fonts/timesi-normal'
-import '../assets/fonts/timesbd-normal'
-import '../assets/fonts/timesbi-normal'
-import {
-  a4,
-  classification,
-  evaluationStatus,
-} from '../modules/evaluation/model'
-import { getString } from '../common/utils/object'
-import { configs } from '../configs'
-import { signPDFAsync } from '../modules/evaluation/services'
-import handleError from '../common/utils/handleError'
+import logo from '../../../assets/images/sgu-logo.png'
+import '../../../assets/fonts/times-normal'
+import '../../../assets/fonts/timesi-normal'
+import '../../../assets/fonts/timesbd-normal'
+import '../../../assets/fonts/timesbi-normal'
+import { a4, classification, evaluationStatus } from '../model'
+import { getString } from '../../../common/utils/object'
+import { configs } from '../../../configs'
+import { signPDFAsync } from '../services'
+import handleError from '../../../common/utils/handleError'
 
 // pdfjs
 const pdf = new jsPDF({ unit: 'px', format: 'a4', userUnit: 'px' })

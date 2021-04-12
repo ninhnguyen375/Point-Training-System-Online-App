@@ -8,17 +8,17 @@ export default {
         {
           key: 'evaluation-list-of-student',
           iconClass: 'fas fa-copy',
-          title: 'Phiếu Của Bạn',
+          title: 'Phiếu của bạn',
         },
         {
           key: 'make-evaluation',
           iconClass: 'fas fa-list-alt',
-          title: 'Đánh Giá Rèn Luyện',
+          title: 'Đánh giá rèn luyện',
         },
         {
           key: 'evaluation-list-of-class',
           iconClass: 'fas fa-copy',
-          title: 'Danh Sách Phiếu Của Lớp',
+          title: 'Danh sách phiếu của lớp',
         },
       ],
     },
@@ -30,12 +30,12 @@ export default {
         {
           key: 'evaluation-list-of-student',
           iconClass: 'fas fa-copy',
-          title: 'Phiếu Của Bạn',
+          title: 'Phiếu của bạn',
         },
         {
           key: 'make-evaluation',
           iconClass: 'fas fa-list-alt',
-          title: 'Đánh Giá Rèn Luyện',
+          title: 'Đánh giá rèn luyện',
         },
       ],
     },
@@ -45,7 +45,7 @@ export default {
         {
           key: 'evaluation',
           iconClass: 'fas fa-copy',
-          title: 'Danh Sách Phiếu Của Lớp',
+          title: 'Danh sách phiếu của lớp',
         },
       ],
     },
@@ -57,7 +57,7 @@ export default {
         {
           key: 'evaluation',
           iconClass: 'fas fa-copy',
-          title: 'Danh Sách Phiếu Của Lớp',
+          title: 'Danh sách phiếu của lớp',
         },
       ],
     },
@@ -69,7 +69,7 @@ export default {
         {
           key: 'evaluation',
           iconClass: 'fas fa-copy',
-          title: 'Duyệt Phiếu Rèn Luyện',
+          title: 'Duyệt phiếu rèn luyện',
         },
       ],
     },
@@ -81,17 +81,17 @@ export default {
         {
           key: 'evaluation/create',
           iconClass: 'fas fa-play-circle',
-          title: 'Bắt Đầu Đợt Đánh Giá',
+          title: 'Bắt đầu đợt đánh giá',
         },
         {
           key: 'evaluation-batch',
-          iconClass: 'fas fa-copy',
-          title: 'Đợt Đánh Giá Đã Tạo',
+          iconClass: 'fas fa-calendar-week',
+          title: 'Đợt đánh giá đã tạo',
         },
         {
           key: 'evaluation',
           iconClass: 'fas fa-copy',
-          title: 'Phiếu Của Lớp Quá Hạn',
+          title: 'Phiếu của lớp quá hạn',
         },
       ],
     },
@@ -100,18 +100,18 @@ export default {
       items: [
         {
           key: 'evaluation-batch/detail',
-          iconClass: 'fas fa-copy',
-          title: 'DS Phiếu Rèn Luyện',
+          iconClass: 'fas fa-chart-bar',
+          title: 'Thống kê rèn luyện',
         },
         {
           key: 'student',
           iconClass: 'fas fa-user-graduate',
-          title: 'Sinh Viên',
+          title: 'Sinh viên',
         },
         {
           key: 'student-class',
           iconClass: 'fas fa-suitcase',
-          title: 'Danh Sách Lớp',
+          title: 'Danh sách lớp',
         },
       ],
     },
@@ -121,12 +121,12 @@ export default {
         {
           key: 'student-class/import',
           iconClass: 'fas fa-file-import',
-          title: 'Nhập Lớp',
+          title: 'Nhập lớp',
         },
         {
           key: 'student/import',
           iconClass: 'fas fa-file-import',
-          title: 'Nhập Sinh Viên',
+          title: 'Nhập sinh viên',
         },
       ],
     },
@@ -138,17 +138,17 @@ export default {
         {
           key: 'manager',
           iconClass: 'fas fa-users',
-          title: 'Tài Khoản Quản Lý',
+          title: 'Tài khoản quản lý',
         },
         {
           key: 'employee',
           iconClass: 'fas fa-users',
-          title: 'Tài Khoản Nhân Viên',
+          title: 'Tài khoản nhân viên',
         },
         {
           key: 'deputydean',
           iconClass: 'fas fa-users',
-          title: 'Tài Khoản Phó Khoa',
+          title: 'Tài khoản phó khoa',
         },
       ],
     },
@@ -160,7 +160,7 @@ export default {
         {
           key: 'dashboard',
           iconClass: 'fas fa-home',
-          title: 'Bảng Điều Khiển',
+          title: 'Bảng điều khiển',
         },
       ],
     },

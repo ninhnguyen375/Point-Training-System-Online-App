@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import propTypes from 'prop-types'
-import { Layout, Menu, Dropdown, Tag } from 'antd'
+import { Layout, Menu, Dropdown, Tag, notification } from 'antd'
 
 import { useHistory, useLocation } from 'react-router-dom'
 import SubMenu from 'antd/lib/menu/SubMenu'
 import { useDispatch, useSelector } from 'react-redux'
 import siderMenu from '../constants/siderMenu'
 import userIcon from '../../assets/images/user.svg'
+import logo from '../../assets/images/sgu-logo_cntt_small.png'
 import { clearAll, setSiderMenu } from '../actions'
 import { MODULE_NAME as MODULE_USER, ROLE } from '../../modules/user/model'
-import { configs } from '../../configs'
+import UpdatePasswordForm from '../../modules/user/components/UpdatePasswordForm'
+import handleError from '../utils/handleError'
+import { updateEmployeesService } from '../../modules/user/services'
 
 const { Header, Sider, Content } = Layout
 
@@ -129,11 +132,43 @@ const MainLayout = ({ children }) => {
       )
     })
 
+  const updatePassword = async (values) => {
+    try {
+      await updateEmployeesService({
+        userCode: profile.code,
+        userEmail: profile.email,
+        userRoleName: profile.roleName,
+        oldPassword: values.oldPassword,
+        newPassword: values.newPassword,
+      })
+
+      notification.success({
+        message: 'Thay đổi mật khẩu',
+        description: 'Thành công',
+      })
+
+      window.Modal.clear()
+    } catch (err) {
+      handleError(err, null, notification)
+    }
+  }
+
+  const handleClickChangePassword = () => {
+    window.Modal.show(<UpdatePasswordForm onSubmit={updatePassword} />, {
+      title: <b>THAY ĐỔI MẬT KHẨU</b>,
+      key: 'change-password-modal',
+    })
+  }
+
   const headerDropdown = (
     <Dropdown
       trigger={['click']}
       overlay={
         <Menu style={{ width: 200 }}>
+          <Menu.Item onClick={handleClickChangePassword}>
+            <i className="fas fa-key me-2" />
+            Đổi mật khẩu
+          </Menu.Item>
           <Menu.Item onClick={handleLogout}>
             <i className="fas fa-sign-out-alt me-2" />
             Đăng xuất
@@ -165,18 +200,8 @@ const MainLayout = ({ children }) => {
         className="main-layout__sider"
         width={255}
       >
-        <div
-          style={{
-            height: 100,
-            margin: '5px 0 5px 0',
-            padding: '0 0 0 5px',
-            boxShadow: '0 0 5px 1px lightgrey',
-            borderRadius: '0 5px 5px 0',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <img alt="logo" src={configs.LogoURL} height={48} />
+        <div className="main-layout__sider__logo">
+          <img alt="logo" src={logo} height={56} />
         </div>
         <Menu
           onOpenChange={handleOpenChange}

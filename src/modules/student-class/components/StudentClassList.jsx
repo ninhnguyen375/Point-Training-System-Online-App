@@ -62,7 +62,7 @@ const StudentClassList = () => {
   ]
 
   return (
-    <Card size="small" title={<b>DANH SÁCH LỚP</b>}>
+    <Card title={<b>DANH SÁCH LỚP</b>}>
       <div className="d-flex justify-content-end">
         <Link to="/student-class/import">
           <Button type="primary">

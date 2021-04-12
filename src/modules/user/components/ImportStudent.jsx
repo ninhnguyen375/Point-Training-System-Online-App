@@ -25,20 +25,84 @@ const ImportStudent = () => {
 
   const demoData = [
     {
-      MSSV: '3117410180',
-      'Họ Tên': 'Nguyễn Văn A',
-      Email: 'nguyenvana@gmail.com',
-      'Ngày Sinh(ngày/tháng/năm)': '05/07/1999',
-      Lớp: 'DCT0000',
-      Khoá: 'K17',
+      MSSV: 3117410000,
+      'Họ Tên': 'Sinh viên 3117410000',
+      Email: '',
+      'Ngày Sinh': '30/01/1999',
+      Lớp: 'DCT1170',
+      Khóa: 'K17',
     },
     {
-      MSSV: '3117410181',
-      'Họ Tên': 'Nguyễn Văn B',
-      Email: 'nguyenvanb@gmail.com',
-      'Ngày Sinh(ngày/tháng/năm)': '05/07/1999',
-      Lớp: 'DCT0000',
-      Khoá: 'K17',
+      MSSV: 3118410000,
+      'Họ Tên': 'Sinh viên 3118410000',
+      Email: '',
+      'Ngày Sinh': '30/01/1999',
+      Lớp: 'DCT1180',
+      Khóa: 'K18',
+    },
+    {
+      MSSV: 3119410000,
+      'Họ Tên': 'Sinh viên 3119410000',
+      Email: '',
+      'Ngày Sinh': '30/01/1999',
+      Lớp: 'DCT1190',
+      Khóa: 'K19',
+    },
+    {
+      MSSV: 3116410000,
+      'Họ Tên': 'Sinh viên 3116410000',
+      Email: '',
+      'Ngày Sinh': '30/01/1999',
+      Lớp: 'DCT1160',
+      Khóa: 'K16',
+    },
+    {
+      MSSV: 3115410000,
+      'Họ Tên': 'Sinh viên 3115410000',
+      Email: '',
+      'Ngày Sinh': '30/01/1999',
+      Lớp: 'DCT1150',
+      Khóa: 'K15',
+    },
+    {
+      MSSV: 3117410001,
+      'Họ Tên': 'Sinh viên 3117410001',
+      Email: '',
+      'Ngày Sinh': '30/01/1999',
+      Lớp: 'DCT1170',
+      Khóa: 'K17',
+    },
+    {
+      MSSV: 3118410001,
+      'Họ Tên': 'Sinh viên 3118410001',
+      Email: '',
+      'Ngày Sinh': '30/01/1999',
+      Lớp: 'DCT1180',
+      Khóa: 'K18',
+    },
+    {
+      MSSV: 3119410001,
+      'Họ Tên': 'Sinh viên 3119410001',
+      Email: '',
+      'Ngày Sinh': '30/01/1999',
+      Lớp: 'DCT1190',
+      Khóa: 'K19',
+    },
+    {
+      MSSV: 3116410001,
+      'Họ Tên': 'Sinh viên 3116410001',
+      Email: '',
+      'Ngày Sinh': '30/01/1999',
+      Lớp: 'DCT1160',
+      Khóa: 'K16',
+    },
+    {
+      MSSV: 3115410001,
+      'Họ Tên': 'Sinh viên 3115410001',
+      Email: '',
+      'Ngày Sinh': '30/01/1999',
+      Lớp: 'DCT1150',
+      Khóa: 'K15',
     },
   ]
 
@@ -67,7 +131,7 @@ const ImportStudent = () => {
             type: String,
             required: false,
           },
-          'Ngày Sinh(ngày/tháng/năm)': {
+          'Ngày Sinh': {
             prop: 'dateOfBirth',
             type: String,
             required: true,
@@ -90,7 +154,6 @@ const ImportStudent = () => {
       rows = rows.map((r, i) => ({
         ...r,
         row: i + 2,
-        dateOfBirth: moment(r.dateOfBirth, 'DD/MM/yyyy').format('DD/MM/yyyy'),
       }))
 
       setStudents(rows)
@@ -134,7 +197,7 @@ const ImportStudent = () => {
     {
       key: 'dateOfBirth',
       title: 'Ngày Sinh',
-      render: (r) => moment(r.dateOfBirth).format('DD/MM/YYYY'),
+      dataIndex: 'dateOfBirth',
     },
     {
       key: 'studentClassTitle',
@@ -150,7 +213,11 @@ const ImportStudent = () => {
 
   const handleImportStudent = async () => {
     try {
-      await importStudentsService(students)
+      const data = students.map((s) => ({
+        ...s,
+        dateOfBirth: moment(s.dateOfBirth, 'DD/MM/YYYY').format('MM/DD/YYYY'),
+      }))
+      await importStudentsService(data)
 
       notification.success({ message: 'Nhập sinh viên thành công' })
       history.push('/student')
@@ -160,7 +227,7 @@ const ImportStudent = () => {
   }
 
   return (
-    <Card size="small" title={<b>NHẬP SINH VIÊN</b>}>
+    <Card title={<b>NHẬP SINH VIÊN</b>}>
       <div className="row">
         <div className="col-lg-4 mb-2">
           <Dragger

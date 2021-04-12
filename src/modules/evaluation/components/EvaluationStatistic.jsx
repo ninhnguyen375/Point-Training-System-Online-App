@@ -26,8 +26,9 @@ import {
   getEvaluationsService,
 } from '../services'
 import { getString } from '../../../common/utils/object'
-import ClassStatisticExport from '../../../pages/ClassStatisticExport'
-import EvaluationStatisticExport from '../../../pages/EvaluationStatisticExport'
+import ClassStatisticExport from './ClassStatisticExport'
+import EvaluationStatisticExport from './EvaluationStatisticExport'
+import CounterStatisticExport from './CounterStatisticExport'
 
 const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
   // state
@@ -342,6 +343,7 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
         title: <b>BẢNG ĐIỂM CỦA LỚP</b>,
         style: { top: 10 },
         width: a4.width + 40,
+        key: 'class-statistic-modal',
       },
     )
   }
@@ -368,13 +370,100 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
         title: <b>BẢNG ĐIỂM</b>,
         style: { top: 10 },
         width: a4.width + 40,
+        key: 'evaluation-statistic-modal',
+      },
+    )
+  }
+
+  const handleClickExportCounterStatistic = () => {
+    // check valid
+    const invalidItems = evaluations.filter(
+      (e) =>
+        e.status !== evaluationStatus.Done &&
+        e.status !== evaluationStatus.Canceled,
+    )
+
+    if (invalidItems.length > 0) {
+      notification.error({ message: 'Lớp chưa hoàn thành đánh giá' })
+      return
+    }
+
+    let data = [...studentClasses]
+
+    data = data.map((studentClass, index) => {
+      const counter = {}
+      const counterCanceled = {}
+      const evalOfClass = evaluations.filter(
+        (e) => e.student.studentClass.title === studentClass,
+      )
+      const canceledEvalOfClass = evalOfClass.filter(
+        (e) => e.status === evaluationStatus.Canceled,
+      )
+
+      for (let i = 0; i < classification.length; i += 1) {
+        const item = classification[i]
+        counter[item] = evalOfClass.reduce(
+          (prev, curr) => (curr.classification === item ? prev + 1 : prev),
+          0,
+        )
+      }
+
+      for (let i = 0; i < reasonForCancellation.length; i += 1) {
+        const item = reasonForCancellation[i]
+        counterCanceled[item] = canceledEvalOfClass.reduce(
+          (prev, curr) =>
+            curr.reasonForCancellation === item ? prev + 1 : prev,
+          0,
+        )
+      }
+
+      const canceledReasons = Object.keys(counterCanceled)
+        .map((key) =>
+          counterCanceled[key] > 0 ? `${counterCanceled[key]} ${key}` : null,
+        )
+        .filter((item) => item !== null)
+
+      return {
+        index: index + 1,
+        title: studentClass,
+        studentNumber: evalOfClass.length,
+        [classification[0]]: counter[classification[0]],
+        [classification[1]]: counter[classification[1]],
+        [classification[2]]: counter[classification[2]],
+        [classification[3]]: counter[classification[3]],
+        [classification[4]]: counter[classification[4]],
+        canceled: canceledReasons.join(', '),
+      }
+    })
+
+    window.Modal.show(
+      <div
+        style={{
+          height: '85vh',
+          overflow: 'auto',
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
+        <CounterStatisticExport
+          studentClassCounters={data}
+          batchTitle={`Học kỳ ${semesterId} - Năm học ${getString(
+            evaluationBatches.find((b) => b.year.id === yearId),
+            'year.title',
+          )}`}
+        />
+      </div>,
+      {
+        title: <b>BẢNG ĐIỂM</b>,
+        style: { top: 10 },
+        width: a4.width + 40,
+        key: 'evaluation-statistic-modal',
       },
     )
   }
 
   return (
     <Card
-      size="small"
       title={
         <span>
           <b>DANH SÁCH PHIẾU ĐIỂM RÈN LUYỆN</b>
@@ -386,26 +475,34 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
       <Divider />
 
       <div className="d-flex flex-wrap">
-        <Button
+        <div
           onClick={handleClickExportEvaluationStatistic}
-          type="primary"
-          className="success me-2 mb-2"
+          aria-hidden
+          className="card-box me-4 mb-2"
         >
-          <i className="fas fa-file-pdf me-2" />
+          <i className="fas fa-file-pdf" />
           XUẤT BẢNG ĐIỂM HK{semesterId}{' '}
           {getString(
             evaluationBatches.find((b) => b.year.id === yearId),
             'year.title',
           )}
-        </Button>
-        <Button
+        </div>
+        <div
           onClick={handleClickExportClassStatistic}
-          type="primary"
-          className="success me-2 mb-2"
+          aria-hidden
+          className="card-box me-4 mb-2"
         >
-          <i className="fas fa-file-pdf me-2" />
+          <i className="fas fa-file-pdf" />
           XUẤT BẢNG ĐIỂM THEO LỚP
-        </Button>
+        </div>
+        <div
+          onClick={handleClickExportCounterStatistic}
+          aria-hidden
+          className="card-box me-4 mb-2"
+        >
+          <i className="fas fa-file-pdf" />
+          XUẤT BẢNG THỐNG KÊ SỐ LƯỢNG
+        </div>
       </div>
 
       <Divider />

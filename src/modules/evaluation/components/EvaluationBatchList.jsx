@@ -1,4 +1,4 @@
-import { Button, Card, notification, Table, Tag } from 'antd'
+import { Button, Card, notification, Table, Tag, Tooltip } from 'antd'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import handleError from '../../../common/utils/handleError'
@@ -44,7 +44,7 @@ const EvaluationBatchList = () => {
   }
 
   return (
-    <Card title={<b>ĐỢT ĐÁNH GIÁ RÈN LUYỆN ĐÃ TẠO</b>} size="small">
+    <Card title={<b>ĐỢT ĐÁNH GIÁ RÈN LUYỆN ĐÃ TẠO</b>}>
       <div className="d-flex justify-content-end mb-2">
         <Link to="/evaluation/create">
           <Button type="primary">
@@ -57,6 +57,7 @@ const EvaluationBatchList = () => {
         rowKey={(r) => `${r.year.id}-${r.semester.id}`}
         dataSource={evaluationBatches}
         size="small"
+        scroll={{ x: 400 }}
         columns={[
           {
             key: 'year',
@@ -88,14 +89,16 @@ const EvaluationBatchList = () => {
             render: (r) => (
               <div>
                 {!r.isInDeadline && (
-                  <Button
-                    type="primary"
-                    className="me-2 success"
-                    icon={<i className="fas fa-play me-2" />}
-                    onClick={() => handleActiveEvaluationBatch(r)}
-                  >
-                    KÍCH HOẠT
-                  </Button>
+                  <Tooltip title="KÍCH HOẠT">
+                    <Button
+                      type="primary"
+                      shape="circle"
+                      className="me-2 success"
+                      onClick={() => handleActiveEvaluationBatch(r)}
+                    >
+                      <i className="fas fa-play" />
+                    </Button>
+                  </Tooltip>
                 )}
                 <Button
                   shape="circle"
