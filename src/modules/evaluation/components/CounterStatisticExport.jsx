@@ -1,5 +1,5 @@
 /* eslint-disable new-cap */
-import { Button, Switch } from 'antd'
+import { Button } from 'antd'
 import jsPDF from 'jspdf'
 import React, { useCallback, useEffect, useState } from 'react'
 import { any, arrayOf, objectOf, string } from 'prop-types'
@@ -7,8 +7,8 @@ import '../../../assets/fonts/times-normal'
 import '../../../assets/fonts/timesi-normal'
 import '../../../assets/fonts/timesbd-normal'
 import '../../../assets/fonts/timesbi-normal'
-import { a4, evaluationStatus } from '../model'
-import { getString } from '../../../common/utils/object'
+import { a4, classification } from '../model'
+import { configs } from '../../../configs'
 
 // pdfjs
 const pdf = new jsPDF({ unit: 'px', format: 'a4', userUnit: 'px' })
@@ -19,7 +19,6 @@ pdf.setFont('timesbi')
 
 const CounterStatisticExport = ({ studentClassCounters, batchTitle }) => {
   // state
-  const [isFilterValidTicket, setIsFilterValidTicket] = useState(false)
   const [pages, setPages] = useState([])
   const [loading, setLoading] = useState(false)
 
@@ -30,14 +29,10 @@ const CounterStatisticExport = ({ studentClassCounters, batchTitle }) => {
     let src = [...studentClassCounters]
     src = src.map((s, i) => ({ ...s, index: i + 1 }))
 
-    if (isFilterValidTicket) {
-      src = src.filter((s) => !!s.conclusionPoint)
-    }
-
-    const itemNumWithHeaderAndFooter = 27
-    const itemNumWithHeader = 28
-    const itemNumWithFooter = 37
-    const itemNum = 37
+    const itemNumWithHeaderAndFooter = 36
+    const itemNumWithHeader = 36
+    const itemNumWithFooter = 36
+    const itemNum = 36
     let numPage = 1
     let isSplitFooter = true
 
@@ -83,7 +78,7 @@ const CounterStatisticExport = ({ studentClassCounters, batchTitle }) => {
     }
 
     setPages(newPages)
-  }, [isFilterValidTicket, studentClassCounters])
+  }, [studentClassCounters])
 
   useEffect(() => {
     getPages()
@@ -92,7 +87,6 @@ const CounterStatisticExport = ({ studentClassCounters, batchTitle }) => {
   const exportToPDF = async () => {
     setLoading(true)
     const input = document.getElementById('pdf-element')
-
     await pdf.html(input, { html2canvas: { scale: 0.75 } })
     pdf.save(`${batchTitle}.pdf`)
 
@@ -107,23 +101,40 @@ const CounterStatisticExport = ({ studentClassCounters, batchTitle }) => {
       <table className="raw-table mt-2">
         <thead>
           <tr>
-            <th>
+            <th rowSpan={2}>
               <b>STT</b>
             </th>
+            <th rowSpan={2}>
+              <b>LỚP</b>
+            </th>
+            <th rowSpan={2}>
+              <b>SĨ SỐ</b>
+            </th>
+            <th colSpan={7}>
+              <b>XẾP LOẠI RÈN LUYỆN</b>
+            </th>
+          </tr>
+          <tr>
             <th>
-              <b>Mã sinh viên</b>
+              <b>XS</b>
             </th>
             <th>
-              <b>Họ và tên SV</b>
+              <b>Tốt</b>
             </th>
             <th>
-              <b>Ngày sinh</b>
+              <b>Khá</b>
             </th>
             <th>
-              <b>Điểm</b>
+              <b>TB</b>
             </th>
             <th>
-              <b>Ghi chú</b>
+              <b>Yếu</b>
+            </th>
+            <th>
+              <b>Kém</b>
+            </th>
+            <th>
+              <b>Lý do</b>
             </th>
           </tr>
         </thead>
@@ -131,34 +142,15 @@ const CounterStatisticExport = ({ studentClassCounters, batchTitle }) => {
           {page.items.map((r) => (
             <tr key={r.index}>
               <td>{r.index}</td>
-              <td>{getString(r, 'student.code')}</td>
-              <td>
-                <div className="d-flex justify-content-between pe-1 ps-1">
-                  <span>
-                    {getString(r, 'student.fullName')
-                      .split(' ')
-                      .slice(
-                        0,
-                        getString(r, 'student.fullName').split(' ').length - 1,
-                      )
-                      .join(' ')}
-                  </span>
-                  <span>
-                    {
-                      getString(r, 'student.fullName').split(' ')[
-                        getString(r, 'student.fullName').split(' ').length - 1
-                      ]
-                    }
-                  </span>
-                </div>
-              </td>
-              <td>{getString(r, 'student.dateOfBirth')}</td>
-              <td>{r.conclusionPoint}</td>
-              <td>
-                {r.status === evaluationStatus.Canceled
-                  ? r.reasonForCancellation
-                  : r.classification}
-              </td>
+              <td>{r.title}</td>
+              <td>{r.studentNumber}</td>
+              <td>{r[classification[0]]}</td>
+              <td>{r[classification[1]]}</td>
+              <td>{r[classification[2]]}</td>
+              <td>{r[classification[3]]}</td>
+              <td>{r[classification[4]]}</td>
+              <td>{r[classification[5]]}</td>
+              <td>{r.canceled}</td>
             </tr>
           ))}
         </tbody>
@@ -182,14 +174,6 @@ const CounterStatisticExport = ({ studentClassCounters, batchTitle }) => {
           {!loading && <i className="fas fa-download me-2" />}
           TẢI XUỐNG
         </Button>
-        <div className="d-flex align-items-center">
-          <Switch
-            onChange={(checked) => setIsFilterValidTicket(checked)}
-            checked={isFilterValidTicket}
-            className="me-2"
-          />
-          CHỈ LẤY SINH VIÊN CÓ ĐIỂM
-        </div>
       </div>
 
       <div id="pdf-element">
@@ -205,6 +189,9 @@ const CounterStatisticExport = ({ studentClassCounters, batchTitle }) => {
                 border: '1px solid lightgray',
               }}
             >
+              <div>
+                {batchTitle} - {configs.Speciality}
+              </div>
               <div>{renderTable(p)}</div>
             </div>
           ))

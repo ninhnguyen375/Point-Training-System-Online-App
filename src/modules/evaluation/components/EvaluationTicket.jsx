@@ -72,7 +72,9 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
   const isTicketOfCurrentStudent =
     evaluation && evaluation.studentId === profile.id
   let { isMonitor } = profile
-  isMonitor = !(evaluation && evaluation.overdue)
+  if (evaluation && evaluation.overdue) {
+    isMonitor = false
+  }
   const isTicketOfMonitor = evaluation && isMonitor && isTicketOfCurrentStudent
   const viewRole =
     isMonitor && !isTicketOfMonitor ? ROLE.monitor : profile.roleName
@@ -630,6 +632,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       forStudent ? studentEvaluation : monitorEvaluation,
     )
     const isStudent = viewRole === ROLE.student && !isMonitor
+    console.log('~ isMonitor', profile)
     const isLecturer = viewRole === ROLE.lecturer
     const isEmployee = viewRole === ROLE.employee
 

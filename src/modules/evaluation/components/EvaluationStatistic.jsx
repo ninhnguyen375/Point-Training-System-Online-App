@@ -384,7 +384,7 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
     )
 
     if (invalidItems.length > 0) {
-      notification.error({ message: 'Lớp chưa hoàn thành đánh giá' })
+      notification.error({ message: 'Sinh viên chưa hoàn thành hết đánh giá' })
       return
     }
 
@@ -432,6 +432,7 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
         [classification[2]]: counter[classification[2]],
         [classification[3]]: counter[classification[3]],
         [classification[4]]: counter[classification[4]],
+        [classification[5]]: counter[classification[5]],
         canceled: canceledReasons.join(', '),
       }
     })
