@@ -15,7 +15,7 @@ const EvaluationBatchListPage = () => (
         {
           url: '/evaluation/created',
           title: 'Đợt đánh giá rèn luyện đã tạo',
-          icon: '',
+          icon: 'fas fa-calendar-week',
         },
       ]}
     />

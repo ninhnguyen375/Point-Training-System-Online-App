@@ -1,4 +1,4 @@
-import { Button, Card, notification, Table, Tag, Tooltip } from 'antd'
+import { Button, Card, notification, Table, Tag } from 'antd'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import handleError from '../../../common/utils/handleError'
@@ -89,16 +89,14 @@ const EvaluationBatchList = () => {
             render: (r) => (
               <div>
                 {!r.isInDeadline && (
-                  <Tooltip title="KÍCH HOẠT">
-                    <Button
-                      type="primary"
-                      shape="circle"
-                      className="me-2 success"
-                      onClick={() => handleActiveEvaluationBatch(r)}
-                    >
-                      <i className="fas fa-play" />
-                    </Button>
-                  </Tooltip>
+                  <Button
+                    type="primary"
+                    className="me-2 success"
+                    onClick={() => handleActiveEvaluationBatch(r)}
+                  >
+                    <i className="fas fa-play me-2" />
+                    KÍCH HOẠT
+                  </Button>
                 )}
                 <Button
                   shape="circle"

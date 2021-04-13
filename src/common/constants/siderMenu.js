@@ -93,20 +93,25 @@ export default {
           iconClass: 'fas fa-copy',
           title: 'Phiếu của lớp quá hạn',
         },
+        {
+          key: 'evaluation-batch/detail',
+          iconClass: 'fas fa-chart-bar',
+          title: 'Thống kê rèn luyện',
+        },
       ],
     },
     {
       itemGroup: 'Quản Lý',
       items: [
         {
-          key: 'evaluation-batch/detail',
-          iconClass: 'fas fa-chart-bar',
-          title: 'Thống kê rèn luyện',
-        },
-        {
           key: 'student',
           iconClass: 'fas fa-user-graduate',
           title: 'Sinh viên',
+        },
+        {
+          key: 'lecturer',
+          iconClass: 'fas fa-user-graduate',
+          title: 'Giảng viên',
         },
         {
           key: 'student-class',

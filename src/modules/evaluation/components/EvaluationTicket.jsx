@@ -632,7 +632,6 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       forStudent ? studentEvaluation : monitorEvaluation,
     )
     const isStudent = viewRole === ROLE.student && !isMonitor
-    console.log('~ isMonitor', profile)
     const isLecturer = viewRole === ROLE.lecturer
     const isEmployee = viewRole === ROLE.employee
 

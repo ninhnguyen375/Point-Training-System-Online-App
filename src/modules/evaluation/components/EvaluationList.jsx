@@ -425,7 +425,7 @@ const EvaluationList = () => {
     }
 
     return (
-      <div className="col-lg-4">
+      <div className="col-lg-2">
         <div>Chọn Năm học và Học kỳ:</div>
         <Select
           onChange={(v) => {

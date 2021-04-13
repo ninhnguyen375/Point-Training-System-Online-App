@@ -25,6 +25,12 @@ export const getAllUsersService = () =>
     method: 'get',
   })
 
+export const getAllLecturersService = () =>
+  fetchAuthLoading({
+    url: `${configs.API}/Authentications/GetAllLecturers`,
+    method: 'get',
+  })
+
 export const getEmployeesService = () =>
   fetchAuthLoading({
     url: `${configs.API}/Authentications/GetAllEmployees`,
@@ -53,6 +59,7 @@ export const addEmployeesService = ({
 export const updateEmployeesService = ({
   userCode,
   userRoleName,
+  userFullName,
   userEmail,
   oldPassword,
   newPassword,
@@ -63,6 +70,7 @@ export const updateEmployeesService = ({
     data: {
       userCode,
       userRoleName,
+      userFullName,
       userEmail,
       oldPassword,
       newPassword,

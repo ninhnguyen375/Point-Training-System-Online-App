@@ -21,6 +21,7 @@ import EvaluationListOfStudentClassPage from '../pages/EvaluationListOfStudentCl
 import ManagerListPage from '../pages/ManagerListPage'
 import EmployeeListPage from '../pages/EmployeeListPage'
 import DeputyDeanListPage from '../pages/DeputyDeanListPage'
+import LecturerListPage from '../pages/LecturerListPage'
 
 const Routes = () => {
   const profile = useSelector((state) => state[MODULE_USER].profile)
@@ -97,6 +98,7 @@ const Routes = () => {
       <Switch>
         <Route exact path="/dashboard" component={Dashboard} />
         <Route exact path="/home" component={Home} />
+        <Route exact path="/lecturer" component={LecturerListPage} />
         <Route
           exact
           path="/evaluation/create"

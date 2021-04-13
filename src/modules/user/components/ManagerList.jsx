@@ -150,6 +150,7 @@ const ManagerList = () => {
         userCode: r.code,
         userEmail: values.email,
         userRoleName: r.roleName,
+        userFullName: values.fullName,
       })
 
       notification.success({
