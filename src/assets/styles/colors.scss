@@ -18,3 +18,13 @@
     border-color: darken($warning-color, 10) !important;
   }
 }
+.secondary {
+  background: $secondary-color !important;
+  border-color: $secondary-color !important;
+  color: rgb(0, 0, 0) !important;
+
+  &:hover, &:active {
+    background: darken($secondary-color, 10) !important;
+    border-color: darken($secondary-color, 10) !important;
+  }
+}

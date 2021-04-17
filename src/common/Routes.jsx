@@ -22,6 +22,7 @@ import ManagerListPage from '../pages/ManagerListPage'
 import EmployeeListPage from '../pages/EmployeeListPage'
 import DeputyDeanListPage from '../pages/DeputyDeanListPage'
 import LecturerListPage from '../pages/LecturerListPage'
+import PointTrainingGroupPage from '../pages/PointTrainingGroupPage'
 
 const Routes = () => {
   const profile = useSelector((state) => state[MODULE_USER].profile)
@@ -99,6 +100,11 @@ const Routes = () => {
         <Route exact path="/dashboard" component={Dashboard} />
         <Route exact path="/home" component={Home} />
         <Route exact path="/lecturer" component={LecturerListPage} />
+        <Route
+          exact
+          path="/point-training-group"
+          component={PointTrainingGroupPage}
+        />
         <Route
           exact
           path="/evaluation/create"

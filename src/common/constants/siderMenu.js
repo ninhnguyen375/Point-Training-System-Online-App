@@ -109,14 +109,19 @@ export default {
           title: 'Sinh viên',
         },
         {
+          key: 'student-class',
+          iconClass: 'fas fa-suitcase',
+          title: 'Danh sách lớp',
+        },
+        {
           key: 'lecturer',
           iconClass: 'fas fa-user-graduate',
           title: 'Giảng viên',
         },
         {
-          key: 'student-class',
-          iconClass: 'fas fa-suitcase',
-          title: 'Danh sách lớp',
+          key: 'point-training-group',
+          iconClass: 'fas fa-list',
+          title: 'Mục đánh giá rèn luyện',
         },
       ],
     },

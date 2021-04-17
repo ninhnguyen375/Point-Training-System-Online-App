@@ -1,0 +1,55 @@
+.point-training-group {
+  .remove-button {
+    color: gray;
+
+    &:hover {
+      color: $danger-color;
+    }
+  }
+
+  .edit-button {
+    color: gray;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+
+  &__group {
+    & > div:first-child {
+      font-weight: bold;
+      font-size: 1.1em;
+      margin-bottom: 1em;
+      display: flex;
+      align-items: center;
+    }
+
+    & > div:last-child {
+      border-left: none;
+      padding-left: 0;
+    }
+  }
+
+  &__item {
+    & > div:first-child {
+      margin-bottom: 1em;
+      display: flex;
+      align-items: center;
+    }
+
+    & > div:last-child {
+      margin-bottom: 0;
+    }
+
+    border-left: 3px solid lightgray;
+    padding-left: 5px;
+    margin-left: 3em;
+  }
+
+  &__child {
+    margin-left: 5em;
+    margin-bottom: 1em;
+    display: flex;
+    align-items: center;
+  }
+}
