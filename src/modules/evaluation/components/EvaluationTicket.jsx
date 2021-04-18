@@ -36,7 +36,6 @@ import {
 } from '../services'
 import { MODULE_NAME as MODULE_USER, ROLE } from '../../user/model'
 import {
-  MODULE_NAME as MODULE_EVALUATION,
   disableEvaluationItems,
   evaluationStatus,
   classification as classificationList,
@@ -50,9 +49,6 @@ import TextAreaForm from '../../../common/components/widgets/TextAreaForm'
 const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
   // store
   const profile = useSelector((state) => state[MODULE_USER].profile)
-  const pointTrainingGroups = useSelector(
-    (state) => state[MODULE_EVALUATION].pointTrainingGroup,
-  )
   // state
   const [studentEvaluation, setStudentEvaluation] = useState(null)
   const [monitorEvaluation, setMonitorEvaluation] = useState(null)
@@ -355,31 +351,47 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       const evaluationDataItem = []
 
       displayEvalutionTicket.push({
-        ...d,
+        isAnotherItem: d.IsAnotherItem,
+        maxPoint: d.MaxPoint,
+        pointTrainingItemList: d.PointTrainingItemList,
+        id: `A${d.Id}`,
+        title: `${d.Title} (tối đa ${d.MaxPoint} điểm)`,
         class: 'fw-bold',
-        id: `A${d.id}`,
-        title: `${d.title} (tối đa ${d.maxPoint} điểm)`,
       })
 
-      if (d.pointTrainingItemList) {
-        d.pointTrainingItemList.forEach((item) => {
-          displayEvalutionTicket.push({ ...item, class: 'fw-bold' })
+      if (d.PointTrainingItemList) {
+        d.PointTrainingItemList.forEach((item) => {
+          displayEvalutionTicket.push({
+            childrenItemList: item.ChildrenItemList,
+            id: item.Id,
+            parentId: item.ParentId,
+            point: item.Point,
+            title: item.Title,
+            class: 'fw-bold',
+          })
 
-          if (item.childrenItemList) {
-            item.childrenItemList.forEach((child) => {
+          if (item.ChildrenItemList) {
+            item.ChildrenItemList.forEach((child) => {
               evaluationDataItem.push({
-                id: child.id,
-                title: child.title,
-                parentId: d.id,
+                id: child.Id,
+                title: child.Title,
+                parentId: d.Id,
                 point: 0,
               })
-              displayEvalutionTicket.push({ ...child, class: 'ms-3' })
+              displayEvalutionTicket.push({
+                childrenItemList: child.ChildrenItemList,
+                id: child.Id,
+                parentId: child.ParentId,
+                point: child.Point,
+                title: child.Title,
+                class: 'ms-3',
+              })
             })
           } else {
             evaluationDataItem.push({
-              id: item.id,
-              title: item.title,
-              parentId: d.id,
+              id: item.Id,
+              title: item.Title,
+              parentId: d.Id,
               point: 0,
             })
           }
@@ -387,10 +399,10 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       }
 
       evaluationData.push({
-        id: `A${d.id}`,
-        maxPoint: d.maxPoint,
+        id: `A${d.Id}`,
+        maxPoint: d.MaxPoint,
         point: 0,
-        isAnotherItem: d.isAnotherItem,
+        isAnotherItem: d.IsAnotherItem,
         currentPoint: 0,
         items: evaluationDataItem,
       })
@@ -419,7 +431,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     return total > 100 ? 100 : total
   }
 
-  const getEvaluationPrivate = useCallback(async (stuId, yId, sId, groups) => {
+  const getEvaluationPrivate = useCallback(async (stuId, yId, sId) => {
     try {
       let evaluationPrivate = await getEvaluationPrivateService({
         studentId: stuId,
@@ -427,6 +439,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         yearId: yId,
       })
       evaluationPrivate = evaluationPrivate.data.data
+      const groups = JSON.parse(evaluationPrivate.evaluationJSON)
 
       setEvaluation(evaluationPrivate)
       const mapped = mapToEvaluationTicket(groups)
@@ -463,9 +476,9 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
 
   useEffect(() => {
     if (yearId && semesterId) {
-      getEvaluationPrivate(studentId, yearId, semesterId, pointTrainingGroups)
+      getEvaluationPrivate(studentId, yearId, semesterId)
     }
-  }, [getEvaluationPrivate, studentId, yearId, semesterId, pointTrainingGroups])
+  }, [getEvaluationPrivate, studentId, yearId, semesterId])
 
   const applyPoint = (prePoint, currPoint) => {
     const clone = cloneObj(isMonitor ? monitorEvaluation : studentEvaluation)
@@ -656,9 +669,8 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       const value = currItem.point || 0
       const defaultValue = currItem.point || 0
       const onChange = (v) => handleChangePoint(r.id, v, forStudent)
-      const attachment = attachments.filter(
-        (a) => a.name.split('_')[0] === r.id,
-      )
+      // eslint-disable-next-line eqeqeq
+      const attachment = attachments.filter((a) => a.name.split('_')[0] == r.id)
 
       return (
         <div>
@@ -821,7 +833,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         notification.success({ message: 'Lưu nháp thành công' })
       }
 
-      getEvaluationPrivate(studentId, yearId, semesterId, pointTrainingGroups)
+      getEvaluationPrivate(studentId, yearId, semesterId)
     } catch (err) {
       if (notify) {
         handleError(err, null, notification)
@@ -838,7 +850,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         description: 'Đánh giá thành công',
       })
 
-      getEvaluationPrivate(studentId, yearId, semesterId, pointTrainingGroups)
+      getEvaluationPrivate(studentId, yearId, semesterId)
     } catch (err) {
       handleError(err, null, notification)
     }
@@ -867,7 +879,10 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     try {
       const totalPoint = getTotalPoint(monitorEvaluation)
 
-      if (isUpdate) {
+      if (
+        isUpdate &&
+        evaluation.status !== evaluationStatus.ComplainingMonitor
+      ) {
         await complainService(evaluation.id, '')
       }
 
@@ -900,7 +915,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         })
       }
 
-      getEvaluationPrivate(studentId, yearId, semesterId, pointTrainingGroups)
+      getEvaluationPrivate(studentId, yearId, semesterId)
     } catch (err) {
       handleError(err, null, notification)
     }
@@ -938,7 +953,10 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         : ''
 
       // update ticket
-      if (isUpdate) {
+      if (
+        isUpdate &&
+        evaluation.status !== evaluationStatus.ComplainingLecturer
+      ) {
         await complainService(evaluation.id, '')
       }
 
@@ -959,7 +977,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         })
       }
 
-      getEvaluationPrivate(studentId, yearId, semesterId, pointTrainingGroups)
+      getEvaluationPrivate(studentId, yearId, semesterId)
     } catch (err) {
       handleError(err, null, notification)
     }
@@ -1003,7 +1021,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         })
       }
 
-      getEvaluationPrivate(studentId, yearId, semesterId, pointTrainingGroups)
+      getEvaluationPrivate(studentId, yearId, semesterId)
     } catch (err) {
       handleError(err, null, notification)
     }
@@ -1018,7 +1036,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         description: 'Thành công',
       })
 
-      getEvaluationPrivate(studentId, yearId, semesterId, pointTrainingGroups)
+      getEvaluationPrivate(studentId, yearId, semesterId)
     } catch (err) {
       handleError(err, null, notification)
     }
@@ -1082,12 +1100,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         }),
       )
 
-      await getEvaluationPrivate(
-        studentId,
-        yearId,
-        semesterId,
-        pointTrainingGroups,
-      )
+      await getEvaluationPrivate(studentId, yearId, semesterId)
       window.Modal.clear()
       notification.success({ message: 'Gửi khiếu nại thành công' })
     } catch (err) {

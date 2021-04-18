@@ -267,27 +267,25 @@ const EvaluationList = () => {
           r.status === evaluationStatus.StudentSubmited
         ) {
           actions.push(
-            <Tooltip title="Đánh giá">
-              <Button
-                key="monitor-confirm"
-                onClick={() => gotoConfirmPage(r)}
-                type="primary"
-              >
+            <Tooltip key="monitor-confirm" title="Đánh giá">
+              <Button onClick={() => gotoConfirmPage(r)} type="primary">
                 <i className="fas fa-pen-alt" />
               </Button>
             </Tooltip>,
           )
         }
 
-        // monitor/employee cancel
+        // monitor/employee/deputydean cancel
         if (
-          (profile.isMonitor || profile.roleName === ROLE.employee) &&
-          r.status === evaluationStatus.New
+          ((profile.isMonitor || profile.roleName === ROLE.employee) &&
+            r.status === evaluationStatus.New) ||
+          (profile.roleName === ROLE.deputydean &&
+            (r.status === evaluationStatus.LecturerConfirmed ||
+              r.status === evaluationStatus.EmployeeConfirmed))
         ) {
           actions.push(
-            <Tooltip title="Hủy phiếu">
+            <Tooltip key="monitor-cancel" title="Hủy phiếu">
               <Button
-                key="monitor-cancel"
                 onClick={() => handleCancelEvaluation(r.id)}
                 danger
                 type="primary"
@@ -306,9 +304,8 @@ const EvaluationList = () => {
             r.status === evaluationStatus.ComplainingMonitor)
         ) {
           actions.push(
-            <Tooltip title="Chỉnh sửa">
+            <Tooltip key="monitor-update" title="Chỉnh sửa">
               <Button
-                key="monitor-update"
                 onClick={() => gotoConfirmPage(r)}
                 type="default"
                 className="ms-2"
@@ -325,12 +322,8 @@ const EvaluationList = () => {
           r.status === evaluationStatus.MonitorConfirmed
         ) {
           actions.push(
-            <Tooltip title="Đánh giá">
-              <Button
-                key="lecturer-confirm"
-                onClick={() => gotoConfirmPage(r)}
-                type="primary"
-              >
+            <Tooltip key="lecturer-confirm" title="Đánh giá">
+              <Button onClick={() => gotoConfirmPage(r)} type="primary">
                 <i className="fas fa-pen-alt" />
               </Button>
             </Tooltip>,
@@ -344,9 +337,8 @@ const EvaluationList = () => {
             r.status === evaluationStatus.ComplainingLecturer)
         ) {
           actions.push(
-            <Tooltip title="Chỉnh sửa">
+            <Tooltip key="lecturer-update" title="Chỉnh sửa">
               <Button
-                key="lecturer-update"
                 onClick={() => gotoConfirmPage(r)}
                 type="default"
                 className="ms-2"
@@ -363,12 +355,8 @@ const EvaluationList = () => {
           r.status === evaluationStatus.StudentSubmited
         ) {
           actions.push(
-            <Tooltip title="Đánh giá">
-              <Button
-                key="employee-confirm"
-                onClick={() => gotoConfirmPage(r)}
-                type="primary"
-              >
+            <Tooltip key="employee-confirm" title="Đánh giá">
+              <Button onClick={() => gotoConfirmPage(r)} type="primary">
                 <i className="fas fa-pen-alt" />
               </Button>
             </Tooltip>,
@@ -382,16 +370,12 @@ const EvaluationList = () => {
             r.status === evaluationStatus.LecturerConfirmed)
         ) {
           actions.push(
-            <Tooltip title="Duyệt ngay">
+            <Tooltip key="deputydean-confirm" title="Duyệt ngay">
               <Popconfirm
                 title="Xác nhận"
                 onConfirm={() => deputydeanConfirm(r.id)}
               >
-                <Button
-                  className="success"
-                  key="deputydean-confirm"
-                  type="primary"
-                >
+                <Button className="ms-2 success" type="primary">
                   <i className="fas fa-check" />
                 </Button>
               </Popconfirm>

@@ -4,8 +4,6 @@ import React from 'react'
 import { useDispatch } from 'react-redux'
 import Logo from '../../../assets/images/sgu-logo.png'
 import handleError from '../../../common/utils/handleError'
-import { addPointTrainingGroup } from '../../evaluation/actions'
-import { getPointTrainingGroupsService } from '../../evaluation/services'
 import { login } from '../actions'
 import { ROLE } from '../model'
 import { loginService } from '../services'
@@ -19,9 +17,6 @@ const LoginForm = () => {
       let user = await loginService(values)
       user = user.data.data
 
-      let pointTrainingGroups = await getPointTrainingGroupsService(user.token)
-      pointTrainingGroups = pointTrainingGroups.data.data
-
       if (user.roleName === ROLE.monitor) {
         dispatch(login({ ...user, roleName: ROLE.student, isMonitor: true }))
       } else if (user.roleName === ROLE.student) {
@@ -29,8 +24,6 @@ const LoginForm = () => {
       } else {
         dispatch(login(user))
       }
-
-      dispatch(addPointTrainingGroup(pointTrainingGroups))
     } catch (err) {
       handleError(err, null, notification)
     }
