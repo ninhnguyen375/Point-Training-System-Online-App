@@ -1,0 +1,82 @@
+.statistic-card {
+  background: $primary-color;
+  width: 400px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px gray;
+  padding: 10px;
+  cursor: pointer;
+  transition: .1s;
+
+  &:hover {
+    background: lighten($primary-color, 10);
+  }
+
+  &__top {
+    color: white;
+
+    i {
+      font-size: 3.7em;
+      padding: 20px;
+    }
+
+    &__right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+
+      &__title {
+        font-size: 2em;
+        font-weight: bold;
+        text-align: right;
+        margin-right: 20px;
+      }
+
+      &__tag {
+        margin-top: 5px;
+        font-size: 0.7em;
+        background: lighten($primary-color, 30);
+        margin-right: -10px;
+        padding: 5px 5px 5px 10px;
+        border-radius: 5px 0 0 5px;
+        box-shadow: -5px 0 10px #00000059;
+        font-weight: bold;
+        width: 170px;
+        text-align: center;
+
+        .number {
+          font-size: 1.5em;
+        }
+      }
+    }
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: white;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  &__bottom {
+    background: white;
+    color: #333;
+    height: 70px;
+    width: 90%;
+    text-align: center;
+    margin: 0 auto;
+    margin-top: 20px;
+    margin-bottom: -10px;
+    border-radius: 5px 5px 0 0;
+    padding: 10px 10px 0 10px;
+    font-size: 0.9em;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    div {
+      width: 100px;
+      font-weight: bold;
+    }
+  }
+}

@@ -8,6 +8,11 @@ const LecturerListPage = () => (
     <CustomBreadcrumb
       items={[
         {
+          url: '/dashboard',
+          title: 'Bảng Điều Khiển',
+          icon: 'fas fa-home',
+        },
+        {
           url: '/lecturer',
           title: 'Danh sách giảng viên',
           icon: 'fas fa-user-graduate',

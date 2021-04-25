@@ -3,7 +3,14 @@ import { Button } from 'antd'
 import * as XLSX from 'xlsx'
 import PropTypes from 'prop-types'
 
-const ExportCSV = ({ jsonData, fileName, children, style, ...props }) => {
+const ExportCSV = ({
+  jsonData,
+  fileName,
+  children,
+  useButton,
+  style,
+  ...props
+}) => {
   const fileExtension = '.xlsx'
 
   const exportToCSV = () => {
@@ -12,10 +19,18 @@ const ExportCSV = ({ jsonData, fileName, children, style, ...props }) => {
     XLSX.writeFile(wb, fileName + fileExtension)
   }
 
+  if (useButton) {
+    return (
+      <Button onClick={exportToCSV} {...props}>
+        {children}
+      </Button>
+    )
+  }
+
   return (
-    <Button onClick={exportToCSV} {...props}>
+    <div onClick={exportToCSV} aria-hidden="true">
       {children}
-    </Button>
+    </div>
   )
 }
 ExportCSV.propTypes = {
@@ -23,9 +38,11 @@ ExportCSV.propTypes = {
   style: PropTypes.objectOf(PropTypes.any),
   fileName: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
+  useButton: PropTypes.bool,
 }
 
 ExportCSV.defaultProps = {
   style: {},
+  useButton: true,
 }
 export default ExportCSV

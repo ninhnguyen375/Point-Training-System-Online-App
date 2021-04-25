@@ -9,7 +9,6 @@ import {
 } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
 import readExcelFile from 'read-excel-file'
 import ExportCSV from '../../../common/components/widgets/ExportCSV'
 import handleError from '../../../common/utils/handleError'
@@ -19,8 +18,6 @@ const ImportStudentClass = () => {
   // state
   const [studentClasses, setStudentClasses] = useState([])
   const [failStudentClasses, setFailStudentClasses] = useState([])
-
-  const history = useHistory()
 
   const demoData = [
     {
@@ -202,7 +199,6 @@ const ImportStudentClass = () => {
       await importStudentClassesService(studentClasses)
 
       notification.success({ message: 'Nhập lớp thành công' })
-      history.push('/student-class')
     } catch (err) {
       handleError(err, null, notification)
     }

@@ -122,10 +122,10 @@ const StudentList = () => {
       title: 'MSSV',
       render: (r) => (
         <Tooltip title={r.roleName === ROLE.monitor ? 'Lớp Trưởng' : ''}>
-          {r.roleName === ROLE.monitor && (
-            <i className="fas fa-key me-2 text-secondary" />
-          )}
           {r.code}
+          {r.roleName === ROLE.monitor && (
+            <i className="fas fa-key ms-2 text-secondary" />
+          )}
         </Tooltip>
       ),
     },

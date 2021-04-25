@@ -29,7 +29,7 @@ export const getEvaluationPrivateService = (
 
 export const getPointOnlineService = (code) =>
   fetchAxios({
-    url: `${configs.CrawlerAPI}/crawler/get-point`,
+    url: `${configs.ServiceAPI}/crawler/get-point`,
     method: 'get',
     params: { code },
   })
@@ -297,4 +297,14 @@ export const signPDFAsync = (data) =>
     url: `${configs.API}/PDFSignatures`,
     method: 'post',
     data,
+  })
+
+export const sendMailService = (email, content) =>
+  fetchAxios({
+    url: `${configs.ServiceAPI}/mailer/send`,
+    method: 'post',
+    data: {
+      email,
+      content,
+    },
   })

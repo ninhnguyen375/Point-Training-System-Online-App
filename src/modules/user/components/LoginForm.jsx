@@ -2,6 +2,8 @@
 import { Button, Card, Divider, Form, Input, notification } from 'antd'
 import React from 'react'
 import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router-dom'
+import qs from 'query-string'
 import Logo from '../../../assets/images/sgu-logo.png'
 import handleError from '../../../common/utils/handleError'
 import { login } from '../actions'
@@ -11,11 +13,17 @@ import { loginService } from '../services'
 const LoginForm = () => {
   const [form] = Form.useForm()
   const dispatch = useDispatch()
+  const history = useHistory()
 
   const handleSubmit = async (values) => {
     try {
       let user = await loginService(values)
       user = user.data.data
+
+      if (values.code === values.password) {
+        history.push(`/first-login?${qs.stringify(user)}`)
+        return
+      }
 
       if (user.roleName === ROLE.monitor) {
         dispatch(login({ ...user, roleName: ROLE.student, isMonitor: true }))
@@ -54,23 +62,20 @@ const LoginForm = () => {
             <Form onFinish={handleSubmit} form={form}>
               <Form.Item
                 name="code"
-                initialValue="3117410212"
                 rules={[{ required: true, message: 'Vui lòng nhập mã số ' }]}
                 label="Mã số:"
+                className="text-end"
               >
-                <Input
-                  style={{ float: 'right', width: 300 }}
-                  placeholder="Nhập mã số"
-                />
+                <Input style={{ width: 300 }} placeholder="Nhập mã số" />
               </Form.Item>
               <Form.Item
                 name="password"
-                initialValue="3117410212"
                 rules={[{ required: true, message: 'Vui lòng nhập mật khẩu' }]}
                 label="Mật khẩu:"
+                className="text-end"
               >
                 <Input.Password
-                  style={{ float: 'right', width: 300 }}
+                  style={{ width: 300 }}
                   placeholder="Nhập mật khẩu"
                 />
               </Form.Item>

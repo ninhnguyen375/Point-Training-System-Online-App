@@ -3,6 +3,7 @@ import {
   Card,
   Divider,
   Input,
+  message,
   notification,
   Select,
   Table,
@@ -29,6 +30,7 @@ import { getString } from '../../../common/utils/object'
 import ClassStatisticExport from './ClassStatisticExport'
 import EvaluationStatisticExport from './EvaluationStatisticExport'
 import CounterStatisticExport from './CounterStatisticExport'
+import ExportCSV from '../../../common/components/widgets/ExportCSV'
 
 const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
   // state
@@ -308,15 +310,19 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
       return
     }
 
+    const data = evaluations.filter(
+      (e) => e.student.studentClass.title === search.studentClass,
+    )
+
     // check valid
-    const invalidItems = evaluations.filter(
+    const invalidItems = data.filter(
       (e) =>
         e.status !== evaluationStatus.Done &&
         e.status !== evaluationStatus.Canceled,
     )
 
     if (invalidItems.length > 0) {
-      notification.error({ message: 'Lớp chưa hoàn thành đánh giá' })
+      message.info('Còn sinh viên chưa hoàn thành đánh giá')
       return
     }
 
@@ -330,9 +336,7 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
         }}
       >
         <ClassStatisticExport
-          evaluations={evaluations.filter(
-            (e) => e.student.studentClass.title === search.studentClass,
-          )}
+          evaluations={data}
           batchTitle={`Học kỳ ${semesterId} - Năm học ${getString(
             evaluationBatches.find((b) => b.year.id === yearId),
             'year.title',
@@ -349,6 +353,18 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
   }
 
   const handleClickExportEvaluationStatistic = () => {
+    // check valid
+    const invalidItems = evaluations.filter(
+      (e) =>
+        e.status !== evaluationStatus.Done &&
+        e.status !== evaluationStatus.Canceled,
+    )
+
+    if (invalidItems.length > 0) {
+      message.info('Còn sinh viên chưa hoàn thành đánh giá')
+      return
+    }
+
     window.Modal.show(
       <div
         style={{
@@ -384,7 +400,7 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
     )
 
     if (invalidItems.length > 0) {
-      notification.error({ message: 'Sinh viên chưa hoàn thành hết đánh giá' })
+      message.info('Còn sinh viên chưa hoàn thành đánh giá')
       return
     }
 
@@ -475,36 +491,56 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
 
       <Divider />
 
-      <div className="d-flex flex-wrap">
-        <div
-          onClick={handleClickExportEvaluationStatistic}
-          aria-hidden
-          className="card-box me-4 mb-2"
-        >
-          <i className="fas fa-file-pdf" />
-          XUẤT BẢNG ĐIỂM HK{semesterId}{' '}
-          {getString(
-            evaluationBatches.find((b) => b.year.id === yearId),
-            'year.title',
-          )}
+      {evaluations && (
+        <div className="d-flex flex-wrap">
+          <div
+            onClick={handleClickExportEvaluationStatistic}
+            aria-hidden
+            className="card-box card-box-primary me-4 mb-2"
+          >
+            <i className="fas fa-file-pdf" />
+            XUẤT BẢNG ĐIỂM HK{semesterId}{' '}
+            {getString(
+              evaluationBatches.find((b) => b.year.id === yearId),
+              'year.title',
+            )}
+          </div>
+          <div
+            onClick={handleClickExportClassStatistic}
+            aria-hidden
+            className="card-box card-box-primary me-4 mb-2"
+          >
+            <i className="fas fa-file-pdf" />
+            XUẤT BẢNG ĐIỂM THEO LỚP
+          </div>
+          <div
+            onClick={handleClickExportCounterStatistic}
+            aria-hidden
+            className="card-box card-box-primary me-4 mb-2"
+          >
+            <i className="fas fa-file-pdf" />
+            XUẤT BẢNG THỐNG KÊ SỐ LƯỢNG
+          </div>
+          <ExportCSV
+            jsonData={(filteredEvaluations || []).map((e) => ({
+              Lớp: getString(e, 'student.studentClass.title'),
+              MSSV: e.student.code,
+              'Họ Tên': e.student.fullName,
+              'Ngày Sinh': e.student.dateOfBirth,
+              Điểm: e.conclusionPoint,
+              'Ghi chú': e.classification || e.reasonForCancellation,
+            }))}
+            useButton={false}
+            fileName="Bảng điểm đã lọc"
+            type="primary"
+          >
+            <div aria-hidden className="card-box me-4 mb-2">
+              <i className="fas fa-file-csv" />
+              XUẤT DANH SÁCH ĐIỂM HIỆN TẠI
+            </div>
+          </ExportCSV>
         </div>
-        <div
-          onClick={handleClickExportClassStatistic}
-          aria-hidden
-          className="card-box me-4 mb-2"
-        >
-          <i className="fas fa-file-pdf" />
-          XUẤT BẢNG ĐIỂM THEO LỚP
-        </div>
-        <div
-          onClick={handleClickExportCounterStatistic}
-          aria-hidden
-          className="card-box me-4 mb-2"
-        >
-          <i className="fas fa-file-pdf" />
-          XUẤT BẢNG THỐNG KÊ SỐ LƯỢNG
-        </div>
-      </div>
+      )}
 
       <Divider />
 

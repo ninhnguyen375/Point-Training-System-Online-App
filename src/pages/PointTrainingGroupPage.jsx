@@ -8,6 +8,11 @@ const PointTrainingGroupPage = () => (
     <CustomBreadcrumb
       items={[
         {
+          url: '/dashboard',
+          title: 'Bảng Điều Khiển',
+          icon: 'fas fa-home',
+        },
+        {
           url: '/point-training-group',
           title: 'Mục đánh giá rèn luyện',
           icon: 'fas fa-list',

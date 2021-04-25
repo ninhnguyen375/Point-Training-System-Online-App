@@ -63,8 +63,10 @@ export const updateEmployeesService = ({
   userEmail,
   oldPassword,
   newPassword,
+  token,
 }) =>
   fetchAuthLoading({
+    token,
     url: `${configs.API}/Authentications/UpdateInformation`,
     method: 'post',
     data: {

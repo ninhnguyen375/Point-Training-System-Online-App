@@ -10,7 +10,6 @@ import {
 import Dragger from 'antd/lib/upload/Dragger'
 import moment from 'moment'
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
 import readExcelFile from 'read-excel-file'
 import ExportCSV from '../../../common/components/widgets/ExportCSV'
 import handleError from '../../../common/utils/handleError'
@@ -20,8 +19,6 @@ const ImportStudent = () => {
   // state
   const [students, setStudents] = useState([])
   const [failStudents, setFailStudents] = useState([])
-
-  const history = useHistory()
 
   const demoData = [
     {
@@ -220,7 +217,6 @@ const ImportStudent = () => {
       await importStudentsService(data)
 
       notification.success({ message: 'Nhập sinh viên thành công' })
-      history.push('/student')
     } catch (err) {
       handleError(err, null, notification)
     }

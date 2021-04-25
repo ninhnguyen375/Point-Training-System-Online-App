@@ -18,6 +18,8 @@
 @import './EvaluationTicket.scss';
 @import './PageLoading.scss';
 @import './PointTrainingGroup.scss';
+@import './Statistic.scss';
+@import './Dashboard.scss';
 
 // colors
 @import './colors.scss';
@@ -27,70 +29,13 @@ body {
   overflow: hidden;
   width: 100vw !important;
 }
+
 a {
   text-decoration: none;
   color: $primary-color;
+
   &:hover {
     color: $primary-color;
-  }
-}
-.table-bg-active {
-  background-color: $primary-color !important;
-  border-bottom: $primary-color !important;
-  color: white !important;
-}
-.link {
-  color: $primary-color;
-  cursor: pointer;
-}
-.raw-table {
-  width: 100%;
-  text-align: center;
-  border-top: 1px solid black;
-  border-left: 1px solid black;
-  font-size: 11px;
-
-  th,
-  td {
-    border-bottom: 1px solid black;
-    border-right: 1px solid black;
-  }
-}
-#pdf-element {
-  * {
-    font-family: 'times' !important;
-  }
-
-  i {
-    font-family: 'timesi' !important;
-  }
-
-  b {
-    font-family: 'timesbd' !important;
-  }
-}
-
-.card-box {
-  background: lighten($success-color, 5);
-  padding: 15px;
-  font-size: 1.1em;
-  font-weight: bold;
-  width: 193px;
-  display: flex;
-  justify-content: center;
-  border-radius: 5px;
-  box-shadow: 0 0 5px 5px #f3f3f3;
-  color: white;
-  cursor: pointer;
-  transition: 0.3s;
-
-  &:hover {
-    background: lighten($success-color, 10);
-  }
-
-  i {
-    font-size: 3em;
-    margin-right: 20px;
   }
 }
 

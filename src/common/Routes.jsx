@@ -23,6 +23,7 @@ import EmployeeListPage from '../pages/EmployeeListPage'
 import DeputyDeanListPage from '../pages/DeputyDeanListPage'
 import LecturerListPage from '../pages/LecturerListPage'
 import PointTrainingGroupPage from '../pages/PointTrainingGroupPage'
+import FirstLogin from '../pages/FirstLogin'
 
 const Routes = () => {
   const profile = useSelector((state) => state[MODULE_USER].profile)
@@ -136,7 +137,7 @@ const Routes = () => {
         />
 
         <Route exact path="/">
-          <Redirect to="/evaluation-batch" />
+          <Redirect to="/dashboard" />
         </Route>
         <Route exact path="*" component={NotFound} />
       </Switch>
@@ -160,6 +161,7 @@ const Routes = () => {
 
   return (
     <Switch>
+      <Route exact path="/first-login" component={FirstLogin} />
       <Route exact path="*" component={Login} />
     </Switch>
   )

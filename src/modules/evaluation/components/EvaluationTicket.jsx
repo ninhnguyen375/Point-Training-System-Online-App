@@ -33,6 +33,7 @@ import {
   getNote,
   employeeConfirmService,
   deputydeanConfirmService,
+  sendMailService,
 } from '../services'
 import { MODULE_NAME as MODULE_USER, ROLE } from '../../user/model'
 import {
@@ -999,7 +1000,10 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         : ''
       const employeeId = profile.id
 
-      if (isUpdate) {
+      if (
+        isUpdate &&
+        evaluation.status !== evaluationStatus.ComplainingEmployee
+      ) {
         await complainService(evaluation.id, '')
       }
 
@@ -1092,17 +1096,25 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     }
 
     try {
-      await complainService(
+      const { data } = await complainService(
         evaluation.id,
         JSON.stringify({
           ...getNote(evaluation.note),
           studentNote: value,
         }),
       )
+      const email = data.data
 
       await getEvaluationPrivate(studentId, yearId, semesterId)
       window.Modal.clear()
       notification.success({ message: 'Gửi khiếu nại thành công' })
+
+      sendMailService(
+        email,
+        `<h4>KHIẾU NẠI</h4>
+        <div>Sinh viên ${profile.code} đang khiếu nại kết quả của bạn.</div>
+        <div>Vui lòng truy cập http://${window.location.host}/evaluation/confirm?semesterId=${semesterId}&studentId=${profile.id}&yearId=${yearId} để giải quyết khiếu nại.</div>`,
+      )
     } catch (err) {
       handleError(err, null, notification)
     }

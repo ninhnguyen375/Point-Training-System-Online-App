@@ -79,6 +79,11 @@ export default {
       itemGroup: 'Tổng Quan',
       items: [
         {
+          key: 'dashboard',
+          iconClass: 'fas fa-home',
+          title: 'Bảng điều khiển',
+        },
+        {
           key: 'evaluation/create',
           iconClass: 'fas fa-play-circle',
           title: 'Bắt đầu đợt đánh giá',

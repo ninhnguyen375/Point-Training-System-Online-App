@@ -8,6 +8,11 @@ const StudentListPage = () => (
     <CustomBreadcrumb
       items={[
         {
+          url: '/dashboard',
+          title: 'Bảng Điều Khiển',
+          icon: 'fas fa-home',
+        },
+        {
           url: '/student',
           title: 'Danh sách sinh viên',
           icon: 'fas fa-user-graduate',
