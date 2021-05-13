@@ -87,6 +87,13 @@ const EvaluationListOfStudentClass = () => {
       })
 
       evaluationPrivate = evaluationPrivate.data.data
+      if (!evaluationPrivate.monitorId) {
+        notification.info({
+          message:
+            'Không thể xem danh sách phiếu của lớp do bạn thuộc lớp quá hạn ra trường',
+        })
+        return
+      }
 
       const { data } = await getEvaluationsService({
         yearId,
