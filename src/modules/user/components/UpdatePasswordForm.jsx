@@ -1,13 +1,27 @@
 import { Button, Divider, Form, Input } from 'antd'
-import { func } from 'prop-types'
+import { func, string } from 'prop-types'
 import React from 'react'
 
-const UpdatePasswordForm = ({ onSubmit }) => {
+const UpdatePasswordForm = ({ onSubmit, email }) => {
   const [form] = Form.useForm()
 
   return (
     <div className="container-fluid">
       <Form layout="vertical" form={form} onFinish={(v) => onSubmit(v)}>
+        <Form.Item
+          name="email"
+          rules={[
+            {
+              required: true,
+              type: 'email',
+              message: 'Vui lòng nhập email',
+            },
+          ]}
+          label="Email:"
+          initialValue={email}
+        >
+          <Input placeholder="Nhập email" />
+        </Form.Item>
         <Form.Item
           name="oldPassword"
           label="Mật khẩu cũ:"
@@ -52,6 +66,7 @@ const UpdatePasswordForm = ({ onSubmit }) => {
 
 UpdatePasswordForm.propTypes = {
   onSubmit: func.isRequired,
+  email: string.isRequired,
 }
 
 export default UpdatePasswordForm

@@ -136,7 +136,7 @@ const MainLayout = ({ children }) => {
     try {
       await updateEmployeesService({
         userCode: profile.code,
-        userEmail: profile.email,
+        userEmail: values.email,
         userRoleName: profile.roleName,
         oldPassword: values.oldPassword,
         newPassword: values.newPassword,
@@ -154,10 +154,13 @@ const MainLayout = ({ children }) => {
   }
 
   const handleClickChangePassword = () => {
-    window.Modal.show(<UpdatePasswordForm onSubmit={updatePassword} />, {
-      title: <b>THAY ĐỔI MẬT KHẨU</b>,
-      key: 'change-password-modal',
-    })
+    window.Modal.show(
+      <UpdatePasswordForm onSubmit={updatePassword} email={profile.email} />,
+      {
+        title: <b>THAY ĐỔI MẬT KHẨU</b>,
+        key: 'change-password-modal',
+      },
+    )
   }
 
   const headerDropdown = (
