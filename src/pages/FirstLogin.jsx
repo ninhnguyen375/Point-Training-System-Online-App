@@ -81,7 +81,13 @@ const FirstLogin = () => {
             <Form onFinish={handleSubmit} form={form}>
               <Form.Item
                 name="email"
-                rules={[{ required: true, message: 'Vui lòng nhập email' }]}
+                rules={[
+                  {
+                    required: true,
+                    type: 'email',
+                    message: 'Vui lòng nhập email',
+                  },
+                ]}
                 label="Email:"
                 initialValue={user.email}
                 className="text-end"

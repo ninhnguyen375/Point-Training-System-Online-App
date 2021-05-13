@@ -53,7 +53,6 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
   // state
   const [studentEvaluation, setStudentEvaluation] = useState(null)
   const [monitorEvaluation, setMonitorEvaluation] = useState(null)
-  console.log('~ monitorEvaluation', monitorEvaluation)
   const [displayEvaluationTicket, setDisplayEvaluationTicket] = useState([])
   const [currentResult, setCurrentResult] = useState(null)
   const [previousResult, setPreviousResult] = useState(null)

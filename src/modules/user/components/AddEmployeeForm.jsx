@@ -25,7 +25,9 @@ const AddEmployeeForm = ({ onSubmit }) => {
         <Form.Item
           name="email"
           label="Email:"
-          rules={[{ required: true, message: 'Vui lòng nhập email' }]}
+          rules={[
+            { required: true, type: 'email', message: 'Vui lòng nhập email' },
+          ]}
         >
           <Input placeholder="Nhập email" />
         </Form.Item>
