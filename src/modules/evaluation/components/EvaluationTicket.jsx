@@ -42,7 +42,7 @@ import {
   classification as classificationList,
 } from '../model'
 
-import { cloneObj } from '../../../common/utils/object'
+import { cloneObj, getString } from '../../../common/utils/object'
 import { configs } from '../../../configs'
 import ChoosePointTrainingItemId from './ChoosePointTrainingItemId'
 import TextAreaForm from '../../../common/components/widgets/TextAreaForm'
@@ -1192,6 +1192,10 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         <div className="mt-2">
           <b>MSSV: </b>
           {evaluation.student.code || 'sv'}
+        </div>
+        <div className="mt-2">
+          <b>Lớp: </b>
+          {getString(evaluation, 'student.studentClass.title') || 'sv'}
         </div>
         <div className="mt-2">
           <b>Nhập điểm hệ 4 học kỳ trước (VD: 2.5):</b>
