@@ -134,7 +134,7 @@ const FirstLogin = () => {
               </Form.Item>
 
               <Button size="large" htmlType="submit" type="primary" block>
-                THAY ĐỔI MẬT KHẨU
+                LƯU THÔNG TIN
               </Button>
             </Form>
           </div>

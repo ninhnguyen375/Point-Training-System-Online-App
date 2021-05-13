@@ -206,12 +206,6 @@ const CreateEvaluationForm = () => {
             <DatePicker style={{ width: '100%' }} />
           </Form.Item>
           <div>
-            <Checkbox
-              checked={isValidate}
-              onClick={() => setIsValidate(!isValidate)}
-            >
-              Validate
-            </Checkbox>
             <Popconfirm
               okButtonProps={{ className: 'success' }}
               placement="topRight"
@@ -220,7 +214,7 @@ const CreateEvaluationForm = () => {
             >
               <Button size="large" className="success" type="primary" block>
                 <i className="fas fa-play-circle me-2" />
-                BẮT ĐẦU
+                BẮT ĐẦU ĐỢT ĐÁNH GIÁ
               </Button>
             </Popconfirm>
           </div>

@@ -221,7 +221,7 @@ const LecturerList = () => {
   }, [applySearch])
 
   return (
-    <Card title={<b>DANH SÁCH SINH VIÊN</b>}>
+    <Card title={<b>DANH SÁCH GIẢNG VIÊN</b>}>
       <div className="d-flex justify-content-between flex-wrap">
         <div className="d-flex flex-wrap">
           <Input

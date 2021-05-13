@@ -53,6 +53,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
   // state
   const [studentEvaluation, setStudentEvaluation] = useState(null)
   const [monitorEvaluation, setMonitorEvaluation] = useState(null)
+  console.log('~ monitorEvaluation', monitorEvaluation)
   const [displayEvaluationTicket, setDisplayEvaluationTicket] = useState([])
   const [currentResult, setCurrentResult] = useState(null)
   const [previousResult, setPreviousResult] = useState(null)
@@ -85,8 +86,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       evaluation.status === evaluationStatus.ComplainingEmployee)
   const isMySubmited =
     evaluation &&
-    ((viewRole === ROLE.monitor &&
-      evaluation.status === evaluationStatus.MonitorConfirmed) ||
+    ((isMonitor && evaluation.status === evaluationStatus.MonitorConfirmed) ||
       (viewRole === ROLE.lecturer &&
         evaluation.status === evaluationStatus.LecturerConfirmed) ||
       (viewRole === ROLE.employee &&
@@ -482,7 +482,11 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
   }, [getEvaluationPrivate, studentId, yearId, semesterId])
 
   const applyPoint = (prePoint, currPoint) => {
-    const clone = cloneObj(isMonitor ? monitorEvaluation : studentEvaluation)
+    const clone = cloneObj(
+      viewRole === ROLE.student && !isMonitor
+        ? studentEvaluation
+        : monitorEvaluation,
+    )
     let newEvaluation
     // reset point
     newEvaluation = getEvaluationWithNewPoint(2, 0, clone)
@@ -541,17 +545,21 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     }
 
     src.every((ticket) => {
-      if (ticket.isAnotherItem && ticket.id === id) {
+      if (ticket.isAnotherItem && String(ticket.id) === String(id)) {
         item = ticket
         return false
       }
 
       const found =
-        ticket.id === id ? ticket : ticket.items.find((a) => a.id === id)
+        String(ticket.id) === String(id)
+          ? ticket
+          : ticket.items.find((a) => String(a.id) === String(id))
+
       if (found) {
         item = found
         return false
       }
+
       return true
     })
 
@@ -1376,7 +1384,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
               <Popconfirm
                 disabled={!isValidDeadline}
                 title="HOÀN TẤT đánh giá?"
-                onConfirm={handleSubmit}
+                onConfirm={() => handleSubmit(false)}
               >
                 <Button
                   disabled={!isValidDeadline}
