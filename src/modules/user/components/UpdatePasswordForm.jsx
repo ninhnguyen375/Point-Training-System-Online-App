@@ -22,18 +22,10 @@ const UpdatePasswordForm = ({ onSubmit, email }) => {
         >
           <Input placeholder="Nhập email" />
         </Form.Item>
-        <Form.Item
-          name="oldPassword"
-          label="Mật khẩu cũ:"
-          rules={[{ required: true, message: 'Vui lòng nhập mật khẩu cũ' }]}
-        >
+        <Form.Item name="oldPassword" label="Mật khẩu cũ:">
           <Input.Password placeholder="Nhập mật khẩu cũ" />
         </Form.Item>
-        <Form.Item
-          name="newPassword"
-          label="Mật khẩu mới:"
-          rules={[{ required: true, message: 'Vui lòng nhập mật khẩu mới' }]}
-        >
+        <Form.Item name="newPassword" label="Mật khẩu mới:">
           <Input.Password placeholder="Nhập mật khẩu mới" />
         </Form.Item>
         <Form.Item

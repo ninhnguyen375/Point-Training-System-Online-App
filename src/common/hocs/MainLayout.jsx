@@ -143,11 +143,12 @@ const MainLayout = ({ children }) => {
       })
 
       notification.success({
-        message: 'Thay đổi mật khẩu',
+        message: 'Thay đổi thông tin',
         description: 'Thành công',
       })
 
       window.Modal.clear()
+      dispatch(clearAll())
     } catch (err) {
       handleError(err, null, notification)
     }
@@ -157,7 +158,7 @@ const MainLayout = ({ children }) => {
     window.Modal.show(
       <UpdatePasswordForm onSubmit={updatePassword} email={profile.email} />,
       {
-        title: <b>THAY ĐỔI MẬT KHẨU</b>,
+        title: <b>THAY ĐỔI THÔNG TIN</b>,
         key: 'change-password-modal',
       },
     )
@@ -170,7 +171,7 @@ const MainLayout = ({ children }) => {
         <Menu style={{ width: 200 }}>
           <Menu.Item onClick={handleClickChangePassword}>
             <i className="fas fa-key me-2" />
-            Đổi mật khẩu
+            Đổi thông tin
           </Menu.Item>
           <Menu.Item onClick={handleLogout}>
             <i className="fas fa-sign-out-alt me-2" />
