@@ -109,14 +109,14 @@ export default {
       itemGroup: 'Quản Lý',
       items: [
         {
-          key: 'student',
-          iconClass: 'fas fa-user-graduate',
-          title: 'Sinh viên',
-        },
-        {
           key: 'student-class',
           iconClass: 'fas fa-suitcase',
           title: 'Danh sách lớp',
+        },
+        {
+          key: 'student',
+          iconClass: 'fas fa-user-graduate',
+          title: 'Sinh viên',
         },
         {
           key: 'lecturer',

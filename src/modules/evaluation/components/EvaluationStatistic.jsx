@@ -140,19 +140,19 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
 
   const columns = [
     {
-      key: 'studentClass',
-      title: <b>Lớp</b>,
-      render: (r) => <b>{getString(r, 'student.studentClass.title')}</b>,
+      key: 'code',
+      title: <b>MSSV</b>,
+      render: (r) => r.student.code,
     },
     {
       key: 'fullName',
       title: <b>Sinh Viên</b>,
-      render: (r) => <b>{r.student.fullName}</b>,
+      render: (r) => <span>{r.student.fullName}</span>,
     },
     {
-      key: 'code',
-      title: <b>MSSV</b>,
-      render: (r) => r.student.code,
+      key: 'studentClass',
+      title: <b>Lớp</b>,
+      render: (r) => <span>{getString(r, 'student.studentClass.title')}</span>,
     },
     {
       key: 'status',
@@ -380,6 +380,7 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
             evaluationBatches.find((b) => b.year.id === yearId),
             'year.title',
           )}`}
+          isAllStudentClasses={true}
         />
       </div>,
       {

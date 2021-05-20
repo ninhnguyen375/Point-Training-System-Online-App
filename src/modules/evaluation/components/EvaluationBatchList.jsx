@@ -6,6 +6,7 @@ import {
   activeEvaluationBatchService,
   getEvaluationBatchListService,
 } from '../services'
+import { evaluationStatusColor } from '../model'
 
 const EvaluationBatchList = () => {
   const [evaluationBatches, setEvaluationBatches] = useState([])
@@ -74,11 +75,16 @@ const EvaluationBatchList = () => {
             title: <b>Trạng Thái</b>,
             align: 'center',
             render: (r) =>
-              r.isInDeadline ? (
+              (r.isInDeadline && !r.isFinished && (
                 <Tag className="m-0" color="geekblue">
                   ĐANG KÍCH HOẠT
                 </Tag>
-              ) : (
+              )) || (
+                r.isFinished && (
+                <Tag className="m-0" color={evaluationStatusColor['Hoàn tất']}>
+                  HOÀN TẤT
+                </Tag>
+                )) || (
                 ''
               ),
           },
@@ -88,7 +94,7 @@ const EvaluationBatchList = () => {
             align: 'right',
             render: (r) => (
               <div>
-                {!r.isInDeadline && (
+                {!r.isInDeadline && !r.isFinished && (
                   <Button
                     type="primary"
                     className="me-2 success"

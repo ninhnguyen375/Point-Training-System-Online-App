@@ -94,7 +94,7 @@ const EvaluationListOfStudent = () => {
       title: <b>Đang Đánh Giá</b>,
       align: 'center',
       render: (r) =>
-        r.isInDeadline ? <Tag color="geekblue">Đang Đánh Giá</Tag> : '',
+        r.isInDeadline && !r.isFinished ? <Tag color="geekblue">Đang Đánh Giá</Tag> : '',
     },
     {
       title: <b>Tổng Điểm</b>,
@@ -169,7 +169,7 @@ const EvaluationListOfStudent = () => {
     <Card
       title={
         <span>
-          <b>DANH SÁCH PHIẾU ĐIỂM RÈN LUYỆN CỦA LỚP</b>
+          <b>DANH SÁCH PHIẾU ĐIỂM RÈN LUYỆN CỦA BẠN</b>
         </span>
       }
     >

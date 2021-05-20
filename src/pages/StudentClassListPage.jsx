@@ -13,7 +13,7 @@ const StudentClassListPage = () => (
           icon: 'fas fa-home',
         },
         {
-          url: '/student',
+          url: `${window.location.pathname}`,
           title: 'Danh sách lớp',
           icon: 'fas fa-suitcase',
         },

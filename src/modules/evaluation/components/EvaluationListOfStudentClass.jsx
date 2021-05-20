@@ -23,7 +23,8 @@ import {
   getEvaluationsService,
   getEvaluationPrivateService,
 } from '../services'
-import { MODULE_NAME as MODULE_USER } from '../../user/model'
+import { MODULE_NAME as MODULE_USER, ROLE } from '../../user/model'
+import { getString } from '../../../common/utils/object'
 
 const EvaluationListOfStudentClass = () => {
   // store
@@ -88,6 +89,10 @@ const EvaluationListOfStudentClass = () => {
 
       evaluationPrivate = evaluationPrivate.data.data
       if (!evaluationPrivate.monitorId) {
+        // Reset list
+        setEvaluationList([])
+        setFilteredEvaluationList([])
+
         notification.info({
           message:
             'Không thể xem danh sách phiếu của lớp do bạn thuộc lớp quá hạn ra trường',
@@ -124,6 +129,11 @@ const EvaluationListOfStudentClass = () => {
 
   const columns = [
     {
+      key: 'code',
+      title: <b>MSSV</b>,
+      render: (r) => r.student.code,
+    },
+    {
       key: 'fullName',
       title: <b>Sinh Viên</b>,
       render: (r) => (
@@ -131,11 +141,6 @@ const EvaluationListOfStudentClass = () => {
           {r.student.fullName}
         </span>
       ),
-    },
-    {
-      key: 'code',
-      title: <b>MSSV</b>,
-      render: (r) => r.student.code,
     },
     {
       key: 'status',
@@ -259,7 +264,11 @@ const EvaluationListOfStudentClass = () => {
     <Card
       title={
         <span>
-          <b>DANH SÁCH PHIẾU ĐIỂM RÈN LUYỆN CỦA LỚP</b>
+          <b>
+            {'DANH SÁCH PHIẾU ĐIỂM RÈN LUYỆN CỦA LỚP' + 
+            ((profile.roleName === ROLE.student && evaluationList && ' ' + getString(evaluationList[0], 'student.studentClass.title')) ||
+            '')}
+          </b>
         </span>
       }
     >

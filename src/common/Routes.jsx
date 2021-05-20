@@ -28,31 +28,55 @@ import FirstLogin from '../pages/FirstLogin'
 const Routes = () => {
   const profile = useSelector((state) => state[MODULE_USER].profile)
 
-  if (profile && profile.roleName === ROLE.student) {
+  if (profile && profile.roleName === ROLE.student && !profile.isMonitor) {
     return (
       <Switch>
-        <Route exact path="/dashboard" component={Dashboard} />
-        <Route exact path="/make-evaluation" component={MakeEvaluationPage} />
-        <Route exact path="/evaluation" component={EvaluationListPage} />
-        <Route
-          exact
-          path="/evaluation/confirm"
-          component={ConfirmEvaluationPage}
-        />
+        <Route exact path="/">
+          <Redirect to="/make-evaluation" />
+        </Route>
+
         <Route
           exact
           path="/evaluation-list-of-student"
           component={EvaluationListOfStudentPage}
         />
+
+        <Route exact path="/make-evaluation" component={MakeEvaluationPage} />
+
         <Route
           exact
           path="/evaluation-list-of-class"
           component={EvaluationListOfStudentClassPage}
         />
 
+        <Route exact path="*" component={NotFound} />
+      </Switch>
+    )
+  }
+
+  if (profile && profile.isMonitor) {
+    return (
+      <Switch>
         <Route exact path="/">
           <Redirect to="/make-evaluation" />
         </Route>
+
+        <Route
+          exact
+          path="/evaluation-list-of-student"
+          component={EvaluationListOfStudentPage}
+        />
+
+        <Route exact path="/make-evaluation" component={MakeEvaluationPage} />
+
+        <Route exact path="/evaluation" component={EvaluationListPage} />
+        
+        <Route
+          exact
+          path="/evaluation/confirm"
+          component={ConfirmEvaluationPage}
+        />
+
         <Route exact path="*" component={NotFound} />
       </Switch>
     )
@@ -61,17 +85,18 @@ const Routes = () => {
   if (profile && profile.roleName === ROLE.lecturer) {
     return (
       <Switch>
-        <Route exact path="/dashboard" component={Dashboard} />
+        <Route exact path="/">
+          <Redirect to="/evaluation" />
+        </Route>
+
         <Route exact path="/evaluation" component={EvaluationListPage} />
+
         <Route
           exact
           path="/evaluation/confirm"
           component={ConfirmEvaluationPage}
         />
 
-        <Route exact path="/">
-          <Redirect to="/evaluation" />
-        </Route>
         <Route exact path="*" component={NotFound} />
       </Switch>
     )
@@ -80,16 +105,18 @@ const Routes = () => {
   if (profile && profile.roleName === ROLE.deputydean) {
     return (
       <Switch>
+        <Route exact path="/">
+          <Redirect to="/evaluation" />
+        </Route>
+
         <Route exact path="/evaluation" component={EvaluationListPage} />
+
         <Route
           exact
           path="/evaluation/confirm"
           component={ConfirmEvaluationPage}
         />
-
-        <Route exact path="/">
-          <Redirect to="/evaluation" />
-        </Route>
+        
         <Route exact path="*" component={NotFound} />
       </Switch>
     )
@@ -98,47 +125,58 @@ const Routes = () => {
   if (profile && profile.roleName === ROLE.employee) {
     return (
       <Switch>
+        <Route exact path="/">
+          <Redirect to="/dashboard" />
+        </Route>
+
         <Route exact path="/dashboard" component={Dashboard} />
-        <Route exact path="/home" component={Home} />
-        <Route exact path="/lecturer" component={LecturerListPage} />
-        <Route
-          exact
-          path="/point-training-group"
-          component={PointTrainingGroupPage}
-        />
+
         <Route
           exact
           path="/evaluation/create"
           component={CreateEvaluationPage}
         />
+
         <Route
           exact
           path="/evaluation-batch"
           component={EvaluationBatchListPage}
         />
-        <Route
-          exact
-          path="/evaluation-batch/detail"
-          component={EvaluationBatchPage}
-        />
-        <Route exact path="/student" component={StudentListPage} />
-        <Route exact path="/student/import" component={ImportStudentPage} />
-        <Route exact path="/student-class" component={StudentClassListPage} />
-        <Route
-          exact
-          path="/student-class/import"
-          component={ImportStudentClassPage}
-        />
+
         <Route exact path="/evaluation" component={EvaluationListPage} />
+
         <Route
           exact
           path="/evaluation/confirm"
           component={ConfirmEvaluationPage}
         />
 
-        <Route exact path="/">
-          <Redirect to="/dashboard" />
-        </Route>
+        <Route
+          exact
+          path="/evaluation-batch/detail"
+          component={EvaluationBatchPage}
+        />
+
+        <Route exact path="/student-class" component={StudentClassListPage} />
+
+        <Route exact path="/student" component={StudentListPage} />
+
+        <Route exact path="/lecturer" component={LecturerListPage} />
+
+        <Route
+          exact
+          path="/point-training-group"
+          component={PointTrainingGroupPage}
+        />
+
+        <Route
+          exact
+          path="/student-class/import"
+          component={ImportStudentClassPage}
+        />  
+
+        <Route exact path="/student/import" component={ImportStudentPage} />
+        
         <Route exact path="*" component={NotFound} />
       </Switch>
     )
@@ -147,13 +185,16 @@ const Routes = () => {
   if (profile && profile.roleName === ROLE.manager) {
     return (
       <Switch>
-        <Route exact path="/manager" component={ManagerListPage} />
-        <Route exact path="/employee" component={EmployeeListPage} />
-        <Route exact path="/deputydean" component={DeputyDeanListPage} />
-
         <Route exact path="/">
           <Redirect to="/manager" />
         </Route>
+
+        <Route exact path="/manager" component={ManagerListPage} />
+
+        <Route exact path="/employee" component={EmployeeListPage} />
+        
+        <Route exact path="/deputydean" component={DeputyDeanListPage} />
+        
         <Route exact path="*" component={NotFound} />
       </Switch>
     )

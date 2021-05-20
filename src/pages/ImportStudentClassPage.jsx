@@ -8,8 +8,13 @@ const ImportStudentClassPage = () => (
     <CustomBreadcrumb
       items={[
         {
+          url: '/dashboard',
+          title: 'Bảng Điều Khiển',
+          icon: 'fas fa-home',
+        },
+        {
           url: '/student-class',
-          title: 'Danh sách Lớp',
+          title: 'Danh sách lớp',
           icon: 'fas fa-suitcase',
         },
         {

@@ -8,8 +8,8 @@ const EvaluationListOfStudentClassPage = () => (
     <CustomBreadcrumb
       items={[
         {
-          url: '/evaluation',
-          title: 'Phiếu Điểm Của Lớp',
+          url: `${window.location.pathname}`,
+          title: 'Danh sách phiếu điểm rèn luyện của lớp',
           icon: 'fas fa-copy',
         },
       ]}

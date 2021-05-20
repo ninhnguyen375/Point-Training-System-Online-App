@@ -13,7 +13,7 @@ const EvaluationBatchListPage = () => (
           icon: 'fas fa-home',
         },
         {
-          url: '/evaluation/created',
+          url: `${window.location.pathname}`,
           title: 'Đợt đánh giá rèn luyện đã tạo',
           icon: 'fas fa-calendar-week',
         },

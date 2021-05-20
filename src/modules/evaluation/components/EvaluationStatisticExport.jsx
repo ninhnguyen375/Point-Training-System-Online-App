@@ -19,7 +19,7 @@ pdf.setFont('timesi')
 pdf.setFont('timesbd')
 pdf.setFont('timesbi')
 
-const EvaluationStatisticExport = ({ evaluations, batchTitle }) => {
+const EvaluationStatisticExport = ({ evaluations, batchTitle, isAllStudentClasses = false }) => {
   // state
   const [isFilterValidTicket, setIsFilterValidTicket] = useState(false)
   const [pages, setPages] = useState([])
@@ -238,7 +238,7 @@ const EvaluationStatisticExport = ({ evaluations, batchTitle }) => {
         <div>
           <b>
             Lớp: Đại học chính quy - ngành {configs.Speciality} - Khóa {course}{' '}
-            {`(${studentClass})`}
+            {isAllStudentClasses ? '' : `(${studentClass})`}
           </b>
         </div>
         <div>

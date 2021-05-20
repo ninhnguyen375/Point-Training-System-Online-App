@@ -9,20 +9,20 @@ import EvaluationTicket from '../modules/evaluation/components/EvaluationTicket'
 const ConfirmEvaluationPage = () => {
   let { search } = useLocation()
   search = qs.parse(search)
-
+  
   return (
     <MainLayout>
       <CustomBreadcrumb
         items={[
           {
-            url: '/dashboard',
-            title: 'Bảng Điều Khiển',
-            icon: 'fas fa-home',
+            url: '/evaluation',
+            title: 'Danh sách phiếu của lớp',
+            icon: 'fas fa-copy',
           },
           {
-            url: '/evaluation/confirm',
+            url: `/evaluation/confirm${window.location.search}`,
             title: 'Phiếu điểm rèn luyện',
-            icon: '',
+            icon: 'fas fa-list-alt',
           },
         ]}
       />

@@ -15,7 +15,7 @@ const MakeEvaluationPage = () => {
         items={[
           {
             url: '/make-evaluation',
-            title: 'Đánh Giá Rèn Luyện',
+            title: 'Đánh giá điểm rèn luyện',
             icon: 'fas fa-list-alt',
           },
         ]}

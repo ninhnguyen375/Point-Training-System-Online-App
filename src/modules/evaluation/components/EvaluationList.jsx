@@ -203,19 +203,22 @@ const EvaluationList = () => {
 
   let columns = [
     {
-      key: 'studentClass',
-      title: <b>Lớp</b>,
-      render: (r) => <b>{getString(r, 'student.studentClass.title')}</b>,
+      key: 'code',
+      title: <b>MSSV</b>,
+      render: (r) => r.student.code,
     },
     {
       key: 'fullName',
       title: <b>Sinh Viên</b>,
-      render: (r) => <b>{r.student.fullName}</b>,
+      render: (r) => profile.isMonitor && r.student.id === profile.id ? 
+        <b>{r.student.fullName}</b> :
+        <span>{r.student.fullName}</span>
+      ,
     },
     {
-      key: 'code',
-      title: <b>MSSV</b>,
-      render: (r) => r.student.code,
+      key: 'studentClass',
+      title: <b>Lớp</b>,
+      render: (r) => <span>{getString(r, 'student.studentClass.title')}</span>,
     },
     {
       key: 'status',
@@ -363,6 +366,25 @@ const EvaluationList = () => {
           )
         }
 
+        // employee update
+        if (
+          profile.roleName === ROLE.employee &&
+          (r.status === evaluationStatus.EmployeeConfirmed ||
+            r.status === evaluationStatus.ComplainingEmployee)
+        ) {
+          actions.push(
+            <Tooltip key="employee-update" title="Chỉnh sửa">
+              <Button
+                onClick={() => gotoConfirmPage(r)}
+                type="default"
+                className="ms-2"
+              >
+                <i className="fas fa-edit" />
+              </Button>
+            </Tooltip>,
+          )
+        }
+
         // deputydean confirm
         if (
           profile.roleName === ROLE.deputydean &&
@@ -382,17 +404,36 @@ const EvaluationList = () => {
             </Tooltip>,
           )
         }
-
-        actions.push(
-          <Button
-            className="ms-2"
-            key="default"
-            shape="circle"
-            onClick={() => gotoConfirmPage(r)}
-          >
-            <i className="fas fa-info" />
-          </Button>,
-        )
+        
+        // Click to view info
+        if (
+          (profile.isMonitor && 
+            r.status !== evaluationStatus.StudentSubmited &&
+            r.status !== evaluationStatus.MonitorConfirmed &&
+            r.status !== evaluationStatus.ComplainingMonitor) ||
+          (profile.roleName === ROLE.lecturer &&
+            r.status !== evaluationStatus.MonitorConfirmed &&
+            r.status !== evaluationStatus.LecturerConfirmed &&
+            r.status !== evaluationStatus.ComplainingLecturer) ||
+          (profile.roleName === ROLE.employee &&
+            r.status !== evaluationStatus.StudentSubmited &&
+            r.status !== evaluationStatus.EmployeeConfirmed &&
+            r.status !== evaluationStatus.ComplainingEmployee) ||
+          (profile.roleName === ROLE.deputydean)
+        ) {
+          actions.push(
+            <Tooltip key="view-info" title="Xem">
+              <Button
+                className="ms-2"
+                key="default"
+                shape="circle"
+                onClick={() => gotoConfirmPage(r)}
+              >
+                <i className="fas fa-info" />
+              </Button>
+            </Tooltip>,
+          )
+        }
 
         return actions.map((a) => a)
       },
@@ -534,7 +575,13 @@ const EvaluationList = () => {
     <Card
       title={
         <span>
-          <b>DANH SÁCH PHIẾU ĐIỂM RÈN LUYỆN CỦA LỚP</b>
+          <b> 
+            {'DANH SÁCH PHIẾU ĐIỂM RÈN LUYỆN' + 
+            ((profile.isMonitor && evaluations && ' CỦA LỚP ' + getString(evaluations[0], 'student.studentClass.title')) || 
+            (profile.roleName === ROLE.lecturer && search.studentClass !== undefined && ' CỦA LỚP ' + search.studentClass) ||
+            (profile.roleName === ROLE.employee && ' CỦA LỚP QUÁ HẠN') ||
+            '')}
+          </b>
         </span>
       }
     >

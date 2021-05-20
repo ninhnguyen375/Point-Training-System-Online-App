@@ -33,10 +33,12 @@ const UpdatePasswordForm = ({ onSubmit, email }) => {
           label="Xác nhận mật khẩu mới:"
           rules={[
             {
-              validator: async (_, v, cb) => {
-                if (form.getFieldValue('newPassword') !== v) {
-                  cb('Mật khẩu không khớp')
+              validator: (_, value) => {
+                if (form.getFieldValue('newPassword') === value) {
+                  return Promise.resolve()
                 }
+
+                return Promise.reject(new Error('Mật khẩu không khớp'))
               },
             },
           ]}

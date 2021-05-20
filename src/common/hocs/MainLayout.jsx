@@ -121,7 +121,7 @@ const MainLayout = ({ children }) => {
           </SubMenu>
         ) : (
           <Menu.Item key={i.key}>
-            <div className="main-layout__menu-item">
+          <div className="main-layout__menu-item">
               <span>
                 <span className="me-2">{i.title}</span>
                 <i className={`${i.iconClass} icon`} />
