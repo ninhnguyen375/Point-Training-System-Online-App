@@ -308,3 +308,9 @@ export const sendMailService = (email, content) =>
       content,
     },
   })
+
+export const deleteEvaluationBatchService = (semesterId, yearId) =>
+  fetchAxios({
+    url: `${configs.API}/Evaluations/DeleteEvaluationPeriod/${semesterId},${yearId}`,
+    method: 'delete',
+  })

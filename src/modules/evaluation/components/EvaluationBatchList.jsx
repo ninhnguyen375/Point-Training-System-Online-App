@@ -1,9 +1,10 @@
-import { Button, Card, notification, Table, Tag } from 'antd'
+import { Button, Card, Modal, notification, Popconfirm, Table, Tag } from 'antd'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import handleError from '../../../common/utils/handleError'
 import {
   activeEvaluationBatchService,
+  deleteEvaluationBatchService,
   getEvaluationBatchListService,
 } from '../services'
 import { evaluationStatusColor } from '../model'
@@ -42,6 +43,27 @@ const EvaluationBatchList = () => {
     } catch (err) {
       handleError(err, null, notification)
     }
+  }
+
+  const deleteEvaluationBatch = (r) => {
+    Modal.confirm({
+      content:
+        'Dữ liệu bị xóa sẽ không thể hoàn tác, chắc chắn xóa đợt đánh giá này?',
+      onOk: async () => {
+        try {
+          await deleteEvaluationBatchService(r.semester.id, r.year.id)
+
+          notification.success({
+            message: 'Xóa đợt đánh giá',
+            description: 'Thành công',
+          })
+
+          getEvaluationBatch()
+        } catch (error) {
+          handleError(error, null, notification)
+        }
+      },
+    })
   }
 
   return (
@@ -103,6 +125,14 @@ const EvaluationBatchList = () => {
                     KÍCH HOẠT
                   </Button>
                 )}
+                <Popconfirm
+                  title="Xóa đợt đánh giá này?"
+                  onConfirm={() => deleteEvaluationBatch(r)}
+                >
+                  <Button shape="circle" type="primary" className="me-2" danger>
+                    <i className="fas fa-trash" />
+                  </Button>
+                </Popconfirm>
                 <Button
                   shape="circle"
                   onClick={() =>
