@@ -9,7 +9,7 @@ import EvaluationTicket from '../modules/evaluation/components/EvaluationTicket'
 const ConfirmEvaluationPage = () => {
   let { search } = useLocation()
   search = qs.parse(search)
-  
+
   return (
     <MainLayout>
       <CustomBreadcrumb

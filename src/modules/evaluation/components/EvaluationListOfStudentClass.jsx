@@ -265,9 +265,15 @@ const EvaluationListOfStudentClass = () => {
       title={
         <span>
           <b>
-            {'DANH SÁCH PHIẾU ĐIỂM RÈN LUYỆN CỦA LỚP' + 
-            ((profile.roleName === ROLE.student && evaluationList && ' ' + getString(evaluationList[0], 'student.studentClass.title')) ||
-            '')}
+            {`DANH SÁCH PHIẾU ĐIỂM RÈN LUYỆN CỦA LỚP${
+              (profile.roleName === ROLE.student &&
+                evaluationList &&
+                ` ${getString(
+                  evaluationList[0],
+                  'student.studentClass.title',
+                )}`) ||
+              ''
+            }`}
           </b>
         </span>
       }

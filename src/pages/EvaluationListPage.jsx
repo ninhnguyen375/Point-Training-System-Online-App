@@ -5,7 +5,6 @@ import MainLayout from '../common/hocs/MainLayout'
 import EvaluationList from '../modules/evaluation/components/EvaluationList'
 import { MODULE_NAME as MODULE_USER, ROLE } from '../modules/user/model'
 
-
 const EvaluationListPage = () => {
   // store
   const profile = useSelector((state) => state[MODULE_USER].profile)
@@ -29,12 +28,10 @@ const EvaluationListPage = () => {
 
   return (
     <MainLayout>
-      <CustomBreadcrumb
-        items={items}
-      />
+      <CustomBreadcrumb items={items} />
       <EvaluationList />
     </MainLayout>
-  );
+  )
 }
 
 export default EvaluationListPage

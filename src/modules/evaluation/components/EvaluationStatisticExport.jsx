@@ -2,7 +2,7 @@
 import { Button, Switch } from 'antd'
 import jsPDF from 'jspdf'
 import React, { useCallback, useEffect, useState } from 'react'
-import { any, arrayOf, objectOf, string } from 'prop-types'
+import { any, arrayOf, bool, objectOf, string } from 'prop-types'
 import logo from '../../../assets/images/sgu-logo.png'
 import '../../../assets/fonts/times-normal'
 import '../../../assets/fonts/timesi-normal'
@@ -19,7 +19,11 @@ pdf.setFont('timesi')
 pdf.setFont('timesbd')
 pdf.setFont('timesbi')
 
-const EvaluationStatisticExport = ({ evaluations, batchTitle, isAllStudentClasses = false }) => {
+const EvaluationStatisticExport = ({
+  evaluations,
+  batchTitle,
+  isAllStudentClasses,
+}) => {
   // state
   const [isFilterValidTicket, setIsFilterValidTicket] = useState(false)
   const [pages, setPages] = useState([])
@@ -311,6 +315,11 @@ const EvaluationStatisticExport = ({ evaluations, batchTitle, isAllStudentClasse
 EvaluationStatisticExport.propTypes = {
   evaluations: arrayOf(objectOf(any)).isRequired,
   batchTitle: string.isRequired,
+  isAllStudentClasses: bool,
+}
+
+EvaluationStatisticExport.defaultProps = {
+  isAllStudentClasses: false,
 }
 
 export default EvaluationStatisticExport

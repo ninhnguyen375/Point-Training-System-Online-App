@@ -195,8 +195,8 @@ const ManagerList = () => {
 
   return (
     <Card title={<b>DANH SÁCH QUẢN LÝ</b>}>
-      <div className="d-flex justify-content-between">
-        <div className="d-flex">
+      <div className="d-flex justify-content-between flex-wrap">
+        <div className="d-flex flex-wrap">
           <Input
             className="me-2 mb-2"
             onChange={(e) => setSearch({ ...search, code: e.target.value })}

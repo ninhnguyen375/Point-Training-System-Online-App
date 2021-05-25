@@ -121,7 +121,7 @@ const MainLayout = ({ children }) => {
           </SubMenu>
         ) : (
           <Menu.Item key={i.key}>
-          <div className="main-layout__menu-item">
+            <div className="main-layout__menu-item">
               <span>
                 <span className="me-2">{i.title}</span>
                 <i className={`${i.iconClass} icon`} />
@@ -159,7 +159,7 @@ const MainLayout = ({ children }) => {
       <UpdatePasswordForm onSubmit={updatePassword} email={profile.email} />,
       {
         title: <b>THAY ĐỔI THÔNG TIN</b>,
-        key: 'change-password-modal',
+        key: `change-password-modal-${profile.email}`,
       },
     )
   }

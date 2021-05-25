@@ -15,7 +15,6 @@ import StudentListPage from '../pages/StudentListPage'
 import ImportStudentPage from '../pages/ImportStudentPage'
 import StudentClassListPage from '../pages/StudentClassListPage'
 import ImportStudentClassPage from '../pages/ImportStudentClassPage'
-import Home from '../pages/Home'
 import EvaluationListOfStudentPage from '../pages/EvaluationListOfStudentPage'
 import EvaluationListOfStudentClassPage from '../pages/EvaluationListOfStudentClassPage'
 import ManagerListPage from '../pages/ManagerListPage'
@@ -70,7 +69,7 @@ const Routes = () => {
         <Route exact path="/make-evaluation" component={MakeEvaluationPage} />
 
         <Route exact path="/evaluation" component={EvaluationListPage} />
-        
+
         <Route
           exact
           path="/evaluation/confirm"
@@ -116,7 +115,7 @@ const Routes = () => {
           path="/evaluation/confirm"
           component={ConfirmEvaluationPage}
         />
-        
+
         <Route exact path="*" component={NotFound} />
       </Switch>
     )
@@ -173,10 +172,10 @@ const Routes = () => {
           exact
           path="/student-class/import"
           component={ImportStudentClassPage}
-        />  
+        />
 
         <Route exact path="/student/import" component={ImportStudentPage} />
-        
+
         <Route exact path="*" component={NotFound} />
       </Switch>
     )
@@ -192,9 +191,9 @@ const Routes = () => {
         <Route exact path="/manager" component={ManagerListPage} />
 
         <Route exact path="/employee" component={EmployeeListPage} />
-        
+
         <Route exact path="/deputydean" component={DeputyDeanListPage} />
-        
+
         <Route exact path="*" component={NotFound} />
       </Switch>
     )

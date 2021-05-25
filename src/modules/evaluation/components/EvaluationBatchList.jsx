@@ -79,14 +79,13 @@ const EvaluationBatchList = () => {
                 <Tag className="m-0" color="geekblue">
                   ĐANG KÍCH HOẠT
                 </Tag>
-              )) || (
-                r.isFinished && (
+              )) ||
+              (r.isFinished && (
                 <Tag className="m-0" color={evaluationStatusColor['Hoàn tất']}>
                   HOÀN TẤT
                 </Tag>
-                )) || (
-                ''
-              ),
+              )) ||
+              '',
           },
           {
             key: 'actions',

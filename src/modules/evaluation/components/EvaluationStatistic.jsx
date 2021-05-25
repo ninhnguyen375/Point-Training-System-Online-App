@@ -380,7 +380,7 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
             evaluationBatches.find((b) => b.year.id === yearId),
             'year.title',
           )}`}
-          isAllStudentClasses={true}
+          isAllStudentClasses
         />
       </div>,
       {

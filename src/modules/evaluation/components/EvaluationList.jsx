@@ -210,10 +210,12 @@ const EvaluationList = () => {
     {
       key: 'fullName',
       title: <b>Sinh Viên</b>,
-      render: (r) => profile.isMonitor && r.student.id === profile.id ? 
-        <b>{r.student.fullName}</b> :
-        <span>{r.student.fullName}</span>
-      ,
+      render: (r) =>
+        profile.isMonitor && r.student.id === profile.id ? (
+          <b>{r.student.fullName}</b>
+        ) : (
+          <span>{r.student.fullName}</span>
+        ),
     },
     {
       key: 'studentClass',
@@ -404,10 +406,10 @@ const EvaluationList = () => {
             </Tooltip>,
           )
         }
-        
+
         // Click to view info
         if (
-          (profile.isMonitor && 
+          (profile.isMonitor &&
             r.status !== evaluationStatus.StudentSubmited &&
             r.status !== evaluationStatus.MonitorConfirmed &&
             r.status !== evaluationStatus.ComplainingMonitor) ||
@@ -419,7 +421,7 @@ const EvaluationList = () => {
             r.status !== evaluationStatus.StudentSubmited &&
             r.status !== evaluationStatus.EmployeeConfirmed &&
             r.status !== evaluationStatus.ComplainingEmployee) ||
-          (profile.roleName === ROLE.deputydean)
+          profile.roleName === ROLE.deputydean
         ) {
           actions.push(
             <Tooltip key="view-info" title="Xem">
@@ -575,12 +577,20 @@ const EvaluationList = () => {
     <Card
       title={
         <span>
-          <b> 
-            {'DANH SÁCH PHIẾU ĐIỂM RÈN LUYỆN' + 
-            ((profile.isMonitor && evaluations && ' CỦA LỚP ' + getString(evaluations[0], 'student.studentClass.title')) || 
-            (profile.roleName === ROLE.lecturer && search.studentClass !== undefined && ' CỦA LỚP ' + search.studentClass) ||
-            (profile.roleName === ROLE.employee && ' CỦA LỚP QUÁ HẠN') ||
-            '')}
+          <b>
+            {`DANH SÁCH PHIẾU ĐIỂM RÈN LUYỆN${
+              (profile.isMonitor &&
+                evaluations &&
+                ` CỦA LỚP ${getString(
+                  evaluations[0],
+                  'student.studentClass.title',
+                )}`) ||
+              (profile.roleName === ROLE.lecturer &&
+                search.studentClass !== undefined &&
+                ` CỦA LỚP ${search.studentClass}`) ||
+              (profile.roleName === ROLE.employee && ' CỦA LỚP QUÁ HẠN') ||
+              ''
+            }`}
           </b>
         </span>
       }

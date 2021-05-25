@@ -94,7 +94,11 @@ const EvaluationListOfStudent = () => {
       title: <b>Đang Đánh Giá</b>,
       align: 'center',
       render: (r) =>
-        r.isInDeadline && !r.isFinished ? <Tag color="geekblue">Đang Đánh Giá</Tag> : '',
+        r.isInDeadline && !r.isFinished ? (
+          <Tag color="geekblue">Đang Đánh Giá</Tag>
+        ) : (
+          ''
+        ),
     },
     {
       title: <b>Tổng Điểm</b>,
