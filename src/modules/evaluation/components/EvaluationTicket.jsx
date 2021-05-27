@@ -16,6 +16,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import readExcelFile from 'read-excel-file'
 import PropTypes from 'prop-types'
+import moment from 'moment'
 import handleError from '../../../common/utils/handleError'
 import {
   getEvaluationPrivateService,
@@ -72,6 +73,14 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
   if (evaluation && evaluation.overdue) {
     isMonitor = false
   }
+  const isExpiredDeadlineOfMonitor =
+    evaluation &&
+    (evaluation.status === evaluationStatus.MonitorConfirmed ||
+      (evaluation.status === evaluationStatus.StudentSubmited &&
+        moment(moment().format('DD-MM-YYYY'), 'DD-MM-YYYY').isAfter(
+          moment(evaluation.deadlineDateForMonitor, 'DD-MM-YYYY'),
+          'date',
+        )))
   const isTicketOfMonitor = evaluation && isMonitor && isTicketOfCurrentStudent
   const viewRole =
     isMonitor && !isTicketOfMonitor ? ROLE.monitor : profile.roleName
@@ -1222,7 +1231,9 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         <div className="mt-2">
           <b>
             <span className="me-2">Nhập điểm hệ 4 học kỳ hiện tại</span>
-            {isMonitor ? '' : '(bỏ trống nếu chưa có)'}
+            {isMonitor || profile.roleName === ROLE.lecturer
+              ? ''
+              : '(bỏ trống nếu chưa có)'}
             <span>:</span>
           </b>
           <div className="mt-2 d-flex flex-wrap align-items-center">
@@ -1233,7 +1244,9 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
               onChange={(v) => setCurrentResult(v)}
               value={currentResult}
               placeholder="Điểm hệ 4"
-              readOnly={!isValidDeadline || !isYourTurn}
+              readOnly={
+                !isValidDeadline || (!isYourTurn && !isExpiredDeadlineOfMonitor)
+              }
             />
             <span className="me-2 ms-2">xem trên</span>
             <a
@@ -1296,7 +1309,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
                 (!isMonitor && !isTicketOfCurrentStudent)
               }
               accept="image/*"
-              onPreview={(file) => handleViewImage(file.url)}
+              onPreview={(file) => handleViewImage([file])}
             >
               <Button icon={<i className="fas fa-file-upload me-2" />}>
                 Tải lên ảnh minh chứng
@@ -1401,6 +1414,27 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
             </>
           )}
 
+        {/* on student submited, is ticket of monitor */}
+        {evaluation.status === evaluationStatus.StudentSubmited &&
+          isTicketOfMonitor && (
+            <>
+              <Popconfirm
+                disabled={!isValidDeadline}
+                title="HOÀN TẤT đánh giá?"
+                onConfirm={() => handleSubmit(true)}
+              >
+                <Button
+                  disabled={!isValidDeadline}
+                  className="success"
+                  size="large"
+                  type="primary"
+                >
+                  HOÀN TẤT
+                </Button>
+              </Popconfirm>
+            </>
+          )}
+
         {/* on student submited, view by monitor */}
         {evaluation.status === evaluationStatus.StudentSubmited &&
           viewRole === ROLE.monitor && (
@@ -1449,23 +1483,22 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         )}
 
         {/* on monitor submited, view by lecturer */}
-        {evaluation.status === evaluationStatus.MonitorConfirmed &&
-          profile.roleName === ROLE.lecturer && (
-            <Popconfirm
+        {isExpiredDeadlineOfMonitor && profile.roleName === ROLE.lecturer && (
+          <Popconfirm
+            disabled={!isValidDeadline}
+            title="DUYỆT đánh giá?"
+            onConfirm={() => handleSubmit(false)}
+          >
+            <Button
               disabled={!isValidDeadline}
-              title="DUYỆT đánh giá?"
-              onConfirm={() => handleSubmit(false)}
+              className="success"
+              size="large"
+              type="primary"
             >
-              <Button
-                disabled={!isValidDeadline}
-                className="success"
-                size="large"
-                type="primary"
-              >
-                DUYỆT ĐÁNH GIÁ
-              </Button>
-            </Popconfirm>
-          )}
+              DUYỆT ĐÁNH GIÁ
+            </Button>
+          </Popconfirm>
+        )}
 
         {/* on student submited and is overdue, view by employee */}
         {evaluation.status === evaluationStatus.StudentSubmited &&
@@ -1592,7 +1625,6 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
           />
         )}
       </div>
-
       <Divider />
 
       {evaluation && (
@@ -1608,6 +1640,21 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
           </div>
         </Tooltip>
       )}
+
+      <br />
+
+      <div className="col-lg-3">
+        {evaluation && evaluation.reasonForCancellation && (
+          <Alert
+            type="error"
+            message={
+              <span>
+                Lý do hủy: <b>{evaluation.reasonForCancellation}</b>
+              </span>
+            }
+          />
+        )}
+      </div>
 
       <Divider />
 

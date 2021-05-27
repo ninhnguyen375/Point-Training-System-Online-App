@@ -23,6 +23,7 @@ const EvaluationBatchList = () => {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.log(err)
+      setEvaluationBatches([])
     }
   }, [])
 

@@ -77,8 +77,9 @@ const CreateEvaluationForm = () => {
       type = 'Cố Vấn Học Tập'
     }
     if (
-      moment(date, 'YYYY-MM-DD').isBefore(
-        moment(form.getFieldValue(name), 'YYYY-MM-DD').add(1, 'day'),
+      moment(date).isBefore(
+        moment(form.getFieldValue(name)).add(1, 'day'),
+        'date',
       )
     ) {
       return Promise.reject(new Error(`Phải lớn hơn hạn chót cho ${type}`))
@@ -152,7 +153,7 @@ const CreateEvaluationForm = () => {
           </Form.Item>
           <Form.Item
             rules={[
-              { required: true, message: 'Bắc buộc' },
+              { required: true, message: 'Bắt buộc' },
               {
                 validator: (_, value) =>
                   moment(value, 'YYYY-MM-YYYY').isBefore(moment())
@@ -167,7 +168,7 @@ const CreateEvaluationForm = () => {
           </Form.Item>
           <Form.Item
             rules={[
-              { required: true, message: 'Bắc buộc' },
+              { required: true, message: 'Bắt buộc' },
               {
                 validator: validator('deadlineDateForStudent'),
               },
@@ -179,7 +180,7 @@ const CreateEvaluationForm = () => {
           </Form.Item>
           <Form.Item
             rules={[
-              { required: true, message: 'Bắc buộc' },
+              { required: true, message: 'Bắt buộc' },
               {
                 validator: validator('deadlineDateForMonitor'),
               },
