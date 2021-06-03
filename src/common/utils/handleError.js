@@ -28,7 +28,7 @@ export default (err, form, noti) => {
   // }
 
   const data = err.response ? err.response.data : undefined
-  console.log('data', data)
+  // console.log('data', data)
   const isOnFormError = !!form
 
   if (!data) {

@@ -13,7 +13,7 @@ export const fetchAuth = async ({
   data,
   ...options
 }) => {
-  console.time(url)
+  // console.time(url)
   const tokenKey = token || store.getState()[MODULE_USER].profile.token
 
   const res = await axios({
@@ -29,7 +29,7 @@ export const fetchAuth = async ({
     ...options,
   })
 
-  console.timeEnd(url)
+  // console.timeEnd(url)
 
   return res
 }
@@ -41,7 +41,7 @@ export const fetchAxios = async ({
   data,
   ...options
 }) => {
-  console.time(url)
+  // console.time(url)
   try {
     const res = await axios({
       url,
@@ -55,7 +55,7 @@ export const fetchAxios = async ({
       ...options,
     })
 
-    console.timeEnd(url)
+    // console.timeEnd(url)
     return res
   } catch (err) {
     console.timeEnd(url)
@@ -73,7 +73,7 @@ export const fetchAuthLoading = async ({
   pageLoading = false,
   ...options
 }) => {
-  console.time(url)
+  // console.time(url)
   if (pageLoading) {
     window.PageLoading.show()
   } else {
@@ -102,7 +102,7 @@ export const fetchAuthLoading = async ({
       nProgress.done()
     }
 
-    console.timeEnd(url)
+    // console.timeEnd(url)
     return res
   } catch (error) {
     if (pageLoading) {
@@ -123,7 +123,7 @@ export const fetchLoading = async ({
   headers,
   ...options
 }) => {
-  console.time(url)
+  // console.time(url)
   nProgress.start()
 
   try {
@@ -140,7 +140,7 @@ export const fetchLoading = async ({
     })
 
     nProgress.done()
-    console.timeEnd(url)
+    // console.timeEnd(url)
     return res
   } catch (error) {
     nProgress.done()

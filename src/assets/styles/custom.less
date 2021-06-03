@@ -232,9 +232,30 @@ span.anticon {
   background: @primary-color;
 }
 
+.ant-steps-item-process >
+  .ant-steps-item-container > 
+    .ant-steps-item-content > 
+      .ant-steps-item-title::after {
+  background-color: @primary-color;
+}
+
+.timeline-editing {
+  height: 400px;
+  overflow: auto;
+}
+
 // ----- RESPONSIVE --------
 @media (max-width: 768px) {
   .ant-card-body, .ant-card-header {
       padding: 5px;
+  }
+
+  .semester-year {
+    width: 33% !important;
+    margin-bottom: 2rem;
+  }
+
+  .box-column-responsive {
+    flex-direction: column;
   }
 }

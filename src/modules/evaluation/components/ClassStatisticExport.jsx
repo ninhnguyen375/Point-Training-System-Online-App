@@ -271,9 +271,9 @@ const ClassStatisticExport = ({ evaluations, batchTitle }) => {
           </tr>
         </thead>
         <tbody>
-          {page.items.map((r) => (
+          {page.items.map((r, index) => (
             <tr key={r.index}>
-              <td>{r.index}</td>
+              <td>{index + 1}</td>
               <td>{getString(r, 'student.code')}</td>
               <td>
                 <div className="d-flex justify-content-between pe-1 ps-1">

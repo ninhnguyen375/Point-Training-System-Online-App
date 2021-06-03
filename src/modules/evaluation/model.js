@@ -61,3 +61,14 @@ export const a4 = {
   padding: 50,
   fontSize: 12,
 }
+
+export const evaluationTimelineStatusColor = {
+  'Lưu phiếu đánh giá': '#1890ff', // #1890ff is light blue
+  'Nộp phiếu đánh giá': '#1890ff',
+  'Khiếu nại về kết quả phiếu đánh giá': '#340C6F',
+  'Xác nhận phiếu đánh giá': '#1890ff',
+  'Chấp nhận phiếu đánh giá': '#1890ff',
+  'Hoàn tất phiếu đánh giá': 'green',
+  'Hủy phiếu đánh giá': 'red',
+  'Phục hồi phiếu đánh giá': 'orange',
+}
