@@ -209,6 +209,10 @@ const EvaluationListOfStudentClass = () => {
               if (curr) {
                 setYearId(curr.year.id)
                 setSemesterId(curr.semester.id)
+              } else {
+                notification.info({
+                  message: 'Hiện tại chưa có đợt đánh giá.',
+                })
               }
             }}
             type="primary"

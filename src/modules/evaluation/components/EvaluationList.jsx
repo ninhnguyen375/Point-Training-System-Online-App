@@ -273,7 +273,11 @@ const EvaluationList = () => {
         ) {
           actions.push(
             <Tooltip key="monitor-confirm" title="Đánh giá">
-              <Button onClick={() => gotoConfirmPage(r)} type="primary">
+              <Button
+                onClick={() => gotoConfirmPage(r)}
+                type="primary"
+                shape="circle"
+              >
                 <i className="fas fa-pen-alt" />
               </Button>
             </Tooltip>,
@@ -294,6 +298,7 @@ const EvaluationList = () => {
                 onClick={() => handleCancelEvaluation(r.id)}
                 danger
                 type="primary"
+                shape="circle"
                 className="ms-2"
               >
                 <i className="fas fa-ban" />
@@ -312,7 +317,11 @@ const EvaluationList = () => {
             <Tooltip key="monitor-update" title="Chỉnh sửa">
               <Button
                 onClick={() => gotoConfirmPage(r)}
-                type="default"
+                style={{
+                  backgroundColor: '#f9f0ff',
+                  color: '#531dab',
+                }}
+                shape="circle"
                 className="ms-2"
               >
                 <i className="fas fa-edit" />
@@ -328,7 +337,11 @@ const EvaluationList = () => {
         ) {
           actions.push(
             <Tooltip key="lecturer-confirm" title="Đánh giá">
-              <Button onClick={() => gotoConfirmPage(r)} type="primary">
+              <Button
+                onClick={() => gotoConfirmPage(r)}
+                type="primary"
+                shape="circle"
+              >
                 <i className="fas fa-pen-alt" />
               </Button>
             </Tooltip>,
@@ -346,6 +359,11 @@ const EvaluationList = () => {
               <Button
                 onClick={() => gotoConfirmPage(r)}
                 type="default"
+                shape="circle"
+                style={{
+                  backgroundColor: '#f9f0ff',
+                  color: '#531dab',
+                }}
                 className="ms-2"
               >
                 <i className="fas fa-edit" />
@@ -361,7 +379,11 @@ const EvaluationList = () => {
         ) {
           actions.push(
             <Tooltip key="employee-confirm" title="Đánh giá">
-              <Button onClick={() => gotoConfirmPage(r)} type="primary">
+              <Button
+                onClick={() => gotoConfirmPage(r)}
+                type="primary"
+                shape="circle"
+              >
                 <i className="fas fa-pen-alt" />
               </Button>
             </Tooltip>,
@@ -379,6 +401,11 @@ const EvaluationList = () => {
               <Button
                 onClick={() => gotoConfirmPage(r)}
                 type="default"
+                shape="circle"
+                style={{
+                  backgroundColor: '#f9f0ff',
+                  color: '#531dab',
+                }}
                 className="ms-2"
               >
                 <i className="fas fa-edit" />
@@ -399,7 +426,7 @@ const EvaluationList = () => {
                 title="Xác nhận"
                 onConfirm={() => deputydeanConfirm(r.id)}
               >
-                <Button className="ms-2 success" type="primary">
+                <Button className="ms-2 success" type="primary" shape="circle">
                   <i className="fas fa-check" />
                 </Button>
               </Popconfirm>
@@ -480,6 +507,10 @@ const EvaluationList = () => {
               if (curr) {
                 setYearId(curr.year.id)
                 setSemesterId(curr.semester.id)
+              } else {
+                notification.info({
+                  message: 'Hiện tại chưa có đợt đánh giá.',
+                })
               }
             }}
             type="primary"
@@ -585,7 +616,8 @@ const EvaluationList = () => {
                   evaluations[0],
                   'student.studentClass.title',
                 )}`) ||
-              (profile.roleName === ROLE.lecturer &&
+              ((profile.roleName === ROLE.lecturer ||
+                profile.roleName === ROLE.deputydean) &&
                 search.studentClass !== undefined &&
                 ` CỦA LỚP ${search.studentClass}`) ||
               (profile.roleName === ROLE.employee && ' CỦA LỚP QUÁ HẠN') ||

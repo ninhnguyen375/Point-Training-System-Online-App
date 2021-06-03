@@ -11,6 +11,7 @@ import {
   Table,
   Tooltip,
   Upload,
+  Timeline,
 } from 'antd'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -35,12 +36,14 @@ import {
   employeeConfirmService,
   deputydeanConfirmService,
   sendMailService,
+  getTimelineEditingService,
 } from '../services'
 import { MODULE_NAME as MODULE_USER, ROLE } from '../../user/model'
 import {
   disableEvaluationItems,
   evaluationStatus,
   classification as classificationList,
+  evaluationTimelineStatusColor,
 } from '../model'
 
 import { cloneObj, getString } from '../../../common/utils/object'
@@ -62,6 +65,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
   const [semesterId, setSemesterId] = useState(semesterIdProp)
   const [attachments, setAttachments] = useState([])
   const [evaluationBatches, setEvaluationBatches] = useState([])
+  const [timelineEditing, setTimelineEditing] = useState([])
   // ref
   const inputCurrentResult = useRef(null)
   const inputPreviousResult = useRef(null)
@@ -111,6 +115,41 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
   const deadlineString = getDeadline(evaluation, viewRole)
 
   const getCurrentActive = (batches = []) => batches.find((b) => b.isInDeadline)
+
+  const isValidLecturerDeadline =
+    evaluation &&
+    moment().isSameOrBefore(
+      moment(evaluation.deadlineDateForLecturer, 'DD/MM/yyyy'),
+      'date',
+    )
+
+  const isEvaluationStudentDone =
+    profile.roleName === ROLE.student &&
+    evaluation &&
+    evaluation.status !== evaluationStatus.New &&
+    evaluation.status !== evaluationStatus.Draft
+
+  const isEvaluationStudentWithoutMonitorDone =
+    isEvaluationStudentDone && !profile.isMonitor
+
+  const isEvaluationMonitorDone =
+    profile.roleName === ROLE.student &&
+    profile.isMonitor &&
+    evaluation &&
+    evaluation.status !== evaluationStatus.New &&
+    evaluation.status !== evaluationStatus.Draft &&
+    evaluation.status !== evaluationStatus.StudentSubmited &&
+    evaluation.status !== evaluationStatus.ComplainingMonitor
+
+  const isEvaluationLecturerDone =
+    profile.roleName === ROLE.lecturer &&
+    evaluation &&
+    evaluation.status !== evaluationStatus.New &&
+    evaluation.status !== evaluationStatus.Draft &&
+    evaluation.status !== evaluationStatus.StudentSubmited &&
+    evaluation.status !== evaluationStatus.MonitorConfirmed &&
+    evaluation.status !== evaluationStatus.ComplainingMonitor &&
+    evaluation.status !== evaluationStatus.ComplainingLecturer
 
   const checkIsCurrentActive = (yId, sId, batches) => {
     const found = batches.find(
@@ -837,6 +876,59 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     )
   }
 
+  const getTimelineEditing = useCallback(async (evaluationId) => {
+    try {
+      let { data } = await getTimelineEditingService(evaluationId)
+      data = data.data
+
+      setTimelineEditing(data)
+    } catch (err) {
+      notification.info({
+        message: 'Không tìm thấy phiếu.',
+      })
+    }
+  }, [])
+
+  useEffect(() => {
+    if (evaluation) {
+      getTimelineEditing(evaluation.id)
+    }
+  }, [evaluation])
+
+  const displayTimelineEditing = () => {
+    window.Modal.show(
+      <Timeline className="timeline-editing" mode="left">
+        {timelineEditing.map((t) => {
+          // Separate date and time
+          const dateTimeArray = t.editedAt.split(' ')
+
+          return (
+            <Timeline.Item
+              key={t.code + dateTimeArray[0] + dateTimeArray[1]}
+              color={evaluationTimelineStatusColor[t.content]}
+              label={
+                <div>
+                  <div>{dateTimeArray[0]}</div>
+                  <div>{dateTimeArray[1]}</div>
+                </div>
+              }
+            >
+              <div>{t.content}</div>
+              <div>{t.code !== null ? `Mã số: ${t.code}` : ''}</div>
+              <div>
+                {(t.code !== null ? `${t.roleName}: ` : '') + t.fullName}
+              </div>
+            </Timeline.Item>
+          )
+        })}
+      </Timeline>,
+      {
+        title: <b>MỐC THỜI GIAN ĐÁNH GIÁ CỦA PHIẾU</b>,
+        key: 'view-timeline-editing',
+      },
+    )
+  }
+
   const handleClickSaveAsDraft = async (notify = true) => {
     try {
       await studentMakeDraftEvaluationService(
@@ -1376,8 +1468,18 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         )}
       </div>
 
+      <div className="mt-4">
+        <Button
+          type="primary"
+          icon={<i className="fas fa-list-ul me-2" />}
+          onClick={displayTimelineEditing}
+        >
+          XEM MỐC THỜI GIAN CỦA PHIẾU
+        </Button>
+      </div>
+
       <div className="d-flex justify-content-end mt-3">
-        {isYourTurn && !isValidDeadline && (
+        {isYourTurn && !isValidDeadline && !isEvaluationStudentDone && (
           <Alert message="Phiếu đóng vì quá hạn" type="error" />
         )}
       </div>
@@ -1540,7 +1642,8 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
           evaluation.status === evaluationStatus.EmployeeConfirmed) &&
           profile.roleName === ROLE.student &&
           !isMonitor &&
-          isTicketOfCurrentStudent && (
+          isTicketOfCurrentStudent &&
+          isValidLecturerDeadline && (
             <Button onClick={handleComplain} size="large" type="primary">
               KHIẾU NẠI
             </Button>
@@ -1594,6 +1697,10 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
                     if (curr) {
                       setYearId(curr.year.id)
                       setSemesterId(curr.semester.id)
+                    } else {
+                      notification.info({
+                        message: 'Hiện tại chưa có đợt đánh giá.',
+                      })
                     }
                   }}
                   type="primary"
@@ -1610,10 +1717,23 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         {deadlineString && evaluation && evaluation.isInDeadline && (
           <Alert
             message={`Hạn chót của bạn: ${deadlineString} ${
-              isYourTurn && !isValidDeadline ? '(quá hạn)' : ''
+              isEvaluationStudentWithoutMonitorDone ||
+              isEvaluationMonitorDone ||
+              isEvaluationLecturerDone
+                ? '(Hoàn tất)'
+                : !isValidDeadline
+                ? '(Quá hạn)'
+                : ''
             }`}
             className="mt-2"
-            type={isYourTurn ? (isValidDeadline ? 'success' : 'error') : ''}
+            type={
+              isValidDeadline ||
+              isEvaluationStudentWithoutMonitorDone ||
+              isEvaluationMonitorDone ||
+              isEvaluationLecturerDone
+                ? 'success'
+                : 'error'
+            }
           />
         )}
 

@@ -309,14 +309,16 @@ const DeputyDeanList = () => {
               }
 
               actions.push(
-                <Button
-                  key="info"
-                  onClick={() => handleClickShowInfo(r)}
-                  className="mb-2 me-2"
-                  shape="circle"
-                >
-                  <i className="fas fa-info" />
-                </Button>,
+                <Tooltip key="view-info" title="Thông tin">
+                  <Button
+                    key="info"
+                    onClick={() => handleClickShowInfo(r)}
+                    className="mb-2 me-2"
+                    shape="circle"
+                  >
+                    <i className="fas fa-info" />
+                  </Button>
+                </Tooltip>,
               )
 
               return actions.map((a) => a)

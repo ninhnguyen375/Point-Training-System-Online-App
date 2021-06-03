@@ -9,9 +9,12 @@ import {
   Table,
   Tag,
   Tooltip,
+  Modal,
+  Steps,
 } from 'antd'
 import qs from 'query-string'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 import { number } from 'prop-types'
 import handleError from '../../../common/utils/handleError'
@@ -22,9 +25,11 @@ import {
   evaluationStatusColor,
   reasonForCancellation,
 } from '../model'
+import { MODULE_NAME as MODULE_USER } from '../../user/model'
 import {
   getEvaluationBatchListService,
   getEvaluationsService,
+  restoreEvaluationService,
 } from '../services'
 import { getString } from '../../../common/utils/object'
 import ClassStatisticExport from './ClassStatisticExport'
@@ -32,7 +37,11 @@ import EvaluationStatisticExport from './EvaluationStatisticExport'
 import CounterStatisticExport from './CounterStatisticExport'
 import ExportCSV from '../../../common/components/widgets/ExportCSV'
 
+const { Step } = Steps
+
 const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
+  // store
+  const profile = useSelector((state) => state[MODULE_USER].profile)
   // state
   const [yearId, setYearId] = useState(yearIdProp)
   const [semesterId, setSemesterId] = useState(semesterIdProp)
@@ -128,6 +137,33 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
     getEvaluations()
   }, [getEvaluations])
 
+  const handleRestoreEvaluation = (evaluationId) => {
+    Modal.confirm({
+      title: 'Phục hồi phiếu đánh giá',
+      content: (
+        <span>
+          Phiếu đánh giá sẽ được phục hồi về trạng thái <strong>Mới</strong>{' '}
+          chắc chắn phục hồi phiếu đánh giá này?
+        </span>
+      ),
+      cancelText: 'Hủy',
+      onOk: async () => {
+        try {
+          await restoreEvaluationService(evaluationId, profile.id)
+
+          notification.success({
+            message: 'Phục hồi phiếu đánh giá',
+            description: 'Thành công',
+          })
+
+          getEvaluations()
+        } catch (error) {
+          handleError(error, null, notification)
+        }
+      },
+    })
+  }
+
   const gotoConfirmPage = (r) => {
     history.push(
       `/evaluation/confirm?${qs.stringify({
@@ -196,14 +232,29 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
       title: <b>Hành Động</b>,
       align: 'right',
       render: (r) => (
-        <Button
-          className="ms-2"
-          key="default"
-          shape="circle"
-          onClick={() => gotoConfirmPage(r)}
-        >
-          <i className="fas fa-info" />
-        </Button>
+        <div>
+          <Tooltip key="restore-evaluation" title="Phục hồi phiếu">
+            <Button
+              className="ms-2"
+              shape="circle"
+              onClick={() => handleRestoreEvaluation(r.id)}
+              style={{
+                backgroundColor: '#ffc7a1',
+              }}
+            >
+              <i className="fas fa-window-restore" />
+            </Button>
+          </Tooltip>
+          <Tooltip key="view-info" title="Xem">
+            <Button
+              className="ms-2"
+              shape="circle"
+              onClick={() => gotoConfirmPage(r)}
+            >
+              <i className="fas fa-info" />
+            </Button>
+          </Tooltip>
+        </div>
       ),
     },
   ]
@@ -214,7 +265,7 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
     }
 
     return (
-      <div className="col-lg-2">
+      <div className="semester-year col-lg-2">
         <div>Chọn Năm học và Học kỳ:</div>
         <Select
           onChange={(v) => {
@@ -242,6 +293,10 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
               if (curr) {
                 setYearId(curr.year.id)
                 setSemesterId(curr.semester.id)
+              } else {
+                notification.info({
+                  message: 'Hiện tại chưa có đợt đánh giá.',
+                })
               }
             }}
             type="primary"
@@ -251,6 +306,49 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
             LẤY HIỆN TẠI
           </Button>
         )}
+      </div>
+    )
+  }
+
+  const getCurrentEvaluationBatch = (batches) =>
+    batches.find(
+      (evaluationBatch) =>
+        evaluationBatch.semester.id === semesterId &&
+        evaluationBatch.year.id === yearId,
+    )
+
+  const renderEvaluationDeadline = (batches = []) => {
+    if (batches.length === 0 || !yearId || !semesterId) {
+      return ''
+    }
+    const currentEvaluationBatch = getCurrentEvaluationBatch(batches)
+
+    return (
+      <div className="col-lg-7">
+        <div className="mb-2">Thời hạn đánh giá: </div>
+        <Steps>
+          <Step
+            title={
+              <strong>{currentEvaluationBatch.deadlineDateForStudent}</strong>
+            }
+            description={<span title="Hạn của Sinh viên">Sinh viên</span>}
+            status="process"
+          />
+          <Step
+            title={
+              <strong>{currentEvaluationBatch.deadlineDateForMonitor}</strong>
+            }
+            description={<span title="Hạn của Lớp trưởng">Lớp trưởng</span>}
+            status="process"
+          />
+          <Step
+            title={
+              <strong>{currentEvaluationBatch.deadlineDateForLecturer}</strong>
+            }
+            description={<span title="Hạn của Giảng viên">Giảng viên</span>}
+            status="process"
+          />
+        </Steps>
       </div>
     )
   }
@@ -488,7 +586,10 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
         </span>
       }
     >
-      <div>{renderSelectBatch(evaluationBatches)}</div>
+      <div className="d-flex justify-content-between box-column-responsive">
+        {renderSelectBatch(evaluationBatches)}
+        {renderEvaluationDeadline(evaluationBatches)}
+      </div>
 
       <Divider />
 

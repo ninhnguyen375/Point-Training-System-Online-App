@@ -314,3 +314,15 @@ export const deleteEvaluationBatchService = (semesterId, yearId) =>
     url: `${configs.API}/Evaluations/DeleteEvaluationPeriod/${semesterId},${yearId}`,
     method: 'delete',
   })
+
+export const restoreEvaluationService = (evaluationId, employeeId) =>
+  fetchAxios({
+    url: `${configs.API}/Evaluations/RestoreEvaluation/${evaluationId},${employeeId}`,
+    method: 'put',
+  })
+
+export const getTimelineEditingService = (evaluationId) =>
+  fetchAxios({
+    url: `${configs.API}/Evaluations/GetTimelineEditing/${evaluationId}`,
+    method: 'get',
+  })

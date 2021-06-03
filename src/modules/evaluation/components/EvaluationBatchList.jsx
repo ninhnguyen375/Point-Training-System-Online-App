@@ -1,4 +1,13 @@
-import { Button, Card, Modal, notification, Popconfirm, Table, Tag } from 'antd'
+import {
+  Button,
+  Card,
+  Modal,
+  notification,
+  Popconfirm,
+  Table,
+  Tag,
+  Tooltip,
+} from 'antd'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import handleError from '../../../common/utils/handleError'
@@ -48,8 +57,10 @@ const EvaluationBatchList = () => {
 
   const deleteEvaluationBatch = (r) => {
     Modal.confirm({
+      title: 'Xóa đợt đánh giá',
       content:
         'Dữ liệu bị xóa sẽ không thể hoàn tác, chắc chắn xóa đợt đánh giá này?',
+      cancelText: 'Hủy',
       onOk: async () => {
         try {
           await deleteEvaluationBatchService(r.semester.id, r.year.id)
@@ -126,24 +137,35 @@ const EvaluationBatchList = () => {
                     KÍCH HOẠT
                   </Button>
                 )}
-                <Popconfirm
-                  title="Xóa đợt đánh giá này?"
-                  onConfirm={() => deleteEvaluationBatch(r)}
-                >
-                  <Button shape="circle" type="primary" className="me-2" danger>
-                    <i className="fas fa-trash" />
+                {!r.isFinished && (
+                  <Popconfirm
+                    title="Xóa đợt đánh giá này?"
+                    onConfirm={() => deleteEvaluationBatch(r)}
+                  >
+                    <Tooltip key="remove-evaluation-batch" title="Xóa">
+                      <Button
+                        shape="circle"
+                        type="primary"
+                        className="me-2"
+                        danger
+                      >
+                        <i className="fas fa-trash" />
+                      </Button>
+                    </Tooltip>
+                  </Popconfirm>
+                )}
+                <Tooltip key="view-info" title="Xem">
+                  <Button
+                    shape="circle"
+                    onClick={() =>
+                      history.push(
+                        `/evaluation-batch/detail?yearId=${r.year.id}&semesterId=${r.semester.id}`,
+                      )
+                    }
+                  >
+                    <i className="fas fa-info" />
                   </Button>
-                </Popconfirm>
-                <Button
-                  shape="circle"
-                  onClick={() =>
-                    history.push(
-                      `/evaluation-batch/detail?yearId=${r.year.id}&semesterId=${r.semester.id}`,
-                    )
-                  }
-                >
-                  <i className="fas fa-info" />
-                </Button>
+                </Tooltip>
               </div>
             ),
           },
