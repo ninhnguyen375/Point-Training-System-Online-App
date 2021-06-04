@@ -12,12 +12,14 @@ import {
   Tooltip,
   Upload,
   Timeline,
+  Tag,
 } from 'antd'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import readExcelFile from 'read-excel-file'
 import PropTypes from 'prop-types'
 import moment from 'moment'
+import Text from 'antd/lib/typography/Text'
 import handleError from '../../../common/utils/handleError'
 import {
   getEvaluationPrivateService,
@@ -897,34 +899,51 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
 
   const displayTimelineEditing = () => {
     window.Modal.show(
-      <Timeline className="timeline-editing" mode="left">
-        {timelineEditing.map((t) => {
-          // Separate date and time
-          const dateTimeArray = t.editedAt.split(' ')
-
-          return (
+      <div className="timeline-editing">
+        <Timeline mode="left">
+          {timelineEditing.map((t, i) => (
             <Timeline.Item
-              key={t.code + dateTimeArray[0] + dateTimeArray[1]}
+              // eslint-disable-next-line react/no-array-index-key
+              key={i}
               color={evaluationTimelineStatusColor[t.content]}
               label={
                 <div>
-                  <div>{dateTimeArray[0]}</div>
-                  <div>{dateTimeArray[1]}</div>
+                  <div>
+                    {moment(t.editedAt, 'DD MM YYYY HH:mm:ss').format(
+                      'DD/MM/YYYY',
+                    )}
+                  </div>
+                  <div>
+                    {moment(t.editedAt, 'DD MM YYYY HH:mm:ss').format(
+                      'HH:mm:ss',
+                    )}
+                  </div>
                 </div>
               }
             >
-              <div>{t.content}</div>
-              <div>{t.code !== null ? `Mã số: ${t.code}` : ''}</div>
-              <div>
-                {(t.code !== null ? `${t.roleName}: ` : '') + t.fullName}
+              <div className="ticket-history-content">
+                <div>
+                  <Tag color={evaluationTimelineStatusColor[t.content]}>
+                    <i className="fas fa-pen me-1" />
+                    {t.content.toUpperCase()}
+                  </Tag>
+                </div>
+                <div>
+                  <Tag>{t.code !== null ? `${t.code}` : ''}</Tag>
+                </div>
+                <div>
+                  {(t.code !== null ? `${t.roleName}: ` : '') + t.fullName}
+                </div>
               </div>
             </Timeline.Item>
-          )
-        })}
-      </Timeline>,
+          ))}
+        </Timeline>
+      </div>,
       {
         title: <b>MỐC THỜI GIAN ĐÁNH GIÁ CỦA PHIẾU</b>,
         key: 'view-timeline-editing',
+        width: 650,
+        style: { top: 10 },
       },
     )
   }

@@ -4,14 +4,14 @@
 @import '~antd/lib/style/themes/default.less';
 @import '~antd/dist/antd.less';
 
-@primary-color: #340C6F;
-@success-color: #52C41A;
+@primary-color: #340c6f;
+@success-color: #52c41a;
 @warning-color: #ffc107;
 @text-color: #333333;
 @text-primary: #333333;
 
 // common
-span.anticon { 
+span.anticon {
   display: inline-flex;
 }
 // Card
@@ -108,7 +108,7 @@ span.anticon {
   &.with-success {
     background: @success-color;
     color: white;
-    
+
     &:hover {
       background: darken(@success-color, 5);
     }
@@ -117,7 +117,7 @@ span.anticon {
   &.with-warning {
     background: @warning-color;
     color: white;
-    
+
     &:hover {
       background: darken(@warning-color, 5);
     }
@@ -128,7 +128,7 @@ span.anticon {
     position: relative;
     padding-left: 3.33rem !important;
     border: none;
-    
+
     &.ant-btn-sm {
       padding-left: 2rem !important;
 
@@ -221,7 +221,7 @@ span.anticon {
   }
 
   &:after {
-    content: "ĐANG TẢI";
+    content: 'ĐANG TẢI';
     font-size: 0.8em;
     margin-left: 5px;
   }
@@ -232,22 +232,32 @@ span.anticon {
   background: @primary-color;
 }
 
-.ant-steps-item-process >
-  .ant-steps-item-container > 
-    .ant-steps-item-content > 
-      .ant-steps-item-title::after {
+.ant-steps-item-process
+  > .ant-steps-item-container
+  > .ant-steps-item-content
+  > .ant-steps-item-title::after {
   background-color: @primary-color;
 }
 
 .timeline-editing {
-  height: 400px;
-  overflow: auto;
+  min-height: 30vh;
+  max-height: 70vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 10px 30px 10px 0;
+}
+
+.ticket-history-content {
+  box-shadow: 0 0 5px lightgrey;
+  padding: 10px;
+  border-radius: 4px;
 }
 
 // ----- RESPONSIVE --------
 @media (max-width: 768px) {
-  .ant-card-body, .ant-card-header {
-      padding: 5px;
+  .ant-card-body,
+  .ant-card-header {
+    padding: 5px;
   }
 
   .semester-year {
