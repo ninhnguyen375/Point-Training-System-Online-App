@@ -2,7 +2,7 @@
 import { Button, notification, Switch } from 'antd'
 import * as FileSaver from 'file-saver'
 import jsPDF from 'jspdf'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { any, arrayOf, objectOf, string } from 'prop-types'
 import logo from '../../../assets/images/sgu-logo.png'
 import '../../../assets/fonts/times-normal'
@@ -27,6 +27,9 @@ const ClassStatisticExport = ({ evaluations, batchTitle }) => {
   const [isFilterValidTicket, setIsFilterValidTicket] = useState(false)
   const [pages, setPages] = useState([])
   const [loading, setLoading] = useState(false)
+
+  // ref
+  const pdfElement = useRef(null)
 
   const itemsLength = pages.reduce((prev, curr) => prev + curr.items.length, [])
 
@@ -186,14 +189,12 @@ const ClassStatisticExport = ({ evaluations, batchTitle }) => {
     getPages()
   }, [getPages])
 
-  const exportToPDF = async () => {
+  const exportToPDF = async (pdfE) => {
     setLoading(true)
     const input = document.getElementById('pdf-element')
 
     const signSlots = document.getElementsByClassName('signSlot')
-    const pdfElement = document
-      .getElementById('pdf-element')
-      .getBoundingClientRect()
+    const rect = pdfE.current.getBoundingClientRect()
     const slots = []
     for (let i = 0; i < signSlots.length; i += 1) {
       const element = signSlots[i].getBoundingClientRect()
@@ -202,10 +203,10 @@ const ClassStatisticExport = ({ evaluations, batchTitle }) => {
         fullName: user.fullName,
         email: user.email,
         code: user.code,
-        x: parseInt(element.x, 10) - parseInt(pdfElement.x, 10),
+        x: parseInt(element.x, 10) - parseInt(rect.x, 10),
         y:
           parseInt(element.y, 10) -
-          parseInt(pdfElement.y, 10) -
+          parseInt(rect.y, 10) -
           parseInt(element.height, 10),
         width: parseInt(element.width, 10),
         height: parseInt(element.height, 10) * 2,
@@ -240,6 +241,7 @@ const ClassStatisticExport = ({ evaluations, batchTitle }) => {
     }
 
     setLoading(false)
+    window.location.reload()
   }
 
   const renderTable = (page) => {
@@ -396,7 +398,7 @@ const ClassStatisticExport = ({ evaluations, batchTitle }) => {
         <Button
           disabled={loading}
           loading={loading}
-          onClick={exportToPDF}
+          onClick={() => exportToPDF(pdfElement)}
           type="primary"
           className="me-2"
         >
@@ -413,7 +415,7 @@ const ClassStatisticExport = ({ evaluations, batchTitle }) => {
         </div>
       </div>
 
-      <div id="pdf-element">
+      <div ref={pdfElement} id="pdf-element">
         {itemsLength > 0 ? (
           pages.map((p) => (
             <div

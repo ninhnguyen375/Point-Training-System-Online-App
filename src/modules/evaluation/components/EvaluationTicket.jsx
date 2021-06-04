@@ -19,7 +19,6 @@ import { useSelector } from 'react-redux'
 import readExcelFile from 'read-excel-file'
 import PropTypes from 'prop-types'
 import moment from 'moment'
-import Text from 'antd/lib/typography/Text'
 import handleError from '../../../common/utils/handleError'
 import {
   getEvaluationPrivateService,
