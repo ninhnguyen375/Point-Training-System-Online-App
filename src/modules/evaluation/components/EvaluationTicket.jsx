@@ -44,7 +44,7 @@ import {
   disableEvaluationItems,
   evaluationStatus,
   classification as classificationList,
-  evaluationTimelineStatusColor,
+  evaluationTimelineStatus,
 } from '../model'
 
 import { cloneObj, getString } from '../../../common/utils/object'
@@ -904,7 +904,11 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
             <Timeline.Item
               // eslint-disable-next-line react/no-array-index-key
               key={i}
-              color={evaluationTimelineStatusColor[t.content]}
+              color={
+                evaluationTimelineStatus[t.content].color !== 'blue'
+                  ? evaluationTimelineStatus[t.content].color
+                  : '#1890ff'
+              }
               label={
                 <div>
                   <div>
@@ -922,15 +926,19 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
             >
               <div className="ticket-history-content">
                 <div>
-                  <Tag color={evaluationTimelineStatusColor[t.content]}>
-                    <i className="fas fa-pen me-1" />
+                  <Tag color={evaluationTimelineStatus[t.content].color}>
+                    <i
+                      className={`fas fa-${
+                        evaluationTimelineStatus[t.content].icon
+                      } me-2`}
+                    />
                     {t.content.toUpperCase()}
                   </Tag>
                 </div>
-                <div>
-                  <Tag>{t.code !== null ? `${t.code}` : ''}</Tag>
+                <div className="mt-2">
+                  <Tag>{t.code !== null ? `Mã số: ${t.code}` : ''}</Tag>
                 </div>
-                <div>
+                <div className="mt-2">
                   {(t.code !== null ? `${t.roleName}: ` : '') + t.fullName}
                 </div>
               </div>
@@ -942,7 +950,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         title: <b>MỐC THỜI GIAN ĐÁNH GIÁ CỦA PHIẾU</b>,
         key: 'view-timeline-editing',
         width: 650,
-        style: { top: 10 },
+        style: { top: 50 },
       },
     )
   }
@@ -1486,15 +1494,17 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
         )}
       </div>
 
-      <div className="mt-4">
-        <Button
-          type="primary"
-          icon={<i className="fas fa-list-ul me-2" />}
-          onClick={displayTimelineEditing}
-        >
-          XEM MỐC THỜI GIAN CỦA PHIẾU
-        </Button>
-      </div>
+      {timelineEditing.length > 0 && (
+        <div className="mt-4">
+          <Button
+            type="primary"
+            icon={<i className="fas fa-list-ul me-2" />}
+            onClick={displayTimelineEditing}
+          >
+            XEM MỐC THỜI GIAN CỦA PHIẾU
+          </Button>
+        </div>
+      )}
 
       <div className="d-flex justify-content-end mt-3">
         {isYourTurn && !isValidDeadline && !isEvaluationStudentDone && (
