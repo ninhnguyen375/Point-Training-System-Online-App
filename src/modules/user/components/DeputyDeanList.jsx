@@ -197,35 +197,40 @@ const DeputyDeanList = () => {
   return (
     <Card title={<b>DANH SÁCH TÀI KHOẢN PHÓ KHOA</b>}>
       <div className="d-flex justify-content-between">
-        <div className="d-flex">
+        <div className="d-flex flex-wrap">
           <Input
             className="me-2 mb-2"
+            style={{ width: 200 }}
             onChange={(e) => setSearch({ ...search, code: e.target.value })}
             placeholder="Tìm theo Mã Số"
             allowClear
           />
           <Input
             className="me-2 mb-2"
+            style={{ width: 200 }}
             onChange={(e) => setSearch({ ...search, fullName: e.target.value })}
             placeholder="Tìm theo Họ Tên"
             allowClear
           />
           <Input
             className="me-2 mb-2"
+            style={{ width: 200 }}
             onChange={(e) => setSearch({ ...search, email: e.target.value })}
             placeholder="Tìm theo Email"
             allowClear
           />
+        </div>
+        <div className="d-flex flex-wrap">
           <Tooltip title="Làm mới">
             <Button onClick={getDeputyDeans} className="me-2 mb-2">
               <i className="fas fa-sync" />
             </Button>
           </Tooltip>
+          <Button onClick={handleClickAddDeputyDean} type="primary">
+            <i className="fas fa-plus me-2" />
+            THÊM PHÓ KHOA
+          </Button>
         </div>
-        <Button onClick={handleClickAddDeputyDean} type="primary">
-          <i className="fas fa-plus me-2" />
-          THÊM PHÓ KHOA
-        </Button>
       </div>
       <Table
         columns={[

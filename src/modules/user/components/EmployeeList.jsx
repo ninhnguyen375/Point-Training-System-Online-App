@@ -199,32 +199,37 @@ const EmployeeList = () => {
         <div className="d-flex flex-wrap">
           <Input
             className="me-2 mb-2"
+            style={{ width: 200 }}
             onChange={(e) => setSearch({ ...search, code: e.target.value })}
             placeholder="Tìm theo Mã Số"
             allowClear
           />
           <Input
             className="me-2 mb-2"
+            style={{ width: 200 }}
             onChange={(e) => setSearch({ ...search, fullName: e.target.value })}
             placeholder="Tìm theo Họ Tên"
             allowClear
           />
           <Input
             className="me-2 mb-2"
+            style={{ width: 200 }}
             onChange={(e) => setSearch({ ...search, email: e.target.value })}
             placeholder="Tìm theo Email"
             allowClear
           />
+        </div>
+        <div className="d-flex flex-wrap">
           <Tooltip title="Làm mới">
             <Button onClick={getEmployees} className="me-2 mb-2">
               <i className="fas fa-sync" />
             </Button>
           </Tooltip>
+          <Button onClick={handleClickAddEmployee} type="primary">
+            <i className="fas fa-plus me-2" />
+            THÊM NHÂN VIÊN
+          </Button>
         </div>
-        <Button onClick={handleClickAddEmployee} type="primary">
-          <i className="fas fa-plus me-2" />
-          THÊM NHÂN VIÊN
-        </Button>
       </div>
       <Table
         columns={[

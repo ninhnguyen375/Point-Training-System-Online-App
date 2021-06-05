@@ -908,14 +908,14 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
               label={
                 <div>
                   <div>
-                    {moment(t.editedAt, 'DD MM YYYY HH:mm:ss').format(
+                    <i className="fas fa-calendar-day me-1" />
+                    {moment(t.editedAt, 'DD-MM-YYYY HH:mm:ss').format(
                       'DD/MM/YYYY',
                     )}
                   </div>
                   <div>
-                    {moment(t.editedAt, 'DD MM YYYY HH:mm:ss').format(
-                      'HH:mm:ss',
-                    )}
+                    <i className="far fa-clock me-1" />
+                    {moment(t.editedAt, 'DD-MM-YYYY HH:mm:ss').format('HH:mm')}
                   </div>
                 </div>
               }
