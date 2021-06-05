@@ -324,7 +324,7 @@ const EvaluationStatistic = ({ yearIdProp, semesterIdProp }) => {
     const currentEvaluationBatch = getCurrentEvaluationBatch(batches)
 
     return (
-      <div className="col-lg-7">
+      <div className="col-lg-7 deadline-date">
         <div className="mb-2">Thời hạn đánh giá: </div>
         <Steps>
           <Step

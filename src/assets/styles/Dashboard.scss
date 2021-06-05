@@ -33,9 +33,10 @@
 
       &__tag {
         margin-top: 5px;
+        margin-right: 20px;
         font-size: 0.7em;
         background: lighten($primary-color, 30);
-        margin-right: -10px;
+        // margin-right: -10px;
         padding: 5px 5px 5px 10px;
         border-radius: 5px 0 0 5px;
         box-shadow: -5px 0 10px #00000059;
@@ -61,7 +62,7 @@
   &__bottom {
     background: white;
     color: #333;
-    height: 70px;
+    height: 100px;
     width: 90%;
     text-align: center;
     margin: 0 auto;
