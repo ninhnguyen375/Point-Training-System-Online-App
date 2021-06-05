@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/Point-Training-System-Online-App/static/css/main.a470b1b7.chunk.css",
-    "main.js": "/Point-Training-System-Online-App/static/js/main.432bcebf.chunk.js",
-    "main.js.map": "/Point-Training-System-Online-App/static/js/main.432bcebf.chunk.js.map",
+    "main.css": "/Point-Training-System-Online-App/static/css/main.3dea652d.chunk.css",
+    "main.js": "/Point-Training-System-Online-App/static/js/main.12964027.chunk.js",
+    "main.js.map": "/Point-Training-System-Online-App/static/js/main.12964027.chunk.js.map",
     "runtime-main.js": "/Point-Training-System-Online-App/static/js/runtime-main.5baa6a3f.js",
     "runtime-main.js.map": "/Point-Training-System-Online-App/static/js/runtime-main.5baa6a3f.js.map",
     "static/css/2.7471b96f.chunk.css": "/Point-Training-System-Online-App/static/css/2.7471b96f.chunk.css",
-    "static/js/2.b1205349.chunk.js": "/Point-Training-System-Online-App/static/js/2.b1205349.chunk.js",
-    "static/js/2.b1205349.chunk.js.map": "/Point-Training-System-Online-App/static/js/2.b1205349.chunk.js.map",
+    "static/js/2.e13cece1.chunk.js": "/Point-Training-System-Online-App/static/js/2.e13cece1.chunk.js",
+    "static/js/2.e13cece1.chunk.js.map": "/Point-Training-System-Online-App/static/js/2.e13cece1.chunk.js.map",
     "static/js/3.1a5286f2.chunk.js": "/Point-Training-System-Online-App/static/js/3.1a5286f2.chunk.js",
     "static/js/3.1a5286f2.chunk.js.map": "/Point-Training-System-Online-App/static/js/3.1a5286f2.chunk.js.map",
     "static/js/4.ab713007.chunk.js": "/Point-Training-System-Online-App/static/js/4.ab713007.chunk.js",
@@ -18,8 +18,8 @@
     "static/js/6.1090dee3.chunk.js.map": "/Point-Training-System-Online-App/static/js/6.1090dee3.chunk.js.map",
     "index.html": "/Point-Training-System-Online-App/index.html",
     "static/css/2.7471b96f.chunk.css.map": "/Point-Training-System-Online-App/static/css/2.7471b96f.chunk.css.map",
-    "static/css/main.a470b1b7.chunk.css.map": "/Point-Training-System-Online-App/static/css/main.a470b1b7.chunk.css.map",
-    "static/js/2.b1205349.chunk.js.LICENSE.txt": "/Point-Training-System-Online-App/static/js/2.b1205349.chunk.js.LICENSE.txt",
+    "static/css/main.3dea652d.chunk.css.map": "/Point-Training-System-Online-App/static/css/main.3dea652d.chunk.css.map",
+    "static/js/2.e13cece1.chunk.js.LICENSE.txt": "/Point-Training-System-Online-App/static/js/2.e13cece1.chunk.js.LICENSE.txt",
     "static/js/3.1a5286f2.chunk.js.LICENSE.txt": "/Point-Training-System-Online-App/static/js/3.1a5286f2.chunk.js.LICENSE.txt",
     "static/js/4.ab713007.chunk.js.LICENSE.txt": "/Point-Training-System-Online-App/static/js/4.ab713007.chunk.js.LICENSE.txt",
     "static/js/5.67486829.chunk.js.LICENSE.txt": "/Point-Training-System-Online-App/static/js/5.67486829.chunk.js.LICENSE.txt",
@@ -31,8 +31,8 @@
   "entrypoints": [
     "static/js/runtime-main.5baa6a3f.js",
     "static/css/2.7471b96f.chunk.css",
-    "static/js/2.b1205349.chunk.js",
-    "static/css/main.a470b1b7.chunk.css",
-    "static/js/main.432bcebf.chunk.js"
+    "static/js/2.e13cece1.chunk.js",
+    "static/css/main.3dea652d.chunk.css",
+    "static/js/main.12964027.chunk.js"
   ]
 }
