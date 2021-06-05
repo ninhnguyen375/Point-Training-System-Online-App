@@ -615,13 +615,31 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
   }
 
   const handleRemoveAttachment = async (attachment) => {
+    if (evaluation.status === evaluationStatus.Done) {
+      notification.info({
+        message: `Phiếu đánh giá đã hoàn tất.`,
+        description: 'Không thể xóa ảnh đính kèm.',
+      })
+
+      return
+    }
+
+    if (evaluation.status === evaluationStatus.Canceled) {
+      notification.info({
+        message: `Phiếu đánh giá đã bị hủy.`,
+        description: 'Không thể xóa ảnh đính kèm.',
+      })
+
+      return
+    }
+
     try {
       await removeFileService(
         evaluation.id,
         attachment.url.split('/')[attachment.url.split('/').length - 1],
       )
 
-      const newAtts = attachments.filter((a) => a.name !== attachment.name)
+      const newAtts = attachments.filter((a) => a.url !== attachment.url)
       setAttachments(newAtts)
       message.success('Xóa thành công')
       window.Modal.clear()
@@ -673,6 +691,24 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
   }
 
   const handleUploadAttachment = (r) => async ({ onSuccess, file }) => {
+    if (evaluation.status === evaluationStatus.Done) {
+      notification.info({
+        message: `Phiếu đánh giá đã hoàn tất.`,
+        description: 'Không thể tải lên ảnh đính kèm.',
+      })
+
+      return
+    }
+
+    if (evaluation.status === evaluationStatus.Canceled) {
+      notification.info({
+        message: `Phiếu đánh giá đã bị hủy.`,
+        description: 'Không thể tải lên ảnh đính kèm.',
+      })
+
+      return
+    }
+
     try {
       const { data } = await uploadFileService(
         evaluation.id,
@@ -844,6 +880,24 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
       <ChoosePointTrainingItemId
         dataSource={dataSource}
         onSubmit={async (trainingPointItemId) => {
+          if (evaluation.status === evaluationStatus.Done) {
+            notification.info({
+              message: `Phiếu đánh giá đã hoàn tất.`,
+              description: 'Không thể tải lên ảnh đính kèm.',
+            })
+
+            return
+          }
+
+          if (evaluation.status === evaluationStatus.Canceled) {
+            notification.info({
+              message: `Phiếu đánh giá đã bị hủy.`,
+              description: 'Không thể tải lên ảnh đính kèm.',
+            })
+
+            return
+          }
+
           try {
             const { data } = await uploadFileService(
               evaluation.id,
@@ -905,9 +959,13 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
               // eslint-disable-next-line react/no-array-index-key
               key={i}
               color={
-                evaluationTimelineStatus[t.content].color !== 'blue'
+                evaluationTimelineStatus[t.content].color !== 'blue' &&
+                evaluationTimelineStatus[t.content].color !== 'geekblue'
                   ? evaluationTimelineStatus[t.content].color
-                  : '#1890ff'
+                  : evaluationTimelineStatus[t.content].color === 'blue'
+                  ? '#1890ff'
+                  : '#1d39c4'
+                // #1890ff is light blue, #1d39c4 is light geekblue
               }
               label={
                 <div>
@@ -1014,13 +1072,6 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     try {
       const totalPoint = getTotalPoint(monitorEvaluation)
 
-      if (
-        isUpdate &&
-        evaluation.status !== evaluationStatus.ComplainingMonitor
-      ) {
-        await complainService(evaluation.id, '')
-      }
-
       // monitor make own ticket
       if (isTicketOfMonitor && !isUpdate) {
         await handleClickSaveAsDraft(false)
@@ -1072,7 +1123,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     return true
   }
 
-  const lecturerConfirm = async (isRefuse = false, note, isUpdate) => {
+  const lecturerConfirm = async (isRefuse = false, note) => {
     try {
       const totalPoint = getTotalPoint(monitorEvaluation)
       const classification = getClassification(totalPoint)
@@ -1086,14 +1137,6 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
             lecturerNote: note,
           })
         : ''
-
-      // update ticket
-      if (
-        isUpdate &&
-        evaluation.status !== evaluationStatus.ComplainingLecturer
-      ) {
-        await complainService(evaluation.id, '')
-      }
 
       await lecturerConfirmService(
         evaluationId,
@@ -1118,7 +1161,7 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
     }
   }
 
-  const employeeConfirm = async (isRefuse = false, note, isUpdate) => {
+  const employeeConfirm = async (isRefuse = false, note) => {
     try {
       const totalPoint = getTotalPoint(monitorEvaluation)
       const classification = getClassification(totalPoint)
@@ -1133,13 +1176,6 @@ const EvaluationTicket = ({ studentIdProp, yearIdProp, semesterIdProp }) => {
           })
         : ''
       const employeeId = profile.id
-
-      if (
-        isUpdate &&
-        evaluation.status !== evaluationStatus.ComplainingEmployee
-      ) {
-        await complainService(evaluation.id, '')
-      }
 
       await employeeConfirmService(
         evaluationId,
