@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 import viVN from 'antd/lib/locale/vi_VN'
 import { ConfigProvider } from 'antd'
 import Routes from './Routes'
@@ -8,9 +8,9 @@ import CustomModal from './components/widgets/CustomModal'
 
 const Root = () => (
   <ConfigProvider locale={viVN}>
-    <Router>
+    <HashRouter>
       <Routes />
-    </Router>
+    </HashRouter>
     <PageLoading
       ref={(ref) => {
         window.PageLoading = ref
