@@ -2,6 +2,7 @@
   "name": "point-training-system-online-app",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://ninhnguyen375.github.io/Point-Training-System-Online-App/",
   "dependencies": {
     "@craco/craco": "^6.1.0",
     "@fortawesome/fontawesome-free": "^5.15.2",
