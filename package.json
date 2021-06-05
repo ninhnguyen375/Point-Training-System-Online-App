@@ -40,7 +40,7 @@
   },
   "scripts": {
     "start": "rm src/configs/index.js && cp src/configs/dev.js src/configs/index.js && craco start",
-    "build": "rm src/configs/index.js && cp src/configs/deploy.js src/configs/index.js && craco build && mv build docs",
+    "build": "rm src/configs/index.js && cp src/configs/deploy.js src/configs/index.js && craco build && rm -rf docs && mv build docs",
     "test": "craco test",
     "eject": "craco eject"
   },
