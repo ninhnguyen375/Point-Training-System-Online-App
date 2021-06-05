@@ -1,4 +1,4 @@
-import { Button, Card, Divider, notification, Select, } from 'antd'
+import { Button, Card, Divider, notification, Select } from 'antd'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import CustomBreadcrumb from '../common/components/widgets/CustomBreadcrumb'
@@ -73,7 +73,15 @@ const Dashboard = () => {
     const config = {
       type: 'pie',
       data: {
-        labels: ['Xuất sắc', 'Tốt', 'Khá', 'Trung bình', 'Yếu', 'Kém', 'Phiếu bị hủy'],
+        labels: [
+          'Xuất sắc',
+          'Tốt',
+          'Khá',
+          'Trung bình',
+          'Yếu',
+          'Kém',
+          'Phiếu bị hủy',
+        ],
         datasets: [
           {
             label: '# of Votes',
@@ -114,29 +122,27 @@ const Dashboard = () => {
             callbacks: {
               label: (context) => {
                 const { label, parsed, dataset } = context
-                
-                const sumEvaluations = dataset.data.reduce((total, item) => {
-                  return total + item 
-                }, 0)
 
-                const percentage = ((parsed / sumEvaluations) * 100).toFixed(1);
+                const sumEvaluations = dataset.data.reduce(
+                  (total, item) => total + item,
+                  0,
+                )
+
+                const percentage = ((parsed / sumEvaluations) * 100).toFixed(1)
 
                 return [` ${label}: ${parsed}`, ` Tỉ lệ: ${percentage}%`]
               },
-            }
-          }
+            },
+          },
         },
       },
     }
 
-    if (
-      window.statisticChart !== undefined &&
-      window.statisticChart !== null
-    ) {
-      window.statisticChart.destroy();
+    if (window.statisticChart !== undefined && window.statisticChart !== null) {
+      window.statisticChart.destroy()
     }
 
-    window.statisticChart = new window.Chart(ctx, config);
+    window.statisticChart = new window.Chart(ctx, config)
   }
 
   // const getCurrentActiveEvaluations = useCallback(async () => {
@@ -240,23 +246,20 @@ const Dashboard = () => {
       for (let i = 0; i < classification.length; i += 1) {
         const item = classification[i]
 
-        if (item !== classification[6]) { // classification[6] is 'Phiếu bị hủy'
+        if (item !== classification[6]) {
+          // classification[6] is 'Phiếu bị hủy'
           counter[item] = data.data.reduce(
-            (prev, curr) => (
-              curr.status !== evaluationStatus.Canceled  &&
-              curr.classification === item ?
-                prev + 1 : 
-                prev
-            ),
+            (prev, curr) =>
+              curr.status !== evaluationStatus.Canceled &&
+              curr.classification === item
+                ? prev + 1
+                : prev,
             0,
           )
         } else {
           counter[item] = data.data.reduce(
-            (prev,curr) => (
-              curr.status === evaluationStatus.Canceled ?
-                prev + 1 :
-                prev
-            ),
+            (prev, curr) =>
+              curr.status === evaluationStatus.Canceled ? prev + 1 : prev,
             0,
           )
         }
@@ -286,7 +289,6 @@ const Dashboard = () => {
         Object.keys(calculatedCounter).map((key) => calculatedCounter[key]),
       )
     } catch (err) {
-      console.log(err)
       notification.info({
         message: 'Chưa có đợt đánh giá',
         description: (
@@ -312,33 +314,37 @@ const Dashboard = () => {
     getEvaluations()
   }, [getEvaluations])
 
-  const isEvaluationExistsCondition = 
-    evaluations && 
-    !!evaluations.find((e) => 
-      (e.classification !== null || e.status === evaluationStatus.Canceled)
+  const isEvaluationExistsCondition =
+    evaluations &&
+    !!evaluations.find(
+      (e) =>
+        e.classification !== null || e.status === evaluationStatus.Canceled,
     )
 
-  const getCurrentBatchActive = useCallback((batches = []) => {
-    if (batches.length === 0) {
-      return ''
-    }
+  const getCurrentBatchActive = useCallback(
+    (batches = []) => {
+      if (batches.length === 0) {
+        return
+      }
 
-    const currentActive = batches.find(
-      (evaluationBatch) =>
-        evaluationBatch.semester.id === semesterId &&
-        evaluationBatch.year.id === yearId,
-    )
+      const currentActive = batches.find(
+        (evaluationBatch) =>
+          evaluationBatch.semester.id === semesterId &&
+          evaluationBatch.year.id === yearId,
+      )
 
-    if (
-      !currentActive ||
-      !currentActive.year.id ||
-      !currentActive.semester.id
-    ) {
-      return
-    }
+      if (
+        !currentActive ||
+        !currentActive.year.id ||
+        !currentActive.semester.id
+      ) {
+        return
+      }
 
-    setActiveBatch(currentActive)
-  }, [yearId, semesterId])
+      setActiveBatch(currentActive)
+    },
+    [yearId, semesterId],
+  )
 
   useEffect(() => {
     getCurrentBatchActive(evaluationBatches)
@@ -413,7 +419,11 @@ const Dashboard = () => {
             <div style={{ marginRight: 100 }}>
               <div
                 aria-hidden="true"
-                onClick={() => history.push(`/evaluation-batch/detail?yearId=${yearId}&semesterId=${semesterId}`)}
+                onClick={() =>
+                  history.push(
+                    `/evaluation-batch/detail?yearId=${yearId}&semesterId=${semesterId}`,
+                  )
+                }
                 className="statistic-card"
               >
                 <div className="d-flex statistic-card__top">
@@ -454,12 +464,16 @@ const Dashboard = () => {
                 paddingTop: 40,
               }}
             >
-              {isEvaluationExistsCondition && <canvas width="250" height="250" id="chart" />}
+              {isEvaluationExistsCondition && (
+                <canvas width="250" height="250" id="chart" />
+              )}
             </div>
           </div>
         )}
 
-        <Divider className={isEvaluationExistsCondition && "dashboard-divider"} />
+        <Divider
+          className={isEvaluationExistsCondition && 'dashboard-divider'}
+        />
 
         <div className="d-flex flex-wrap">
           <Link to="/evaluation/create">

@@ -63,23 +63,16 @@ export const a4 = {
   fontSize: 12,
 }
 
-export const evaluationTimelineStatusColor = {
-  'Lưu phiếu đánh giá': '#1890ff', // #1890ff is light blue
-  'Nộp phiếu đánh giá': '#1890ff',
-  'Khiếu nại về kết quả phiếu đánh giá': '#340C6F',
-  'Xác nhận phiếu đánh giá': '#1890ff',
-  'Chấp nhận phiếu đánh giá': '#1890ff',
-  'Hoàn tất phiếu đánh giá': 'green',
-  'Hủy phiếu đánh giá': 'red',
-  'Phục hồi phiếu đánh giá': 'orange',
-}
-
 export const evaluationTimelineStatus = {
   'Lưu phiếu đánh giá': { color: 'blue', icon: 'pencil-alt' }, // #1890ff is light blue
   'Nộp phiếu đánh giá': { color: 'blue', icon: 'paper-plane' },
-  'Khiếu nại về kết quả phiếu đánh giá': { color: 'purple', icon: 'clipboard-list' },
+  'Khiếu nại về kết quả phiếu đánh giá': {
+    color: 'purple',
+    icon: 'clipboard-list',
+  },
   'Xác nhận phiếu đánh giá': { color: 'blue', icon: 'pen-alt' },
   'Chấp nhận phiếu đánh giá': { color: 'blue', icon: 'pen-square' },
+  'Cập nhật phiếu đánh giá': { color: 'geekblue', icon: 'edit' },
   'Hoàn tất phiếu đánh giá': { color: 'green', icon: 'check-circle' },
   'Hủy phiếu đánh giá': { color: 'red', icon: 'ban' },
   'Phục hồi phiếu đánh giá': { color: 'orange', icon: 'window-restore' },
