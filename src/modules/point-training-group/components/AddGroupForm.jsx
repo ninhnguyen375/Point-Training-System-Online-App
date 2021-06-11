@@ -7,7 +7,7 @@ const AddGroupForm = ({ onSubmit, isGroup, editMode, data }) => {
 
   if (editMode) {
     const titleSplit = isGroup
-      ? data.title.split(' _ ')
+      ? data.title.split(' - ')
       : data.title.split('. ')
 
     form.setFieldsValue({

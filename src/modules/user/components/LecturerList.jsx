@@ -229,14 +229,14 @@ const LecturerList = () => {
             allowClear
             className="me-2 mb-2"
             style={{ width: 200 }}
-            placeholder="MSSV"
+            placeholder="Mã GV"
           />
           <Input
             onChange={(e) => setSearch({ ...search, fullName: e.target.value })}
             allowClear
             className="me-2 mb-2"
             style={{ width: 200 }}
-            placeholder="Họ Tên SV"
+            placeholder="Họ Tên GV"
           />
           <Button onClick={getLecturers} className="me-2 mb-2">
             <i className="fas fa-sync me-2" />
