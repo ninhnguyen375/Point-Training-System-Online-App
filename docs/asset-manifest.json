@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/Point-Training-System-Online-App/static/css/main.3dea652d.chunk.css",
-    "main.js": "/Point-Training-System-Online-App/static/js/main.12964027.chunk.js",
-    "main.js.map": "/Point-Training-System-Online-App/static/js/main.12964027.chunk.js.map",
+    "main.js": "/Point-Training-System-Online-App/static/js/main.df57a003.chunk.js",
+    "main.js.map": "/Point-Training-System-Online-App/static/js/main.df57a003.chunk.js.map",
     "runtime-main.js": "/Point-Training-System-Online-App/static/js/runtime-main.5baa6a3f.js",
     "runtime-main.js.map": "/Point-Training-System-Online-App/static/js/runtime-main.5baa6a3f.js.map",
     "static/css/2.7471b96f.chunk.css": "/Point-Training-System-Online-App/static/css/2.7471b96f.chunk.css",
@@ -33,6 +33,6 @@
     "static/css/2.7471b96f.chunk.css",
     "static/js/2.e13cece1.chunk.js",
     "static/css/main.3dea652d.chunk.css",
-    "static/js/main.12964027.chunk.js"
+    "static/js/main.df57a003.chunk.js"
   ]
 }
